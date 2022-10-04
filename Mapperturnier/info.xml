@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+ <NameKey>Volcano</NameKey>
+ <DescKey>Volcano</DescKey>
+ <Name>Mapperturnier</Name>
+ <Desc>Yeet</Desc>
+ <SizeX>417</SizeX>
+ <SizeY>417</SizeY>
+ <MPFlag>false</MPFlag>
+ <MPPlayerCount>1</MPPlayerCount>
+ <MPGameOptionFlagSet>3</MPGameOptionFlagSet>
+ <MiniMapTextureName>data\graphics\Textures\GUI\MapPics\externalmap</MiniMapTextureName>
+ <Key>2</Key>
+ <GUID>
+  <Data>f8daf7f1-73a3-4ef8-a3c3-b5e63abed6ee</Data>
+ </GUID>
+</root>
