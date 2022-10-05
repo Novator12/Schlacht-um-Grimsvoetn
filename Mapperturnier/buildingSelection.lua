@@ -223,6 +223,8 @@ function BarbArenaSelection()
 end
 
 
+
+
 function InitBuildingSelection()
     SerfSelection()
     BarbarianHQSelection() 

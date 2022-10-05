@@ -42,16 +42,16 @@
         <Category>Leader</Category>
         <Category>Bow</Category>
 		  <AdjustWalkAnimSpeed>true</AdjustWalkAnimSpeed>
-		  <MaxHealth>170</MaxHealth>
+		  <MaxHealth>200</MaxHealth>
 		  <Exploration>25</Exploration>
 		  <ArmorClass>ArmorClassJerkin</ArmorClass> 
-		  <ArmorAmount>4</ArmorAmount>
+		  <ArmorAmount>8</ArmorAmount>
 		  <DodgeChance>0</DodgeChance> 
     	<IdleTaskList>TL_MILITARY_IDLE</IdleTaskList>
     	<ExperiencePoints>25</ExperiencePoints>
     	<Upgrade>                       
 			<Category>LeaderBanditBow</Category>
-			 <Type>CU_BanditLeaderBow2</Type> 
+			
 		 </Upgrade>
 	</Logic>
 	<Behavior>
@@ -87,7 +87,7 @@
 			  <BarrackUpgradeCategory>Arena</BarrackUpgradeCategory>			
             <HomeRadius>3000</HomeRadius>
 
-			  <SoldierType>CU_BanditSoldierBow1</SoldierType>
+			  <SoldierType>CU_BanditSoldierBow2</SoldierType>
 			
 	        <BattleTaskList>TL_BATTLE_BOW</BattleTaskList>
 	        
@@ -101,19 +101,19 @@
 	        <HitAnim>CU_BanditLeaderBow1_Hit</HitAnim>
 	        
 	        <DamageClass>DC_Pierce</DamageClass>
-	        <DamageAmount>14</DamageAmount>
+	        <DamageAmount>18</DamageAmount>
 	        <MaxRandomDamageBonus>0</MaxRandomDamageBonus>
 	        
 	        <BattleWaitUntil>2600</BattleWaitUntil>
 	        
-	        <MissChance>9</MissChance>
+	        <MissChance>6</MissChance>
 	        
 	        <ProjectileEffectID>FXArrow</ProjectileEffectID>
-	        <MaxRange>2500</MaxRange>
+	        <MaxRange>2700</MaxRange>
 	        <MinRange>0.0f</MinRange>	        
 	        <AutoAttackRange>2500</AutoAttackRange>
 	        
-			  <HealingPoints>5</HealingPoints>
+			  <HealingPoints>7</HealingPoints>
 	        <HealingSeconds>3</HealingSeconds>
 	        
 	        <UpkeepCost>20</UpkeepCost>

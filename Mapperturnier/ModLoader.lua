@@ -45,10 +45,18 @@ ModLoader = {
 			Entities.PU_Serf,
 			Entities.PB_GenericMine,
 			Entities.CU_VeteranLieutenant,
+			--
 			Entities.CU_BanditLeaderBow1,
 			Entities.CU_BanditSoldierBow1,
+			--
+			"CU_BanditLeaderBow2",
+			"CU_BanditSoldierBow2",
+			--
 			Entities.CU_BanditLeaderSword1,
 			Entities.CU_BanditSoldierSword1,
+			--
+			Entities.CU_BanditLeaderSword2,
+			Entities.CU_BanditSoldierSword2,
 		},
 		--- EffectTypes to load or reload. put in a string to load, and a number to reload (GGL_Effects.Typename).
 		EffectTypes = {
@@ -133,6 +141,13 @@ ModLoader = {
 			"CB_Barbarian_Arena",
 			"CU_Barbarian_Hero",
 			Models.CU_Barbarian_LeaderClub1,
+			--
+			Models.CU_LeaderOutlaw1,
+			"CU_LeaderOutlaw2",
+			--
+			Models.CU_SoldierOutlaw1,
+			"CU_SoldierOutlaw2",
+			--
 			Models.XA_Wolf,
 		},
 		--- Animations to load or reload. put in a string to load, and a number to reload (Animations.Typename).
@@ -165,7 +180,7 @@ ModLoader = {
 		},
 		--- Settler Upgradde Categories to add. use in [nameUCat]=nameFirstEntity.
 		SettlerUpgradeCategory = {
-
+			
 		},
 		--- Building Upgradde Categories to add. use in [nameUCat]=nameFirstEntity.
 		BuildingUpgradeCategory = {

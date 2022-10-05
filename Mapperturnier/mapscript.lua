@@ -135,7 +135,7 @@ function FirstMapAction()
 
     InitBuildingSelection() --Aktivierung der Selectionsüberarbeitung für neue Gebäude
     InitalizeBarbTower()  --Aktivierung der Barbarentürme
-
+	UpgradeNewTroops() --Aktivierung der neuen Truppenupgrades
 	Input.KeyBindDown(Keys.Back, "GUI.SellBuilding(GUI.GetSelectedEntity())", 2); --Löschen mit Backspace Taste 
 	
 	--Logic.SetTechnologyState(1,Technologies.GT_BarbarianBuildings,3) --Aktivierung der Selektierbarkeit des Baumenüs von Serfs
@@ -159,8 +159,8 @@ function FirstMapAction()
 
 
     --MapStart Funcs
-    CreateDynamicFog("Nebel", 0 );
-	CreateDynamicFog("fog", 0 );
+    CreateDynamicFog("Nebel", 0 ); --Nebel am Spawn
+	CreateDynamicFog("fog", 0 );  --Nebel NV-Camp
     Start_Chapter1()
     StartSimpleJob("GetSystemTime")
 
@@ -181,10 +181,27 @@ function FirstMapAction()
 end
 
 
+-------------------------------------Neue Truppen-Upgraden------------------------------------
 
+function UpgradeNewTroops()
+    GameCallback_OnTechnologyResearchedNewTroops = GameCallback_OnTechnologyResearched
+    function GameCallback_OnTechnologyResearched( _PlayerID, _TechnologyType )
+        GameCallback_OnTechnologyResearchedNewTroops( _PlayerID, _TechnologyType )
 
+        if _TechnologyType == Technologies.T_UpgradeBanditSword1 then
+            --should be LOGIC not GUI
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBandit,PlayerID)
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBandit,PlayerID)
 
+        elseif _TechnologyType == Technologies.T_UpgradeBanditBow1 then
+             --should be LOGIC not GUI
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBanditBow,PlayerID)
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBanditBow,PlayerID)
+        end
+    end
+end
 
+---------------------------Auslesen SystemTime------------------------------------------------
 function GetSystemTime()
 
     local Seconds = Logic.GetTime()
