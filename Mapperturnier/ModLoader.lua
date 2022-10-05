@@ -148,6 +148,8 @@ ModLoader = {
 			Models.CU_SoldierOutlaw1,
 			"CU_SoldierOutlaw2",
 			--
+			"CU_BanditLeaderBow2",
+			"CU_BanditSoldierBow2",
 			Models.XA_Wolf,
 		},
 		--- Animations to load or reload. put in a string to load, and a number to reload (Animations.Typename).

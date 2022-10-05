@@ -190,13 +190,13 @@ function UpgradeNewTroops()
 
         if _TechnologyType == Technologies.T_UpgradeBanditSword1 then
             --should be LOGIC not GUI
-            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBandit,PlayerID)
-            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBandit,PlayerID)
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBandit,_PlayerID)
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBandit,_PlayerID)
 
         elseif _TechnologyType == Technologies.T_UpgradeBanditBow1 then
              --should be LOGIC not GUI
-            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBanditBow,PlayerID)
-            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBanditBow,PlayerID)
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBanditBow,_PlayerID)
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBanditBow,_PlayerID)
         end
     end
 end
