@@ -28,7 +28,7 @@ function AnfangsBriefing()
         DestroyEntity("intro_boat2")
         ResolveBriefing(page1);
 		ResolveBriefing(page2);
-        StrandBriefing(1)
+        StrandBriefing()
     end;
     NormalSpeedInBriefing()
     StartBriefing(briefing)
@@ -968,7 +968,8 @@ function ActivateDeadJargBrief()
                                 Logic.EntityLookAt(GetID(guard), GetID(varg)) 
                                 Logic.EntityLookAt(GetID(varg), GetID("bone_jarg")) 
                                 GUI.DestroyMinimapPulse(GetPosition("marker_pos").X,GetPosition("marker_pos").Y)
-                                Move("hermit","chest_nv") 
+                                Move("hermit","signalfire") 
+                                StartSimpleJob("HeimdallNearSignal")
                             end
                         };
                     local page2 = AP{
@@ -1066,6 +1067,117 @@ function VargNearNvChest()
     end
     return false;
 end
+
+function HeimdallNearSignal()
+    if IsNear("hermit","signalfire",700) then
+        BriefingHeimdallSignal()
+        return true;
+    end
+
+end
+
+function BriefingHeimdallSignal()
+    local callback = function()
+        local briefing = {};
+        local AP = function(_page) table.insert(briefing, _page); return _page; end;
+        local page1 = AP{
+                            title = "@color:255,0,0 Heimdall",
+                            text = "@color:255,136,0 Schaut an, schaut an. Das Leuchtfeuer von Grimsvötn.",
+                            npc = { id = GetEntityId("hermit"),
+                                    isObserved = true }, 
+                            action = function() 
+                                Logic.EntityLookAt(GetID("hermit"), GetID(varg)) 
+                                Logic.EntityLookAt(GetID(varg), GetID("hermit")) 
+                            end
+                        };
+                    local page2 = AP{
+                        title = "@color:255,0,0 Heimdall",
+                        text = "@color:255,136,0 Viele Schiffe sind an diesen Felsen zerberstet und haben Schiffbruch erlitten.",
+                        position = GetPosition("wreck2"),
+                        explore = 2000    
+                        }; 
+                    local page3 = AP{
+                        title = "@color:255,0,0 Heimdall",
+                        text = "@color:255,136,0 Ich glaube kaum, dass dies einer überlebt hat.",
+                        position = GetPosition("wreck1"),
+                        explore = 2000    
+                        }; 
+                    local page4 = AP{
+                        title = "@color:255,0,0 Varg",
+                        text = "@color:255,136,0 Dann sollten wir das Leuchtfeuer schleunigst wieder entzünden. Ich hoffe diese Wilden sind nun ein für alle mal ausgerottet und zerstören es nicht wieder erneut.",
+                        position = GetPosition(varg),
+                        explore = 2000    
+                        }; 
+                    local page5 = AP{
+                        title = "@color:255,0,0 Heimdall",
+                        text = "@color:255,136,0 Da gebe ich dir Recht, jedoch werden wir viel Holz benötigen, um das Feuer wieder aufgebaut zu bekommen und dafür benötigen wir zuerst ein ansehnliches Dorf.",
+                        position = GetPosition("hermit"),  
+                        }; 
+                    local page6 = AP{
+                        title = "@color:255,0,0 Varg",
+                        text = "@color:255,136,0 Lass das Dorf mal meine Sorge sein und jetzt kommt, es gibt viel zu tun...",
+                        position = GetPosition(varg),  
+                        }; 
+
+
+    briefing.finished = function() 
+        ResolveBriefing(page1); 
+        ResolveBriefing(page2); 
+        ResolveBriefing(page3);
+        
+        Move(varg,"varg_chapter2",100)
+        Move(guard,"mijoern_chapter2",100)
+        Move(trupp3,"ruediger_chapter2",100)
+        Move(trupp1,"helgar_chapter2",100)
+        Move(trupp2,"wolfgang_chapter2",100)
+        StartSimpleJob("HerosChapter2")
+        StartBlende(
+        "@center @color:255,0,0 Aufbau von Reynivellir", 
+        "@center @color:255,255,255 @cr @cr Seid Vargs Ankunft in Reynivellir ist viel geschehen. Er hat erfahren, dass seine Mutter und sein Vater tot sind und er nun Oberhaupt seines Stammes und Heimatvolkes ist. Vor Varg liegt ein langer Weg, bis er seinem Vater ebenbürtig werden kann. Alleine ist er jedoch nicht, da seine engsten Freunde, seien es alte oder neu dazugewonnenen, an seiner Seite stehen. Varg muss zunächst das Dorf wieder aufbauen und das Signalfeuer neu entzüden, um weitere Schiffsunglücke zu verhindern. Wird Ihm dies gelingen? Man weiß es nicht...", 
+        function() Start_Chapter2() end, 
+
+        2)--muss später höher
+    end
+
+    
+        NormalSpeedInBriefing()
+        StartBriefing(briefing)
+        
+    end;
+        local npc = {
+                    name = "hermit",
+                    callback = callback,
+                    heroName = varg,
+                    wrongHeroMessage = "Schickt Varg zu mir."
+                };
+        CreateNPC(npc);
+end
+
+
+function StartBriefingChapter2()
+        local briefing = {}
+        local AP = function(_page) table.insert(briefing, _page) return _page end
+        local page1 = AP{
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Die raue See peitsch gegen die Planken der Schiffe. Varg und seine Anhänger sind Wochen lang durch den kalten Nordatlantik gefahren und sind kurz vor dem Ende ihrer nervenzehrenden Reise.",
+            position = GetPosition("intro_boat1"),
+            explore = 2000
+        }
+        local page2 = AP{
+            title	= "@color:255,0,0 Intro",
+            text	= "@color:255,136,0 Das Wetter vor der Küste Islands ist wesentlich klarer als auf der hohen See und die Männer freuen sich auf warmes Met am Lagerfeuer.",
+            position = GetPosition("intro_boat2"),
+            explore = 2000,
+        }
+    
+    
+        briefing.finished = function()  
+           
+        end;
+        NormalSpeedInBriefing()
+        StartBriefing(briefing)
+end
+
 
 
 function AddPages( _briefing )

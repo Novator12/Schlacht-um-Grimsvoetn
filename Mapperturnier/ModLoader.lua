@@ -288,6 +288,12 @@ function ModLoader.ApplyManifest()
 	for _,n in ipairs(ModLoader.Manifest.SelectionTextures_Reload) do
 		CppLogic.ModLoader.ReloadSelectionTexture(n)
 	end
+	for uc, et in pairs(ModLoader.Manifest.SettlerUpgradeCategory) do
+		CppLogic.ModLoader.AddSettlerUpgradeCategory(uc, Entities[et])
+	end
+	for uc, et in pairs(ModLoader.Manifest.BuildingUpgradeCategory) do
+		CppLogic.ModLoader.AddBuildingUpgradeCategory(uc, Entities[et])
+	end
 	for _,n in ipairs(ModLoader.Manifest.Animations) do
 		if type(n)=="string" then
 			CppLogic.ModLoader.AddAnimation(n)
@@ -343,12 +349,6 @@ function ModLoader.ApplyManifest()
 	end
 	for _,n in ipairs(ModLoader.Manifest.GUITextures_Reload) do
 		CppLogic.ModLoader.ReloadGUITexture(n)
-	end
-	for uc, et in pairs(ModLoader.Manifest.SettlerUpgradeCategory) do
-		CppLogic.ModLoader.AddSettlerUpgradeCategory(uc, Entities[et])
-	end
-	for uc, et in pairs(ModLoader.Manifest.BuildingUpgradeCategory) do
-		CppLogic.ModLoader.AddBuildingUpgradeCategory(uc, Entities[et])
 	end
 	for xp, ec in pairs(ModLoader.Manifest.ExperienceClasses) do
 		CppLogic.ModLoader.AddExperienceClass(xp, ec)
