@@ -119,7 +119,7 @@ end
 -- This function is called on game start and after save game to initialize player colors
 function InitPlayerColorMapping()
     Logic.SetPlayerRawName(1, "Varg")
-	Display.SetPlayerColorMapping(1,NEPHILIM_COLOR)
+	Display.SetPlayerColorMapping(1, NEPHILIM_COLOR)
     Display.SetPlayerColorMapping(6, ROBBERS_COLOR)
     Display.SetPlayerColorMapping(7, KERBEROS_COLOR)
     Display.SetPlayerColorMapping(8, ENEMY_COLOR2)
@@ -138,7 +138,6 @@ function FirstMapAction()
     InitalizeBarbTower()  --Aktivierung der Barbarentürme
 	UpgradeNewTroops() --Aktivierung der neuen Truppenupgrades
 	Input.KeyBindDown(Keys.Back, "GUI.SellBuilding(GUI.GetSelectedEntity())", 2); --Löschen mit Backspace Taste 
-	
 	--Logic.SetTechnologyState(1,Technologies.GT_BarbarianBuildings,3) --Aktivierung der Selektierbarkeit des Baumenüs von Serfs
 
     --Vulkanfeuer 
@@ -181,6 +180,77 @@ function FirstMapAction()
     
 end
 
+
+
+-----------------------------------RefreshDisplayNames--------------------------------------------
+function RefreshDisplayNames()
+	BarbName1 = "Helgar der Barbar"
+    BarbName2 = "Wolfgang der Barbar"
+    BarbName3 = "Rüdiger der Barbar"
+    
+    for i=1,3,1 do
+        if IsExisting(_G["trupp"..i]) then
+        CppLogic.Entity.SetDisplayName(_G["trupp"..i], _G["BarbName"..i])
+		SetEntityOverheadWidget(_G["trupp"..i],1)
+        end
+    end
+
+    if IsExisting(guard) then
+    CppLogic.Entity.SetDisplayName(guard, "Mijörn")
+    SetEntityOverheadWidget(guard,1)
+	end
+end
+
+-----------------------------------ResetQuestBook-------------------------------------------------
+function ResetQuestBook(_player) --resets all Quests
+	local questlist = {}
+	local id = _player
+	questlist = {Logic.GetAllQuests(id)}
+	
+	for i = 2, table.getn(questlist) do
+		Logic.RemoveQuest(id,i,nil)
+	end
+end
+
+
+-----------------------------------LoseCondition--------------------------------------------------
+function AllHerosDead()
+	if IsDead(guard) and IsDead(varg) and IsDead(trupp1) and IsDead(trupp2) and IsDead(trupp3) then
+		Defeat()
+	end
+end
+
+---------------------------------------------------------------------------------------------------
+
+
+------------------------------------MainCharacterCheckForResurrect---------------------------------
+function ResurrectMainCharakters()
+	if IsExisting(trupp1) then
+		if IsDead(trupp1) then
+			CppLogic.Entity.Settler.HeroResurrect(GetID(trupp1))
+		end
+	end
+	if IsExisting(trupp2) then
+		if IsDead(trupp2) then
+			CppLogic.Entity.Settler.HeroResurrect(GetID(trupp2))
+		end
+	end
+	if IsExisting(trupp3) then
+		if IsDead(trupp3) then
+			CppLogic.Entity.Settler.HeroResurrect(GetID(trupp3))
+		end
+	end
+	if IsExisting(guard) then
+		if IsDead(guard) then
+			CppLogic.Entity.Settler.HeroResurrect(GetID(guard))
+		end
+	end
+	if IsExisting(varg) then
+		if IsDead(varg) then
+			CppLogic.Entity.Settler.HeroResurrect(GetID(varg))
+		end
+	end
+end
 
 -------------------------------------Neue Truppen-Upgraden------------------------------------
 
