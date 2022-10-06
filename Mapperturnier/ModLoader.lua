@@ -210,6 +210,9 @@ ModLoader = {
             {"girlscream"},
             {"distantexplosion"},
         },
+		--- DirectX Effects to load. no difference between load and reload (requires keeping the bba/s5x that contains them loaded).
+		DirectXEffects = {
+		}
 	},
 }
 
@@ -224,6 +227,7 @@ function ModLoader.Initialize()
 	ModLoader.ApplyManifest()
 
 	--- manual code should go here
+	CppLogic.ModLoader.RefreshEntityCategoryCache()
 end
 
 --- this function gets called after Initialize, only if the map starts fresh.
@@ -238,103 +242,41 @@ end
 
 --- applying everything in Manifest
 function ModLoader.ApplyManifest()
-	for _,n in ipairs(ModLoader.Manifest.EffectTypes) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.PreLoadEffectType(n)
-		end
+	ModLoader.PreloadManifestType(ModLoader.Manifest.EffectTypes, CppLogic.ModLoader.PreLoadEffectType, GGL_Effects)
+	ModLoader.PreloadManifestType(ModLoader.Manifest.TaskLists, CppLogic.ModLoader.PreLoadTaskList, TaskLists)
+	ModLoader.PreloadManifestType(ModLoader.Manifest.EntityTypes, CppLogic.ModLoader.PreLoadEntityType, Entities)
+	ModLoader.PreloadManifestType(ModLoader.Manifest.Technologies, CppLogic.ModLoader.PreLoadTechnology, Technologies)
+	for uc, et in pairs(ModLoader.Manifest.SettlerUpgradeCategory) do
+		CppLogic.ModLoader.PreLoadUpgradeCategory(uc)
 	end
-	for _,n in ipairs(ModLoader.Manifest.TaskLists) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.PreLoadTaskList(n)
-		end
+	for uc, et in pairs(ModLoader.Manifest.BuildingUpgradeCategory) do
+		CppLogic.ModLoader.PreLoadUpgradeCategory(uc)
 	end
-	for _,n in ipairs(ModLoader.Manifest.EntityTypes) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.PreLoadEntityType(n)
-		end
+
+	for _,n in ipairs(ModLoader.Manifest.DirectXEffects) do
+		CppLogic.ModLoader.LoadDirectXEffect(n)
 	end
-	for _,n in ipairs(ModLoader.Manifest.Technologies) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.PreLoadTechnology(n)
-		end
-	end
-	
 	for _,n in ipairs(ModLoader.Manifest.TerrainTextures_Add) do
 		CppLogic.ModLoader.AddTerrainTexture(n)
 	end
 	for _,n in ipairs(ModLoader.Manifest.TerrainTextures_Reload) do
 		CppLogic.ModLoader.ReloadTerrainTexture(n)
 	end
-	for _,n in ipairs(ModLoader.Manifest.WaterTypes) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddWaterType(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadWaterType(n)
-		end
-	end
-	for _,n in ipairs(ModLoader.Manifest.TerrainTypes) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddTerrainType(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadTerrainType(n)
-		end
-	end
+	ModLoader.HandleManifestType(ModLoader.Manifest.WaterTypes, CppLogic.ModLoader.AddWaterType, CppLogic.ModLoader.ReloadWaterType, WaterTypes)
+	ModLoader.HandleManifestType(ModLoader.Manifest.TerrainTypes, CppLogic.ModLoader.AddTerrainType, CppLogic.ModLoader.ReloadTerrainType, TerrainTypes)
 	for _,n in ipairs(ModLoader.Manifest.SelectionTextures_Add) do
 		CppLogic.ModLoader.AddSelectionTexture(n)
 	end
 	for _,n in ipairs(ModLoader.Manifest.SelectionTextures_Reload) do
 		CppLogic.ModLoader.ReloadSelectionTexture(n)
 	end
-	for _,n in ipairs(ModLoader.Manifest.Animations) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddAnimation(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadAnimation(n)
-		end
-	end
-	for _,n in ipairs(ModLoader.Manifest.AnimSets) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddAnimSet(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadAnimSet(n)
-		end
-	end
-	for _,n in ipairs(ModLoader.Manifest.Models) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddModel(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadModel(n)
-		end
-	end
-	for _,n in ipairs(ModLoader.Manifest.EffectTypes) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddEffectType(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadEffectType(n)
-		end
-	end
-	for _,n in ipairs(ModLoader.Manifest.TaskLists) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddTaskList(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadTaskList(n)
-		end
-	end
-	for _,n in ipairs(ModLoader.Manifest.EntityTypes) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddEntityType(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadEntityType(n)
-		end
-	end
-	for _,n in ipairs(ModLoader.Manifest.Technologies) do
-		if type(n)=="string" then
-			CppLogic.ModLoader.AddTechnology(n)
-		elseif type(n)=="number" then
-			CppLogic.ModLoader.ReloadTechnology(n)
-		end
-	end
-	
+	ModLoader.HandleManifestType(ModLoader.Manifest.Animations, CppLogic.ModLoader.AddAnimation, CppLogic.ModLoader.ReloadAnimation, Animations)
+	ModLoader.HandleManifestType(ModLoader.Manifest.AnimSets, CppLogic.ModLoader.AddAnimSet, CppLogic.ModLoader.ReloadAnimSet, AnimSets)
+	ModLoader.HandleManifestType(ModLoader.Manifest.Models, CppLogic.ModLoader.AddModel, CppLogic.ModLoader.ReloadModel, Models)
+	ModLoader.HandleManifestType(ModLoader.Manifest.EffectTypes, CppLogic.ModLoader.AddEffectType, CppLogic.ModLoader.ReloadEffectType, GGL_Effects)
+	ModLoader.HandleManifestType(ModLoader.Manifest.TaskLists, CppLogic.ModLoader.AddTaskList, CppLogic.ModLoader.ReloadTaskList, TaskLists)
+	ModLoader.HandleManifestType(ModLoader.Manifest.EntityTypes, CppLogic.ModLoader.AddEntityType, CppLogic.ModLoader.ReloadEntityType, Entities)
+	ModLoader.HandleManifestType(ModLoader.Manifest.Technologies, CppLogic.ModLoader.AddTechnology, CppLogic.ModLoader.ReloadTechnology, Technologies)
 	for _,n in ipairs(ModLoader.Manifest.GUITextures_Add) do
 		CppLogic.ModLoader.AddGUITexture(n)
 	end
@@ -352,6 +294,22 @@ function ModLoader.ApplyManifest()
 	end
 	for _,a in ipairs(ModLoader.Manifest.SoundGroups) do
 		CppLogic.ModLoader.AddSounds(unpack(a))
+	end
+end
+function ModLoader.PreloadManifestType(en, preload, data)
+	for _, k in ipairs(en) do
+		if type(k) == "string" and not data[k] then
+			preload(k)
+		end
+	end
+end
+function ModLoader.HandleManifestType(en, add, reload, data)
+	for _, k in ipairs(en) do
+		if type(k) == "string" and not data[k] then
+			add(k)
+		else
+			reload(k)
+		end
 	end
 end
 
