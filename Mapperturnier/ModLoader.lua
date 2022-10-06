@@ -150,7 +150,8 @@ ModLoader = {
 			--
 			"CU_BanditLeaderBow2",
 			"CU_BanditSoldierBow2",
-			Models.XA_Wolf,
+			--
+			"Varg_Wolf",
 		},
 		--- Animations to load or reload. put in a string to load, and a number to reload (Animations.Typename).
 		Animations = {
@@ -166,11 +167,7 @@ ModLoader = {
 		},
 		--- Selection Textures to reload.
 		SelectionTextures_Reload = {
-			"selection",
-			"selection_building",
-			"selection_civilian",
-			"selection_hero",
-			"selection_soldier",
+	
 		},
 		--- GUI Textures to add.
 		GUITextures_Add = {
@@ -288,12 +285,6 @@ function ModLoader.ApplyManifest()
 	for _,n in ipairs(ModLoader.Manifest.SelectionTextures_Reload) do
 		CppLogic.ModLoader.ReloadSelectionTexture(n)
 	end
-	for uc, et in pairs(ModLoader.Manifest.SettlerUpgradeCategory) do
-		CppLogic.ModLoader.AddSettlerUpgradeCategory(uc, Entities[et])
-	end
-	for uc, et in pairs(ModLoader.Manifest.BuildingUpgradeCategory) do
-		CppLogic.ModLoader.AddBuildingUpgradeCategory(uc, Entities[et])
-	end
 	for _,n in ipairs(ModLoader.Manifest.Animations) do
 		if type(n)=="string" then
 			CppLogic.ModLoader.AddAnimation(n)
@@ -349,6 +340,12 @@ function ModLoader.ApplyManifest()
 	end
 	for _,n in ipairs(ModLoader.Manifest.GUITextures_Reload) do
 		CppLogic.ModLoader.ReloadGUITexture(n)
+	end
+	for uc, et in pairs(ModLoader.Manifest.SettlerUpgradeCategory) do
+		CppLogic.ModLoader.AddSettlerUpgradeCategory(uc, Entities[et])
+	end
+	for uc, et in pairs(ModLoader.Manifest.BuildingUpgradeCategory) do
+		CppLogic.ModLoader.AddBuildingUpgradeCategory(uc, Entities[et])
 	end
 	for xp, ec in pairs(ModLoader.Manifest.ExperienceClasses) do
 		CppLogic.ModLoader.AddExperienceClass(xp, ec)
