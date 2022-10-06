@@ -11,7 +11,7 @@ function Start_Chapter1()
 end
 
 function ActivateShips()
-    AnfangsBriefing(1)
+    AnfangsBriefing()
     Logic.SetTechnologyState(1,Technologies.B_BarbVillage,0)
     Logic.SetTechnologyState(1,Technologies.B_BarbTower,0)
     Logic.SetTechnologyState(1,Technologies.B_BarbArena,0)
@@ -118,7 +118,7 @@ function VargNearGuard()
         Logic.SetEntityInvulnerabilityFlag(GetID("barb_castle"), 1)
         Logic.SetDiplomacyState(8, 6, 3)
         Message("@color:255,0,0 Schlachtet sie alle ab!")
-        Logic.GroupAttack(GetID("guard"), GetPosition("nv_start_patrol2").X,GetPosition("nv_start_patrol2").Y)
+        Logic.GroupAttack(GetID("guard"), GetPosition("nv_start_patrol2").X, GetPosition("nv_start_patrol2").Y)
         return true;
     end
 end
@@ -189,7 +189,6 @@ function ActivateBandits()
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Lines,
-            LeaderFormation = FormationFunktion,
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
@@ -337,8 +336,7 @@ function ActivateNVCamp()
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
-            Formation = UnlimitedArmy.Formations.Lines,
-            LeaderFormation = FormationFunktion,
+            Formation = UnlimitedArmy.Formations.Chaotic,
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
@@ -403,9 +401,9 @@ function CheckNVCamp()
 end
 
 
-delayBarbCount = 0;
+delayBarbCount1 = 0;
 function DelayResurrectBarb()
-    if delayBarbCount == 3 then
+    if delayBarbCount1 == 3 then
         guard = Logic.ChangeEntityPlayerID(GetID(guard), 8)
         CppLogic.Entity.SetDisplayName(guard, "Mijörn")
         SetEntityOverheadWidget(guard,1)
@@ -413,13 +411,13 @@ function DelayResurrectBarb()
         StartSimpleJob("JargDeadBody")
         return true;
     else
-        delayBarbCount = delayBarbCount +1;
+        delayBarbCount1 = delayBarbCount1 +1;
     end
 end
 
 function JargDeadBody()
     if IsNear(guard,"watch_jarg1",300) then
-        Logic.EntityLookAt(GetID(guard), GetID(bone_jarg)) 
+        Logic.EntityLookAt(GetID(guard), GetID("bone_jarg")) 
         ActivateDeadJargBrief()
         return true;
     end
