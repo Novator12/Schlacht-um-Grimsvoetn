@@ -29,6 +29,7 @@ function AnfangsBriefing()
         ResolveBriefing(page1);
 		ResolveBriefing(page2);
         StrandBriefing()
+        StartSimpleJob("AllHerosDead") --Niederlagebedingung Helden
     end;
     NormalSpeedInBriefing()
     StartBriefing(briefing)
@@ -92,6 +93,11 @@ function StrandBriefing()
     local page7 =AP{
         title	= "@color:255,0,0 Helgar der Barbar",
         text	= "@color:255,136,0 Schnell Varg. Lasst uns hoch zum Dorf laufen!",
+        position = GetPosition(trupp1),
+    }
+    local page8 =AP{
+        title	= "Hinweis",
+        text	= "Sterben Varg und seine Begleiter ist das Spiel verloren. Dies gilt für die gesamte Dauer der Karte.",
         position = GetPosition(trupp1),
     }
 
@@ -1073,7 +1079,6 @@ function HeimdallNearSignal()
         BriefingHeimdallSignal()
         return true;
     end
-
 end
 
 function BriefingHeimdallSignal()
@@ -1124,13 +1129,12 @@ function BriefingHeimdallSignal()
         ResolveBriefing(page1); 
         ResolveBriefing(page2); 
         ResolveBriefing(page3);
-        
-        Move(varg,"varg_chapter2",100)
-        Move(guard,"mijoern_chapter2",100)
-        Move(trupp3,"ruediger_chapter2",100)
-        Move(trupp1,"helgar_chapter2",100)
-        Move(trupp2,"wolfgang_chapter2",100)
-        StartSimpleJob("HerosChapter2")
+        ResolveBriefing(page4);
+        DestroyEntity(varg)
+        DestroyEntity(guard)
+        DestroyEntity(trupp3)
+        DestroyEntity(trupp1)
+        DestroyEntity(trupp2)
         StartBlende(
         "@center @color:255,0,0 Aufbau von Reynivellir", 
         "@center @color:255,255,255 @cr @cr Seid Vargs Ankunft in Reynivellir ist viel geschehen. Er hat erfahren, dass seine Mutter und sein Vater tot sind und er nun Oberhaupt seines Stammes und Heimatvolkes ist. Vor Varg liegt ein langer Weg, bis er seinem Vater ebenbürtig werden kann. Alleine ist er jedoch nicht, da seine engsten Freunde, seien es alte oder neu dazugewonnenen, an seiner Seite stehen. Varg muss zunächst das Dorf wieder aufbauen und das Signalfeuer neu entzüden, um weitere Schiffsunglücke zu verhindern. Wird Ihm dies gelingen? Man weiß es nicht...", 
@@ -1159,20 +1163,114 @@ function StartBriefingChapter2()
         local AP = function(_page) table.insert(briefing, _page) return _page end
         local page1 = AP{
             title	= "@color:255,0,0 Varg",
-            text	= "@color:255,136,0 Die raue See peitsch gegen die Planken der Schiffe. Varg und seine Anhänger sind Wochen lang durch den kalten Nordatlantik gefahren und sind kurz vor dem Ende ihrer nervenzehrenden Reise.",
-            position = GetPosition("intro_boat1"),
-            explore = 2000
+            text	= "@color:255,136,0 So Männer. Es gibt viel zu tun. Wir müssen das gesamte Dorf wieder neu errichten, deshalb bekommt jeder von euch eine eigene Aufgabe.",
+            position = GetPosition(varg),
+            explore = 2000,
+            action = function() 
+                Logic.EntityLookAt(varg,trupp1)
+                Logic.EntityLookAt(guard,varg)
+                for i=1,3,1 do
+                    Logic.EntityLookAt(_G["trupp"..i],varg)
+                end
+            end 
         }
         local page2 = AP{
-            title	= "@color:255,0,0 Intro",
-            text	= "@color:255,136,0 Das Wetter vor der Küste Islands ist wesentlich klarer als auf der hohen See und die Männer freuen sich auf warmes Met am Lagerfeuer.",
-            position = GetPosition("intro_boat2"),
-            explore = 2000,
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Helgar, du sollst dich darum kümmern, dass die verschütteten Minen wieder in Betrieb genommen werden können. Vielleicht kann unser der Wissenschaftler dabei wieder eine Hilfe sein.",
+            position = GetPosition(varg),
+            action = function() 
+                Logic.EntityLookAt(varg,trupp1)
+                Logic.EntityLookAt(trupp1,varg)
+            end 
+        }
+        local page3 = AP{
+            title	= "@color:255,0,0 Helgar",
+            text	= "@color:255,136,0 Jawohl, Herr.",
+            position = GetPosition(trupp1),
+            action = function() 
+                Logic.EntityLookAt(varg,trupp1)
+                Logic.EntityLookAt(trupp1,varg)
+            end 
+        }
+        local page4 = AP{
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Du kannst wegtreten.",
+            position = GetPosition(varg),
+            action = function() 
+                Move(trupp1,GetID("target_helgar"))
+            end 
+        }
+        local page5 = AP{
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Wolfgang, kümmere du dich um die Instandsetzung unserer Dorfpalisaden. Diese Höhlenmenschen haben unsere gesamte Verteidigung zerstört. Vielleicht kann dir dabei Mijörn weiterhelfen.",
+            position = GetPosition(varg),
+            action = function() 
+                Logic.EntityLookAt(varg,trupp2)
+                Logic.EntityLookAt(trupp2,varg)
+            end 
+        }
+        local page6 = AP{
+            title	= "@color:255,0,0 Mijörn",
+            text	= "@color:255,136,0 Ich habe noch die alten Pläne der Anlage und eine Liste der Kosten, die auf uns zukommen. Ich lasse dir alles zukommen.",
+            position = GetPosition(guard),
+            action = function() 
+                Logic.EntityLookAt(guard,trupp2)
+                Logic.EntityLookAt(trupp2,guard)
+            end 
+        }
+        local page7 = AP{
+            title	= "@color:255,0,0 Wolfgang",
+            text	= "@color:255,136,0 Habt Danke. Ich werde mich umgehend darum kümmern.",
+            position = GetPosition(trupp2),
+        }
+        local page8 = AP{
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Auch du kannst wegtreten.",
+            position = GetPosition(varg),
+            action = function() 
+                Move(trupp2,GetID("target_wolfgang"))
+            end 
+        }
+        local page9 = AP{
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Zu guter letzt Rüdiger, für dich habe ich einen besonderen Auftrag. Irgendwo hier in unserem Gebiet soll es einen alten Kautz geben, der uns mehr über die Entwicklung zur politischen Lage und Besetzung von Grimvötn erzählen kann. Finde Ihn!",
+            position = GetPosition(varg),
+            action = function() 
+                Logic.EntityLookAt(varg,trupp3)
+                Logic.EntityLookAt(trupp3,varg)
+            end 
+        }
+        local page10 = AP{
+            title	= "@color:255,0,0 Rüdiger",
+            text	= "@color:255,136,0 Ja, mein Herr. Ich werde mein bestes geben.",
+            position = GetPosition(trupp3),
+        }
+        local page11 = AP{
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Dann kannst du auch wegtreten.",
+            position = GetPosition(varg),
+            action = function() 
+                Move(trupp3,GetID("target_ruediger"))
+            end 
+        }
+        local page12 = AP{
+            title	= "@color:255,0,0 Varg",
+            text	= "@color:255,136,0 Und wir beide Mijörn, wir warten ab, bis die drei Ihre Aufgaben erfüllt haben.",
+            position = GetPosition(varg),
+            action = function() 
+                guard = Logic.ChangeEntityPlayerID(guard,3)
+                varg = Logic.ChangeEntityPlayerID(varg,3)
+                RefreshDisplayNames()
+            end 
         }
     
-    
         briefing.finished = function()  
-           
+           ResolveBriefing(page1)
+           Logic.AddQuest(1, 1, MAINQUEST_OPEN, "@color:255,0,0 Wideraufbau von Reynivellir", "@cr Varg hat seine Mitstreiter mit verschiedenen Aufgaben beauftragt. Erledigt Sie alle um fortzufahren.", 1)
+           Logic.AddQuest(1, 2, SUBQUEST_OPEN, "@color:255,0,0 Minen", "@cr Helgar wurde damit beauftrag die Minen wieder freizulegen. Der Wissenschaflter könnte Ihm hierbei behilflich sein.", 1)
+           Logic.AddQuest(1, 3, SUBQUEST_OPEN, "@color:255,0,0 Dorfpalisaden", "@cr Wolfgang soll die Verteidigung des Dorfes wieder in Stand setzen. Mijörn hat ihm dafür eine Liste der Kosten zukommen lassen.", 1)
+           Logic.AddQuest(1, 4, SUBQUEST_OPEN, "@color:255,0,0 Alter Kautz", "@cr Rüdiger soll einen alten Kautz finden. Wo er sich aufhält weiß niemand. Da hilft wohl nur suchen.", 1)
+           StartHelgarQuest()
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
