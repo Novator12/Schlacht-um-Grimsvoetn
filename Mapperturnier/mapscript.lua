@@ -107,6 +107,10 @@ function InitWeatherGfxSets()
     XGUIEng.ShowWidget("ChapterInfo_BG", 0)
 
     end
+
+
+	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
+
 end
 
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -139,6 +143,8 @@ function FirstMapAction()
 	UpgradeNewTroops() --Aktivierung der neuen Truppenupgrades
 	Input.KeyBindDown(Keys.Back, "GUI.SellBuilding(GUI.GetSelectedEntity())", 2); --Löschen mit Backspace Taste 
 	--Logic.SetTechnologyState(1,Technologies.GT_BarbarianBuildings,3) --Aktivierung der Selektierbarkeit des Baumenüs von Serfs
+
+	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
 
     --Vulkanfeuer 
 	x_vulc,y_vulc = Logic.EntityGetPos(GetID("vulc_middle"))
@@ -181,6 +187,67 @@ function FirstMapAction()
 end
 
 
+
+-----------------------------------UpdateHeroAnzeige (oben-rechts)--------------------------------
+function Update_GUIUpdate_HeroFindButtons()
+	function
+		GUIUpdate_HeroFindButtons()
+		
+			local PlayerID = GUI.GetPlayerID()
+			
+			--XGUIEng.ShowAllSubWidgets(gvGUI_WidgetID.HeroFindContainer,0)	
+			
+			
+			--Create Table with all heroes
+			
+			local Hero = {}
+			
+			Logic.GetHeroes(PlayerID, Hero)
+
+			for n=1,table.getn(Hero),1 do  --Filtern nach Veteran ID´s und aus Hero table entfernen
+				if Hero[n] == GetID(trupp1) or Hero[n] == GetID(trupp2) or Hero[n] == GetID(trupp3) then
+					table.remove(Hero,Hero[n])
+					n= n-1
+				end
+			end
+
+			--local j = 1
+			
+			for j=1,6
+			do
+			
+				if  Hero[j] ~= nil then
+					
+					XGUIEng.ShowWidget(gvGUI_WidgetID.HeroFindButtons[j],1)	
+					
+					--AddOn: Show also BG
+					XGUIEng.ShowWidget(gvGUI_WidgetID.HeroBGIcon[j],1)	
+					
+					XGUIEng.SetBaseWidgetUserVariable(gvGUI_WidgetID.HeroFindButtons[j], 0,Hero[j])
+					
+					
+					--XGUIEng.ShowAllSubWidgets(gvGUI_WidgetID.HeroDeadIconContainer,0)	
+					local Health = Logic.GetEntityHealth(Hero[j]) 
+					if Logic.GetEntityHealth(Hero[j]) == 0 then
+						XGUIEng.ShowWidget(gvGUI_WidgetID.HeroDeadIcon[j],1)	
+					else
+						XGUIEng.ShowWidget(gvGUI_WidgetID.HeroDeadIcon[j],0)	
+					end
+					
+					--j = j + 1
+				else
+					XGUIEng.ShowWidget(gvGUI_WidgetID.HeroFindButtons[j],0)	
+					--AddOn: disbale also BG
+					XGUIEng.ShowWidget(gvGUI_WidgetID.HeroBGIcon[j],0)	
+					XGUIEng.ShowWidget(gvGUI_WidgetID.HeroDeadIcon[j],0)
+				end
+				
+			end
+			
+	end
+end
+
+--------------------------------------------------------------------------------------------------
 
 -----------------------------------RefreshDisplayNames--------------------------------------------
 function RefreshDisplayNames()
