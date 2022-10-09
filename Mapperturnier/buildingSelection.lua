@@ -1,3 +1,21 @@
+function HelgarBombSelection()
+    GameCallback_GUI_SelectionChangedHelgarSel = GameCallback_GUI_SelectionChanged
+    function GameCallback_GUI_SelectionChanged()
+        GameCallback_GUI_SelectionChangedHelgarSel()
+        local sel = GUI.GetSelectedEntity()
+        if sel == GetID(trupp1) then
+            XGUIEng.ShowWidget("Selection_HeroVet", 1)
+        end
+        XGUIEng.DoManualButtonUpdate(gvGUI_WidgetID.InGame)
+    end
+end
+
+
+
+
+
+
+
 function BarbarianHQSelection()
 	GameCallback_GUI_SelectionChangedBarbarianCastle = GameCallback_GUI_SelectionChanged
     function GameCallback_GUI_SelectionChanged()

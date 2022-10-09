@@ -160,7 +160,7 @@ function WolfsDeadBriefing()
         ResolveBriefing(page1);
         ResolveBriefing(page4);
         MoveAndVanish(GetID(scientist), GetID("leoas_vanish")) 
-        --Hier Bombenfähigkeit Widget einschalten.
+        HelgarBombSelection()--Hier Bombenfähigkeit Widget einschalten.
         
     end;
     NormalSpeedInBriefing()
