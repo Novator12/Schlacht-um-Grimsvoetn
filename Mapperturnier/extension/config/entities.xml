@@ -590,6 +590,9 @@
 		<Entity>XD_ResourceTree</Entity>
 		<Entity>XD_TreeStump1</Entity>
 
+		<Entity>XD_Construction_Site1</Entity>
+		<Entity>XD_Construction_Site1_Small</Entity>
+		<Entity>XD_Construction_SiteTower</Entity>
 		<Entity>XD_CliffEvelance1</Entity>
 		<Entity>XD_CliffEvelance2</Entity>
 		<Entity>XD_CliffEvelance3</Entity>
@@ -739,6 +742,8 @@
 		<Entity>ZB_UpgradeSiteUniversity1</Entity>
 		<Entity>ZB_UpgradeSiteVillageCenter1</Entity>
 		<Entity>ZB_UpgradeSiteTower1</Entity>
+
+
 
 	<!-- ********************************************
 	   DUMMIES
