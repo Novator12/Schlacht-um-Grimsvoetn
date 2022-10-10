@@ -37,6 +37,9 @@ ModLoader = {
 			"PB_WoodMine2",
 			"PB_WoodMine3",
 			"CB_Barbarian_Arena",
+			"XD_Construction_Site1",
+			"XD_Construction_Site1_Small",
+			"XD_Construction_SiteTower",
 			Entities.CB_Evil_Tower1,
 			Entities.CB_Evil_Tower1_ArrowLauncher,
 			Entities.CU_Barbarian_Hero,
@@ -152,6 +155,9 @@ ModLoader = {
 			"CU_BanditSoldierBow2",
 			--
 			"Varg_Wolf",
+			"XD_Construction_Site1",
+			"XD_Construction_Site1_Small",
+			"XD_Construction_SiteTower",
 		},
 		--- Animations to load or reload. put in a string to load, and a number to reload (Animations.Typename).
 		Animations = {
