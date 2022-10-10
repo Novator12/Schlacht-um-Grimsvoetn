@@ -143,7 +143,6 @@ function FirstMapAction()
 	UpgradeNewTroops() --Aktivierung der neuen Truppenupgrades
 	Input.KeyBindDown(Keys.Back, "GUI.SellBuilding(GUI.GetSelectedEntity())", 2); --Löschen mit Backspace Taste 
 	--Logic.SetTechnologyState(1,Technologies.GT_BarbarianBuildings,3) --Aktivierung der Selektierbarkeit des Baumenüs von Serfs
-
 	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
 
     --Vulkanfeuer 
@@ -183,8 +182,84 @@ function FirstMapAction()
 		Entities.XD_WallCorner, 
 		Entities.XD_WallStraight, 
 		Entities.XD_WallDistorted)
-    
+
+	--Trigger für neue Comforts	
+    StartReplaceOnNextTick() --Startet den ReplaceOnNextTick-Job
+	StartGateChangerJob() --Startet den GateJob
+
 end
+
+
+-----------------------------------ReplaceEntityNextTick-----------------------------------------------------
+ReplaceData = {}
+
+function ReplaceEntityOnNextTick(_id,_type, _name)  --name = Name des neuen Gebäudes
+	table.insert(ReplaceData, {id = _id, type = _type, name = _name})
+end
+
+function StartReplaceOnNextTick()
+	Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_TURN, nil, "ReplaceEntityJob",1) --Trigger für Replacen auf nächsten Tick
+end
+
+function ReplaceEntityJob()
+	for i= table.getn(ReplaceData),1,-1 do
+		local replaceID = ReplaceData[i].id
+		local replaceType = ReplaceData[i].type
+		local replaceName = ReplaceData[i].name
+		local newID = ReplaceEntity(replaceID,replaceType)
+		if replaceName then
+			Logic.SetEntityName(newID,replaceName)
+		end
+		table.remove(ReplaceData, i)
+	end
+end
+-----------------------------------GateChanger---------------------------------------------------------------
+
+GatesData = {};
+
+function AddChangeGate(_point, _radius, _type1, _type2, _gatename)
+    table.insert(GatesData, {point=_point,radius=_radius,type1=_type1,type2=_type2,gate= _gatename})
+end;
+
+function RemoveChangeGate(_gatename)
+    for i = 1,table.getn(GatesData) do
+        if GatesData[i].gate == _gatename then
+            table.remove(GatesData, i);
+            break;
+        end;
+    end;
+end;
+
+function StartGateChangerJob()
+   gateTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"GateChangerJob",1) --gateTrigger beenden wenn alle Tore weg sind
+end;
+
+function GateChangerJob()  --wechselt den Zustand eines Objektes (Tor,Zugbrücke,etc.)
+    for i = table.getn(GatesData), 1, -1 do
+        local changeParams = GatesData[i];
+        local _tp = GetID(changeParams.point) --gibt den Punkt an von dem die Triggerrange ausgeht (Objekt, welches seinen Zustand wechseln soll nicht weiter als 500 von diesem Punkt weg)
+        local _tr = changeParams.radius --Radius, bei dem das Objekt seinen Zustand wechselt, wenn Truppen in der Nähe sind
+        local _et1 = changeParams.type1 --Truppen Typ 1
+        local _et2 = changeParams.type2--Truppen Typ 2
+
+        local _,gateOpenID = Logic.GetEntitiesInArea(Entities.XD_DarkWallStraightGate,GetPosition(_tp).X,GetPosition(_tp).Y,500,1)
+        local _,gateClosedID = Logic.GetEntitiesInArea(Entities.XD_DarkWallStraightGate_Closed,GetPosition(_tp).X,GetPosition(_tp).Y,500,1)
+        if Logic.GetEntitiesInArea(_et1,GetPosition(_tp).X,GetPosition(_tp).Y, _tr,1) >0
+        or Logic.GetEntitiesInArea(_et2,GetPosition(_tp).X,GetPosition(_tp).Y, _tr,1) >0 
+        then
+            if Logic.GetEntityTypeName(Logic.GetEntityType(gateClosedID)) == "XD_DarkWallStraightGate_Closed" then
+                ReplaceEntity(gateClosedID, Entities.XD_DarkWallStraightGate)
+            end
+        elseif Logic.GetEntitiesInArea(_et1,GetPosition(_tp).X,GetPosition(_tp).Y, _tr,1) <= 0 
+        or Logic.GetEntitiesInArea(_et2,GetPosition(_tp).X,GetPosition(_tp).Y, _tr,1) <= 0  
+        then
+            if Logic.GetEntityTypeName(Logic.GetEntityType(gateOpenID)) == "XD_DarkWallStraightGate" then
+                ReplaceEntity(gateOpenID, Entities.XD_DarkWallStraightGate_Closed)
+            end
+        end
+    end;
+end
+
 
 
 
