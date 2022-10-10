@@ -123,6 +123,9 @@ function WolfsDead()
         end
     end
     if not wolftable[1] then
+        if IsDead(trupp1) then
+			CppLogic.Entity.Settler.HeroResurrect(GetID(trupp1))
+		end
         WolfsDeadBriefing()
         return true;
     end
@@ -147,22 +150,201 @@ function WolfsDeadBriefing()
         title	= "@color:255,0,0 Wissenschaftler",
         text	= "@color:255,136,0 So...jetzt kannst du alles was du willst in die Luft sprengen. Viel Spaß. Ich verzieh mich aus dieser tristen Gegend.",
         position = GetPosition(scientist),
+        action = function() 
+            MoveAndVanish(GetID(scientist), GetID("leoas_vanish")) 
+        end
     }
+    local page5
     local page4 = AP{
         title	= "@color:255,0,0 Helgar",
         text	= "@color:255,136,0 Har Har, ich bin unbesiegbar! Habt Dank werter Herr.",
         position = GetPosition(trupp1),
-        explore = 2000
+        explore = 2000,
+        action = function() 
+            if mode == 1 or mode ==2 then
+                serf_iron = Logic.CreateEntity(Entities.PU_Thief,GetPosition("serf_nviron").X,GetPosition("serf_nviron").Y,0,3)
+                ResearchTechnology(Technologies.T_ThiefSabotage,1)
+            elseif mode ==3 then
+                serf_iron = Logic.CreateEntity(Entities.PU_Serf,GetPosition("serf_nviron").X,GetPosition("serf_nviron").Y,0,3)
+            end
+            page5.npc = { id = GetEntityId(serf_iron),isObserved = true }
+        end
     }
-
-
+    page5 = AP{
+        title	= "@color:255,0,0 Fremder",
+        text	= "@color:255,136,0 Zu Hilfe...Rettet mich...AHHHHHHHHH. Sie sind hinter mir her...",
+        npc = { id = GetEntityId(serf_iron),
+                isObserved = true },
+        action = function() 
+            Move(serf_iron,trupp1,200)
+            StartSimpleJob("SerfNearHelgar")
+            Display.SetRenderFogOfWar(0)
+        end
+    }
+    local page7
+    local page6 = AP{
+        title	= "@color:255,0,0 Helgar",
+        text	= "@color:255,136,0 Was ist denn los? Hinter euch ist niemand!",
+        position = GetPosition(trupp1),
+        action = function() 
+            page7.position = GetPosition(serf_iron)
+            Display.SetRenderFogOfWar(1)
+        end
+    }
+    page7 = AP{
+        title	= "@color:255,0,0 Fremder",
+        text	= "@color:255,136,0 Was? Echt? Oh Stimmt ihr habt recht. Ich bin vor diesen abscheulichen Höhlenmenschen geflohen.",
+        position = GetPosition(serf_iron),
+    }
+    local page8 = AP{
+        title	= "@color:255,0,0 Helgar",
+        text	= "@color:255,136,0 Welche Höhlenmenschen? Wir haben vor ein paar Tagen ihr letztes Lager vernichtet!",
+        position = GetPosition(trupp1),
+    }
+    local page9 = AP{
+        title	= "@color:255,0,0 Fremder",
+        text	= "@color:255,136,0 Da müsst Ihr euch irren. Sie haben oben auf dem Berg bei der verschütteten Eisenmine ein kleines Lager.",
+        position = GetPosition("nv_spawn_iron"),
+        explore = 1000
+    }
+    local page10 = AP{
+        title	= "@color:255,0,0 Helgar",
+        text	= "@color:255,136,0 Das gibt es doch nicht. Diese Dinger sind schlimmer als Zecken. Nun dann müssen wir uns wohl oder übel um dieses Pack kümmern.",
+        position = GetPosition(trupp1),
+    }
+    local page11 = AP{
+        title	= "@color:255,0,0 Fremder",
+        text	= "@color:255,136,0 Seid dabei auf der Hut. Sie haben Kontrolle über das Tor. Es öffnet sich nur, wenn einer Ihrer Soldaten in der Nähe des Tores ist. Dann ist euer Zeitfenster gekommen, Truppen in das Lager einzuschleusen.",
+        position = GetPosition("iron_gate"),
+        explore = 1000
+    }
+    local page12 = AP{
+        title	= "@color:255,0,0 Fremder",
+        text	= "@color:255,136,0 Lasst mich euch wenigstens behilflich sein. Ein Helfer mehr sollte euch ja nicht schaden.",
+        position = GetPosition(trupp1),
+    }
     briefing.finished = function()  
         ResolveBriefing(page1);
         ResolveBriefing(page4);
-        MoveAndVanish(GetID(scientist), GetID("leoas_vanish")) 
+        ResolveBriefing(page5);
+        ResolveBriefing(page9);
+        ResolveBriefing(page11);
         HelgarBombSelection()--Hier Bombenfähigkeit Widget einschalten.
-        
+        Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED,nil,"PitQuest",1,nil,nil)
+        CreateNVIronPit()
+        serf_iron = ChangePlayer(serf_iron,1)
     end;
     NormalSpeedInBriefing()
     StartBriefing(briefing)
 end 
+
+
+function SerfNearHelgar()
+    if IsNear(serf_iron,trupp1,300) then
+        Logic.EntityLookAt(serf_iron,trupp1)
+        Logic.EntityLookAt(trupp1,serf_iron)
+    end
+end
+
+
+---------NV bei der Eisenmine
+
+function CreateNVIronPit()
+
+    if mode == 1 then
+        nvIron_table = {
+            [1] = 1, --Größe der Armee/ Leaderanzahl
+            [2] = 60 --Respawnzeit
+        }
+        SetHealth("nv_spawner_iron", 40)
+    elseif mode == 2 then
+        nvIron_table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 30 --Respawnzeit
+        }
+    elseif mode == 3 then
+        nvIron_table = {
+            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [2] = 10 --Respawnzeit
+        }
+    end
+    
+    
+        NVIronArmy = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 6,
+            Area = 2000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Chaotic,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true
+        }, 6,10)
+    
+
+        SpawnerNVIronArmy = UnlimitedArmySpawnGenerator:New(NVIronArmy, {
+            -- benötigt:
+            Position = GetPosition("nv_spawn_iron"), --position
+            ArmySize = nvIron_table[1], --armysize
+            SpawnCounter = nvIron_table[2],  --spawncounter
+            SpawnLeaders = nvIron_table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.CU_Evil_LeaderBearman1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderSkirmisher1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+            },
+            -- optional:
+            Generator = "nv_spawner_iron",  --generator
+        })
+    
+
+    ---Move-Befehle
+    
+    NVIronArmy: AddCommandMove(GetPosition("patrol_iron1"), true);
+    NVIronArmy: AddCommandWaitForIdle(true);
+    NVIronArmy: AddCommandMove(GetPosition("patrol_iron2"), true);
+    NVIronArmy: AddCommandWaitForIdle(true);
+    NVIronArmy: AddCommandMove(GetPosition("nv_spawn_iron"), true);
+    NVIronArmy: AddCommandWaitForIdle(true);
+
+
+    AddChangeGate("patrol_iron2",1000,Entities.CU_Evil_LeaderBearman1,Entities.CU_Evil_LeaderSkirmisher1, "Tor1")
+    Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED, nil, "NVIronSpawnerDead",1,nil,nil)
+
+end
+
+function NVIronSpawnerDead()
+    if NVIronArmy:IsDead() == -1 and IsDestroyed("nv_spawner_iron") then
+        RemoveChangeGate("Tor1")
+        local _,gateClosedID = Logic.GetEntitiesInArea(Entities.XD_DarkWallStraightGate_Closed,GetPosition("patrol_iron2").X,GetPosition("patrol_iron2").Y,500,1)
+        if Logic.GetEntityTypeName(Logic.GetEntityType(gateClosedID)) == "XD_DarkWallStraightGate_Closed" then
+            ReplaceEntityOnNextTick(gateClosedID,Entities.XD_DarkWallStraightGate, nil)  --Tor zur Eisenmine
+        end
+        return true;
+    end
+end
+
+
+
+
+pitCounter = 0
+
+function PitQuest()
+    local pitID = Event.GetEntityID()
+    if Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedIronPit1" then
+        pitCounter = pitCounter + 1
+    elseif Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedSulfurPit1" then
+        pitCounter = pitCounter + 1
+    elseif Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedStonePit1" then
+        pitCounter = pitCounter + 1
+    elseif Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedClayPit1" then
+        pitCounter = pitCounter + 1
+    end
+
+    if pitCounter >= 4 then
+        Logic.AddQuest(1, 2, SUBQUEST_CLOSED, "@color:255,0,0 Minen", "@cr Helgar wurde damit beauftrag die Minen wieder freizulegen. Der Wissenschaflter könnte Ihm hierbei behilflich sein.", 1)
+        return true;
+    end
+
+end

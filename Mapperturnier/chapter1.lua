@@ -105,7 +105,6 @@ function CreateNVStart()
     --Logic.RemoveQuest(_player, _questId, _info) 
     StartSimpleJob("StartNVAlive")
     StartSimpleJob("VargNearGuard")
-    Logic.SetEntityInvulnerabilityFlag(GetID("guard"), 1)
     CppLogic.Entity.SetDisplayName(GetID("guard"), "Mijörn")
     SetEntityOverheadWidget(GetID("guard"),1)
 
@@ -114,8 +113,6 @@ end
 
 function VargNearGuard()
     if Logic.CheckEntitiesDistance(GetID(varg),GetID("guard"),4000) == 1 then
-        Logic.SetEntityInvulnerabilityFlag(GetID("guard_house"), 1)
-        Logic.SetEntityInvulnerabilityFlag(GetID("barb_castle"), 1)
         Logic.SetDiplomacyState(8, 6, 3)
         Message("@color:255,0,0 Schlachtet sie alle ab!")
         Logic.GroupAttack(GetID("guard"), GetPosition("nv_start_patrol2").X, GetPosition("nv_start_patrol2").Y)
@@ -127,11 +124,13 @@ end
 function StartNVAlive()
     if nvStartArmy:IsDead() == -1 then
         Logic.AddQuest(1, 1, MAINQUEST_CLOSED, "@color:255,0,0 Dorf Reynivellir", "@cr Schaut im Dorf nach dem rechten. Seid jedoch vorsichtig.", 1)
+        if IsExisting("guard") then
+            if IsDead("guard") then
+                CppLogic.Entity.Settler.HeroResurrect(GetID("guard"))
+            end
+        end
         ChangeDynamicFog("Nebel", 0, 5 );
         Message("@color:255,0,0 Hey, ihr dadrüben. Kommt zu mir.") 
-        Logic.SetEntityInvulnerabilityFlag(GetID("guard"), 0)
-        Logic.SetEntityInvulnerabilityFlag(GetID("guard_house"), 0)
-        Logic.SetEntityInvulnerabilityFlag(GetID("barb_castle"), 0)
         Logic.SetDiplomacyState(8, 6, 2)
         Move(GetID("guard"),GetPosition("guard_pos"))
         GuardBriefing()
