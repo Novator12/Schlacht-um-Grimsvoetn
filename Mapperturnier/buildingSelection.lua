@@ -110,6 +110,7 @@ function SignalFireSelection()
 end
 
 
+
 function VillageCenterBarbSelection()
     GameCallback_GUI_SelectionChangedVillageBarb = GameCallback_GUI_SelectionChanged
     function GameCallback_GUI_SelectionChanged()
