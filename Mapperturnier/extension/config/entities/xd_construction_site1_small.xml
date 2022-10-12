@@ -12,7 +12,7 @@
 		<DeleteWhenBuiltOn>false</DeleteWhenBuiltOn>
         <SnapTolerance>30.0f</SnapTolerance>
 		<ForceNoPlayer>false</ForceNoPlayer>
-		<Visible>false</Visible>
+		<Visible>true</Visible>
 		<NeedsPlayer>false</NeedsPlayer>
 		
 
