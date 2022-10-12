@@ -11,6 +11,7 @@ function Start_Chapter2()
     guard = Logic.CreateEntity(Entities.CU_VeteranLieutenant, GetPosition("mijoern_chapter2").X,GetPosition("mijoern_chapter2").Y,0, 1)
     RefreshDisplayNames()
     StartBriefingChapter2()
+    
 end
 
 ----------------------------------------------------------------------------Quest1-----------------------------------------------------------------------------------
@@ -231,6 +232,7 @@ function WolfsDeadBriefing()
         ResolveBriefing(page11);
         HelgarBombSelection()--Hier Bombenfähigkeit Widget einschalten.
         Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED,nil,"PitQuest",1,nil,nil)
+        Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_CREATED,nil,"SetPitAmount",1,nil,nil)
         CreateNVIronPit()
         serf_iron = ChangePlayer(serf_iron,1)
     end;
@@ -328,23 +330,225 @@ end
 
 
 
-pitCounter = 0
+pitCounter1 = 0
 
 function PitQuest()
     local pitID = Event.GetEntityID()
     if Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedIronPit1" then
-        pitCounter = pitCounter + 1
+        pitCounter1 = pitCounter1 + 1
     elseif Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedSulfurPit1" then
-        pitCounter = pitCounter + 1
+        pitCounter1 = pitCounter1 + 1
     elseif Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedStonePit1" then
-        pitCounter = pitCounter + 1
+        pitCounter1 = pitCounter1 + 1
     elseif Logic.GetEntityTypeName(Logic.GetEntityType(pitID)) == "XD_ClosedClayPit1" then
-        pitCounter = pitCounter + 1
+        pitCounter1 = pitCounter1 + 1
     end
 
-    if pitCounter >= 4 then
+    if pitCounter1 >= 4 then
         Logic.AddQuest(1, 2, SUBQUEST_CLOSED, "@color:255,0,0 Minen", "@cr Helgar wurde damit beauftrag die Minen wieder freizulegen. Der Wissenschaflter könnte Ihm hierbei behilflich sein.", 1)
         return true;
     end
 
+end
+
+pitCounter2 = 0
+
+function SetPitAmount()
+    local pitId = Event.GetEntityID()
+    local pitName = Logic.GetEntityTypeName(Logic.GetEntityType(pitId))
+    if string.find(pitName,"Pit1") then
+        pitCounter2 = pitCounter2 + 1
+        if mode == 1 then
+         pitAmount = 100000
+        elseif mode == 2 then
+            pitAmount = 50000
+        elseif mode == 3 then
+            pitAmount = 10000
+        end
+        Logic.SetResourceDoodadGoodAmount(pitId,pitAmount)
+    end
+
+    if pitCounter2 >= 4 then
+        return true;
+    end
+end
+
+
+--------------------------------------------------------------------------------Quest2----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+rebuild_costtable = {}
+build_costtable = {}
+
+function ActivateTributWolfgang()
+    if mode == 1 then
+        rebuild_costtable = {
+            Gold = 0,
+            Clay = 2000,
+            Wood = 4000,
+            Stone = 2000,
+            Iron = 0,
+            Sulfur = 0,
+            Silver = 0
+        }
+        build_costtable  = {
+            Gold = 3000,
+            Clay = 1000,
+            Wood = 5000,
+            Stone = 3000,
+            Iron = 0,
+            Sulfur = 0,
+            Silver = 0
+        }
+    elseif mode == 2 then
+        rebuild_costtable = {
+            Gold = 0,
+            Clay = 4000,
+            Wood = 7000,
+            Stone = 4000,
+            Iron = 0,
+            Sulfur = 0,
+            Silver = 0
+        }
+        build_costtable  = {
+            Gold = 6000,
+            Clay = 4000,
+            Wood = 6000,
+            Stone = 5000,
+            Iron = 0,
+            Sulfur = 0,
+            Silver = 0
+        }
+    elseif mode == 3 then
+        rebuild_costtable = {
+            Gold = 0,
+            Clay = 6000,
+            Wood = 8000,
+            Stone = 6000,
+            Iron = 0,
+            Sulfur = 0,
+            Silver = 0
+        }
+        build_costtable  = {
+            Gold = 9000,
+            Clay = 6000,
+            Wood = 6000,
+            Stone = 6000,
+            Iron = 0,
+            Sulfur = 0,
+            Silver = 0
+        }
+    end
+
+    Tribut_RebuildVillage = CreateATribute(1
+    ,"@color:255,0,0 Vorbereitung der Palisaden @cr @color:255,255,255 Zahlt @color:91,58,41 "..rebuild_costtable.Wood.." Holz @color:255,255,255 , @color:213,78,33 "..rebuild_costtable.Clay.." Lehm @color:255,255,255 und @color:124,128,120 "..rebuild_costtable.Stone.." Stein @color:255,255,255 für den Abriss der Ruinen und die Vorbereitung zum Palisadenbau.",
+    rebuild_costtable, 
+    function() 
+        DeleteOldVillage() 
+        AddTribute(Tribut_CreateBuildingSitesVillage)
+    end)
+
+    AddTribute(Tribut_RebuildVillage)
+
+    Tribut_CreateBuildingSitesVillage = CreateATribute(1
+    ,"@color:255,0,0 Ausbau zur Palisadenverteidigung @cr @color:255,255,255 Zahlt @color:212,175,55 "..build_costtable.Gold.." Gold  @color:255,255,255 , @color:91,58,41 "..build_costtable.Wood.." Holz @color:255,255,255 , @color:213,78,33 "..build_costtable.Clay.." Lehm @color:255,255,255 und @color:124,128,120 "..build_costtable.Stone.." Stein @color:255,255,255 für den Ausbau der Gerüste.",
+    rebuild_costtable, 
+    function() 
+        RebuildVillage()
+        Cutscene.Start("villageflight") --Start Cutscene VillageFlight
+        Logic.AddQuest(1, 3, SUBQUEST_CLOSED, "@color:255,0,0 Dorfpalisaden", "@cr Wolfgang soll die Verteidigung des Dorfes wieder in Stand setzen. Mijörn hat ihm dafür eine Liste der Kosten zukommen lassen.", 1)
+    end)
+
+    
+end
+
+function VillageCutsceneBrief()
+    local briefing = {}
+    local AP = function(_page) table.insert(briefing, _page) return _page end
+    local page1 = AP{
+        title	= "Mentor",
+        text	= "Was ein prachtvolles Dorf, Herr. Das hat Wolfgang wahrlich gut gemacht.",
+        position = GetPosition("intro_boat1"),
+        explore = 2000
+    }
+    local page2 = AP{
+        title	= "@color:255,0,0 Wolfgang",
+        text	= "@color:255,136,0 Vielen Dank.",
+        position = GetPosition(trupp2),
+        explore = 2000,
+    }
+
+
+    briefing.finished = function()  
+        ResolveBriefing(page1);
+		ResolveBriefing(page2);
+    end;
+    NormalSpeedInBriefing()
+    StartBriefing(briefing)
+end
+
+   
+
+-------------------------------------------------------------------------------------------------------------Quest3---------------------------------------------------------------------------------------------------
+function StartRuedigerQuest()
+    StartSimpleJob("RuedigerNearLeoStone")
+end
+
+function RuedigerNearLeoStone()
+    if IsNear(trupp3, GetID("rock_leo",300)) then
+        DestroyEntity(GetID("rock_leo"))
+        CreateLeonardoBriefing()
+    end
+end
+
+function CreateLeonardoBriefing()
+
+    local callback = function()
+        local briefing = {};
+        local AP = function(_page) table.insert(briefing, _page); return _page; end;
+        local page1 = AP{
+                            title = "@color:255,0,0 Rüdiger",
+                            text = "@color:255,136,0 Hallo? Wer bist du denn und was machst du hier soweit oben auf dem Berg?",
+                            position = GetPosition(trupp3),
+                            explore = 2000, 
+                            action = function() 
+                                Logic.EntityLookAt(GetID("leonardo"), GetID(trupp3)) 
+                                Logic.EntityLookAt(GetID(trupp3), GetID("leonardo")) 
+                            end
+                        };
+                    local page2 = AP{
+                        title = "@color:255,0,0 Komischer Kautz",
+                        text = "@color:255,136,0 Ich bin der einzig wahre Leonardo, Berater des Königs Dario und kompetenter Erfinder.",
+                        position = GetPosition("leonardo"),
+                        explore = 2000    
+                        }; 
+                    local page3 = AP{
+                        title = "@color:255,0,0 Rüdiger",
+                        text = "@color:255,136,0 Ah ja, Varg hatte dich mal erwähnt. Erzähl mir, was machst du in dieser Gegend.",
+                        position = GetPosition(trupp3),
+                        }; 
+                    local page4 = AP{
+                        title = "@color:255,0,0 Leonardo",
+                        text = "@color:255,136,0 Falls es euch nicht aufgefallen ist befinden wir uns fast an der Spitze eines Vulkans, welcher vor einiger Zeit ausgebrochen ist und ich bin hier um die seismischen Aktivitäten zu studieren und etwas Schwefel zu sammeln....mhm...jaaa.... Schwefel....hehehehe.",
+                        position = GetPosition("leonardo"),
+                          
+                        }; 
+
+
+    briefing.finished = function() 
+        ResolveBriefing(page1); 
+        ResolveBriefing(page2);  
+    end
+        --Cutscene Vulkanflug
+        
+    end;
+        local npc = {
+                    name = "leonardo",
+                    callback = callback,
+                    heroName = trupp3,
+                    wrongHeroMessage = "Schwefel...MEHR SCHWEFEL...!"
+                };
+        CreateNPC(npc);
 end

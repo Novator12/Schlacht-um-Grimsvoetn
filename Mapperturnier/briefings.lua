@@ -1270,7 +1270,9 @@ function StartBriefingChapter2()
            Logic.AddQuest(1, 2, SUBQUEST_OPEN, "@color:255,0,0 Minen", "@cr Helgar wurde damit beauftrag die Minen wieder freizulegen. Der Wissenschaflter könnte Ihm hierbei behilflich sein.", 1)
            Logic.AddQuest(1, 3, SUBQUEST_OPEN, "@color:255,0,0 Dorfpalisaden", "@cr Wolfgang soll die Verteidigung des Dorfes wieder in Stand setzen. Mijörn hat ihm dafür eine Liste der Kosten zukommen lassen.", 1)
            Logic.AddQuest(1, 4, SUBQUEST_OPEN, "@color:255,0,0 Alter Kautz", "@cr Rüdiger soll einen alten Kautz finden. Wo er sich aufhält weiß niemand. Da hilft wohl nur suchen.", 1)
-           StartHelgarQuest()
+           StartHelgarQuest() --Start HelgarQuest
+           ActivateTributWolfgang() --Start WolfgangQuest
+           StartRuedigerQuest() --Start RüdigerQuest
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
