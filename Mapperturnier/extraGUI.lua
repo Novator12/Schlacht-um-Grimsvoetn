@@ -1,3 +1,86 @@
+function InitAttackProgressBar()
+	assert(XGUIEng.GetWidgetID("DefendProgressContainer")==0, "DefendProgressContainer already exists")
+	assert(XGUIEng.GetWidgetID("DefendProgressBarText")==0, "DefendProgressBarText already exists")
+	assert(XGUIEng.GetWidgetID("DefendProgressBarImage")==0, "DefendProgressBarImage already exists")
+	assert(XGUIEng.GetWidgetID("DefendProgressBarEnd")==0, "DefendProgressBarEnd already exists")
+	assert(XGUIEng.GetWidgetID("DefendProgressBar")==0, "DefendProgressBar already exists")
+	assert(XGUIEng.GetWidgetID("DefendProgressBarBG")==0, "DefendProgressBarBG already exists")
+	CppLogic.UI.ContainerWidgetCreateContainerWidgetChild("Normal", "DefendProgressContainer", "GCWindow")
+	CppLogic.UI.WidgetSetPositionAndSize("DefendProgressContainer", 256, 66, 466, 97)
+	XGUIEng.ShowWidget("DefendProgressContainer", 0)
+	CppLogic.UI.WidgetSetBaseData("DefendProgressContainer", 0, false, false)
+	CppLogic.UI.ContainerWidgetCreateStaticTextWidgetChild("DefendProgressContainer", "DefendProgressBarText", nil)
+	CppLogic.UI.WidgetSetPositionAndSize("DefendProgressBarText", 339, 5, 98, 17)
+	XGUIEng.ShowWidget("DefendProgressBarText", 1)
+	CppLogic.UI.WidgetSetBaseData("DefendProgressBarText", 0, false, false)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("DefendProgressBarText", 0, 0, 0, 1, 1)
+	XGUIEng.SetMaterialColor("DefendProgressBarText", 0, 255, 255, 255, 0)
+	CppLogic.UI.WidgetSetFont("DefendProgressBarText", "data\\menu\\fonts\\standard10bold.met")
+	CppLogic.UI.WidgetSetStringFrameDistance("DefendProgressBarText", 0)
+	XGUIEng.SetText("DefendProgressBarText", headline_defendbar, 1)
+	XGUIEng.SetTextColor("DefendProgressBarText", 255, 138, 0, 255)
+	CppLogic.UI.WidgetSetUpdateManualFlag("DefendProgressBarText", true)
+	XGUIEng.SetLinesToPrint("DefendProgressBarText", 0, 0)
+	CppLogic.UI.StaticTextWidgetSetLineDistanceFactor("DefendProgressBarText", 0)
+	CppLogic.UI.ContainerWidgetCreateStaticWidgetChild("DefendProgressContainer", "DefendProgressBarImage", nil)
+	CppLogic.UI.WidgetSetPositionAndSize("DefendProgressBarImage", 394, 33, 45, 33)
+	XGUIEng.ShowWidget("DefendProgressBarImage", 1)
+	CppLogic.UI.WidgetSetBaseData("DefendProgressBarImage", 0, false, false)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("DefendProgressBarImage", 0, 0, 0, 1, 1)
+	XGUIEng.SetMaterialTexture("DefendProgressBarImage", 0, "graphics\\textures\\gui\\questinformation\\fire.png")
+	XGUIEng.SetMaterialColor("DefendProgressBarImage", 0, 255, 255, 255, 255)
+	CppLogic.UI.ContainerWidgetCreateStaticWidgetChild("DefendProgressContainer", "DefendProgressBarEnd", nil)
+	CppLogic.UI.WidgetSetPositionAndSize("DefendProgressBarEnd", 336, 2, 108, 69)
+	XGUIEng.ShowWidget("DefendProgressBarEnd", 1)
+	CppLogic.UI.WidgetSetBaseData("DefendProgressBarEnd", 0, false, false)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("DefendProgressBarEnd", 0, 0, 0, 1, 1)
+	XGUIEng.SetMaterialTexture("DefendProgressBarEnd", 0, "graphics\\textures\\gui\\trade_box_down.png")
+	XGUIEng.SetMaterialColor("DefendProgressBarEnd", 0, 255, 255, 255, 255)
+	CppLogic.UI.ContainerWidgetCreateProgressBarWidgetChild("DefendProgressContainer", "DefendProgressBar", nil)
+	CppLogic.UI.WidgetSetPositionAndSize("DefendProgressBar", 86, 42, 305, 14)
+	XGUIEng.ShowWidget("DefendProgressBar", 1)
+	CppLogic.UI.WidgetSetBaseData("DefendProgressBar", 12, false, false)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("DefendProgressBar", 0, 0, 0, 1, 1)
+	XGUIEng.SetMaterialTexture("DefendProgressBar", 0, "data\\graphics\\textures\\gui\\progress_bar.png")
+	XGUIEng.SetMaterialColor("DefendProgressBar", 0, 255, 102, 0, 255)
+	XGUIEng.SetProgressBarValues("DefendProgressBar", -4.316021E+08, -4.316021E+08)
+	CppLogic.UI.WidgetSetUpdateManualFlag("DefendProgressBar", false)
+	CppLogic.UI.WidgetOverrideUpdateFunc("DefendProgressBar", function() GUIUpdate_ResearchDefendProgress() end)
+	CppLogic.UI.ContainerWidgetCreateStaticWidgetChild("DefendProgressContainer", "DefendProgressBarBG", nil)
+	CppLogic.UI.WidgetSetPositionAndSize("DefendProgressBarBG", 82, 37, 315, 23)
+	XGUIEng.ShowWidget("DefendProgressBarBG", 1)
+	CppLogic.UI.WidgetSetBaseData("DefendProgressBarBG", 0, false, false)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("DefendProgressBarBG", 0, 0, 0, 1, 1)
+	XGUIEng.SetMaterialTexture("DefendProgressBarBG", 0, "graphics\\textures\\gui\\window_bg258x32.png")
+	XGUIEng.SetMaterialColor("DefendProgressBarBG", 0, 255, 255, 255, 255)
+
+
+
+	
+end
+
+DefendCounter = 0
+maxDefendBar = 600
+
+function GUIUpdate_ResearchDefendProgress()
+	local CurrentWidgetID = XGUIEng.GetCurrentWidgetID()
+	local value = DefendCounter
+	XGUIEng.SetProgressBarValues(CurrentWidgetID,value, maxDefendBar)
+end
+
+--StartSimpleJob("StartDefendCounter") aufrufen, sobald die Anzeige laden soll
+
+function StartDefendCounter()
+	if DefendCounter < maxDefendBar then
+		DefendCounter = DefendCounter +1
+		return false
+	else 
+		return true
+	end 
+end
+
+
+
 function veteranBombAbility()
 	assert(XGUIEng.GetWidgetID("Selection_HeroVet")==0, "Selection_HeroVet already exists")
 	assert(XGUIEng.GetWidgetID("Commands_BarbVet")==0, "Commands_BarbVet already exists")
@@ -970,7 +1053,7 @@ function modifygui_barbvillagecenter()
 		XGUIEng.SetMaterialTexture("Research_DefendTower", 4, "graphics\\textures\\gui\\b_units_serf.png")
 		XGUIEng.SetMaterialColor("Research_DefendTower", 4, 255, 255, 255, 255)
 		CppLogic.UI.WidgetSetTooltipData("Research_DefendTower", "TooltipBottom", true, true)
-		CppLogic.UI.WidgetOverrideTooltipFunc("Research_DefendTower", function() GUITooltip_ResearchTechnologiesBarbTower(Technologies.GT_BarbarianBuildings2) end)
+		CppLogic.UI.WidgetOverrideTooltipFunc("Research_DefendTower", function() GUITooltip_ResearchTechnologiesBarbTower() end)
 		CppLogic.UI.WidgetSetUpdateManualFlag("Research_DefendTower", true)
 		CppLogic.UI.WidgetOverrideUpdateFunc("Research_DefendTower", function() GUIUpdate_GlobalTechnologiesButtons("Research_DefendTower", Technologies.GT_BarbarianBuildings1, Entities.PB_VillageCenterBarbarian) end)
 		CppLogic.UI.ContainerWidgetCreateGFXButtonWidgetChild("Commands_BarbVillage", "Research_DefendTowerUpgrade", nil)
@@ -1122,6 +1205,9 @@ function GUITooltip_ResearchUpgradeBarbTower()
 	end
 end
 
+
+------TopLeft GUI (Chapter Info)
+
 function modifygui_InfoChapter()
 
 
@@ -1153,12 +1239,11 @@ function modifygui_InfoChapter()
 	XGUIEng.SetMaterialTexture("TooltipChapterBackground", 0, "data\\graphics\\textures\\gui\\bg_tooltip_top.png")
 	XGUIEng.SetMaterialColor("TooltipChapterBackground", 0, 255, 255, 255, 255)
 
-	
 
 	assert(XGUIEng.GetWidgetID("ChapterInfo")==0, "ChapterInfo already exists")
 	CppLogic.UI.ContainerWidgetCreateGFXButtonWidgetChild("Top", "ChapterInfo", nil)
 	CppLogic.UI.WidgetSetPositionAndSize("ChapterInfo", 12, 52, 40, 40)
-	XGUIEng.ShowWidget("ChapterInfo", 1)
+	XGUIEng.ShowWidget("ChapterInfo", 0)
 	CppLogic.UI.WidgetSetBaseData("ChapterInfo", 0, false, false)
 	XGUIEng.DisableButton("ChapterInfo", 1)
 	XGUIEng.HighLightButton("ChapterInfo", 0)
@@ -1179,6 +1264,9 @@ function modifygui_InfoChapter()
 	XGUIEng.SetMaterialColor("ChapterInfo", 4, 255, 255, 255, 255)
 	CppLogic.UI.WidgetSetTooltipData("ChapterInfo", "TooltipChapter", true, true)
 	CppLogic.UI.WidgetOverrideTooltipFunc("ChapterInfo", function() GUI_SetTooltipText() end)
+	CppLogic.UI.WidgetSetUpdateManualFlag("ChapterInfo", false)
+
+
 
 
 end
@@ -1685,7 +1773,6 @@ end
 
 
 
-cooldown_barb = 60
 
 function Update_HQ_GUI()
 
@@ -1696,7 +1783,7 @@ function Update_HQ_GUI()
 	CppLogic.UI.WidgetSetPositionAndSize("Buy_Barbarian", 39, 4, 32, 32)
 	XGUIEng.ShowWidget("Buy_Barbarian", 1)
 	CppLogic.UI.WidgetSetBaseData("Buy_Barbarian", 0, false, false)
-	XGUIEng.DisableButton("Buy_Barbarian", 0)
+	XGUIEng.DisableButton("Buy_Barbarian", 1)
 	XGUIEng.HighLightButton("Buy_Barbarian", 0)
 	CppLogic.UI.ButtonOverrideActionFunc("Buy_Barbarian", function() GUI_Action_BuyBarbarian() end)
 	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Buy_Barbarian", 0, 0, 0.8125, 0.25, 0.0625)
@@ -1717,8 +1804,7 @@ function Update_HQ_GUI()
 	CppLogic.UI.WidgetSetTooltipData("Buy_Barbarian", "TooltipBottom", true, true)
 	CppLogic.UI.WidgetOverrideTooltipFunc("Buy_Barbarian", function() GUITooltip_BuyBarbarian() end)
 	CppLogic.UI.WidgetSetUpdateManualFlag("Buy_Barbarian", true)
-	CppLogic.UI.WidgetOverrideUpdateFunc("Buy_Barbarian", function() GUIUpdate_BuyBarbarianButton("Buy_Barbarian", Technologies.GT_BuyBarbarian) end)
-
+	CppLogic.UI.WidgetOverrideUpdateFunc("Buy_Barbarian", function() GUIUpdate_BuyMilitaryUnitButtons("Buy_Barbarian", Technologies.GT_BuyBarbarian, UpgradeCategories.LeaderBarbarian) end)
     
     assert(XGUIEng.GetWidgetID("Buy_Barbarian_RechargeCamouflage")==0, "Buy_Barbarian_RechargeCamouflage already exists")
 	CppLogic.UI.ContainerWidgetCreateProgressBarWidgetChild("Commands_Headquarter", "Buy_Barbarian_RechargeCamouflage", "Buy_Barbarian")
@@ -1729,7 +1815,7 @@ function Update_HQ_GUI()
 	XGUIEng.SetMaterialColor("Buy_Barbarian_RechargeCamouflage", 0, 214, 44, 24, 189)
 	XGUIEng.SetProgressBarValues("Buy_Barbarian_RechargeCamouflage", -4.316021E+08, -4.316021E+08)
 	CppLogic.UI.WidgetSetUpdateManualFlag("Buy_Barbarian_RechargeCamouflage", false)
-	CppLogic.UI.WidgetOverrideUpdateFunc("Buy_Barbarian_RechargeCamouflage", function() GUIUpdate_BuyBarbarian() end)
+	CppLogic.UI.WidgetOverrideUpdateFunc("Buy_Barbarian_RechargeCamouflage", function() GUIUpdate_BuyBarbarianCount() end)
 
 
 
@@ -1881,12 +1967,11 @@ function GUI_Action_BuyBarbarian()
 end
 
 
-
 function GUITooltip_BuyBarbarian()
 	if Logic.GetTechnologyState(1,Technologies.GT_BuyBarbarian) == 0 then
 		XGUIEng.SetText("TooltipBottomText", "@color:180,180,180,255 Nicht verfügbar @cr @color:255,255,255 Diese Technologie ist in dieser Mission noch nicht verfügbar!")
 		XGUIEng.SetText("TooltipBottomCosts", "")
-	elseif XGUIEng.IsButtonDisabled("Buy_Barbarian") == 1 then  
+	elseif XGUIEng.IsButtonDisabled("Buy_Barbarian") == 1 and Logic.GetTechnologyState(1,Technologies.GT_BarbarianBuildings1) < 4 then  
 		XGUIEng.SetText("TooltipBottomText", "@color:205,0,0 Elitebarbaren @cr @color:255,165,0 benötigt: @color:255,255,255  Gebäude der Barbaren @cr @color:255,165,0 ermöglicht: @color:255,255,255  Kaufe ein Trupp von Vargs tödlichen Elitebarbaren.")
     	XGUIEng.SetText("TooltipBottomCosts", InterfaceTool_CreateCostString(BarbarianCosts))
 	else
@@ -1895,21 +1980,20 @@ function GUITooltip_BuyBarbarian()
 	end
 end
 
-function GUIUpdate_BuyBarbarian()
+function GUIUpdate_BuyBarbarianCount()
 
     local CurrentWidgetID = XGUIEng.GetCurrentWidgetID()
 	
 	local BarbarianID = GUI.GetSelectedEntity()	
 	
 	
-	
-	if barb_counter >= cooldown_barb then		
-		XGUIEng.SetMaterialColor(CurrentWidgetID,1,0,0,0,0)
-		XGUIEng.DisableButton(XGUIEng.GetWidgetID("Buy_Barbarian"),0)
-	end
 	if barb_counter < cooldown_barb then
-		XGUIEng.SetMaterialColor(CurrentWidgetID,1,214,44,24,189)						
-		XGUIEng.DisableButton(XGUIEng.GetWidgetID("Buy_Barbarian"),1)
+			XGUIEng.SetMaterialColor(CurrentWidgetID,1,214,44,24,189)						
+			XGUIEng.DisableButton(XGUIEng.GetWidgetID("Buy_Barbarian"),1)
+	end
+	if barb_counter >= cooldown_barb then		
+			XGUIEng.SetMaterialColor(CurrentWidgetID,1,0,0,0,0)
+			XGUIEng.DisableButton(XGUIEng.GetWidgetID("Buy_Barbarian"),0)
 	end
 	
 	XGUIEng.SetProgressBarValues(CurrentWidgetID,barb_counter, cooldown_barb)
@@ -1917,10 +2001,12 @@ function GUIUpdate_BuyBarbarian()
 end
 
 
+cooldown_barb = 120
+barb_counter = 0; -- wenn barb_counter = cooldown_barb zum mapstart direkt aktiv, bei barb_counter = 0 zum mapstart erst laden
 
-barb_counter = cooldown_barb; -- wenn barb_counter == cooldown_barb zum mapstart direkt aktiv, bei barb_counter == 0 zum mapstart erst laden
 function BarbCounter()
-	if barb_counter < cooldown_barb then
+	local state = Logic.GetTechnologyState(1,Technologies.GT_BarbarianBuildings1)
+	if barb_counter < cooldown_barb and state >3 then
         barb_counter = barb_counter +1;
         return false;
     end
@@ -1975,7 +2061,7 @@ SignalFireCosts = {
 }
 
 function GUITooltip_IgniteFire()
-    XGUIEng.SetText("TooltipBottomText", "@color:255,165,0 Signalfeuer @color:255,255,255 @cr Entzündet für 10.000 @color:91,58,41 Holz @color:255,255,255 das Leuchtfeuer.")
+    XGUIEng.SetText("TooltipBottomText", "@color:255,165,0 Signalfeuer @color:255,255,255 @cr Entzündet für @color:91,58,41 " ..SignalFireCosts[ResourceType.Wood].. " Holz @color:255,255,255 das Leuchtfeuer.")
     XGUIEng.SetText("TooltipBottomCosts", InterfaceTool_CreateCostString(SignalFireCosts))
 end
 
@@ -2008,4 +2094,5 @@ function GUI_Initialize()
 	selection_barbArena()
 	GameSpeedButton()
 	veteranBombAbility()
+	InitAttackProgressBar()
 end

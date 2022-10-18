@@ -8,6 +8,8 @@ function Start_Chapter1()
         "@center @color:255,255,255 @cr @cr Nach den Ereignissen in Darios Königreich landete Varg mit seinen verbliebenen Truppen in seiner Heimat am Vulkan Grimsvötn in Island. Er und seine Begleiter wollen nun Vargs Geburtsort Reynivellir aufsuchen und sich dort zur Ruhe setzen.", 
         function() ActivateShips() end, 
         2)--muss später höher
+
+    EnableLavaDamage = false; --Schaden in Lava nehmen = AUS
 end
 
 function ActivateShips()
