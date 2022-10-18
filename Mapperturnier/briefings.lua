@@ -29,7 +29,8 @@ function AnfangsBriefing()
         ResolveBriefing(page1);
 		ResolveBriefing(page2);
         StrandBriefing()
-        StartSimpleJob("AllHerosDead") --Niederlagebedingung Helden
+        DefeatJob1 = StartSimpleJob("AllHerosDead") --Niederlagebedingung Helden
+        Defeatjob2 = StartSimpleJob("CastleDestroyed") --Niederlagebedingung Castle
     end;
     NormalSpeedInBriefing()
     StartBriefing(briefing)
@@ -1130,6 +1131,7 @@ function BriefingHeimdallSignal()
         ResolveBriefing(page2); 
         ResolveBriefing(page3);
         ResolveBriefing(page4);
+        EndJob(DefeatJob1)
         DestroyEntity(varg)
         DestroyEntity(guard)
         DestroyEntity(trupp3)
