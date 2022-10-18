@@ -48,6 +48,8 @@ ModLoader = {
 			Entities.PU_Serf,
 			Entities.PB_GenericMine,
 			Entities.CU_VeteranLieutenant,
+			Entities.XD_BuildBlockScriptEntity,
+			Entities.XD_BlendingFog,
 			--
 			Entities.CU_BanditLeaderBow1,
 			Entities.CU_BanditSoldierBow1,
@@ -60,6 +62,9 @@ ModLoader = {
 			--
 			Entities.CU_BanditLeaderSword2,
 			Entities.CU_BanditSoldierSword2,
+			"CB_EvilBoat",
+			"XD_EvilBoat_Wreckage",
+			Entities.PU_LeaderCavalry2,
 		},
 		--- EffectTypes to load or reload. put in a string to load, and a number to reload (GGL_Effects.Typename).
 		EffectTypes = {
@@ -112,6 +117,9 @@ ModLoader = {
 			Technologies.GT_Strategies,
 			Technologies.GT_Tactics,
 			Technologies.GT_Trading,
+			Technologies.T_UpgradeBow3,
+			Technologies.T_UpgradeSword3,
+			Technologies.T_UpgradeSpear3,
 		},
 		--- Experience classes to load. use [nameOfExperienceClass]=entityCategory.
 		ExperienceClasses = {
@@ -158,6 +166,8 @@ ModLoader = {
 			"XD_Construction_Site1",
 			"XD_Construction_Site1_Small",
 			"XD_Construction_SiteTower",
+			"CB_EvilBoat",
+			"XD_EvilBoat_Wreckage",
 		},
 		--- Animations to load or reload. put in a string to load, and a number to reload (Animations.Typename).
 		Animations = {
@@ -193,7 +203,8 @@ ModLoader = {
 			VillageCenterBarbarian = "PB_VillageCenterBarbarian",
 			BarbarianTower = "PB_WatchTower_Barb",
 			WoodMine = "PB_WoodMine1",
-			Arena = "CB_Barbarian_Arena"
+			Arena = "CB_Barbarian_Arena",
+			EvilBoat = "CB_EvilBoat"
 		},
 		--- Terrain Textures to add.
 		TerrainTextures_Add = {
