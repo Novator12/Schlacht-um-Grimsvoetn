@@ -14,12 +14,15 @@ gvBasePath = Folders.Map;
 Script.Load(gvBasePath.."\\s5CommunityLib\\packer\\devLoad.lua")
 table.insert(mcbPacker.Paths, {"data\\maps\\user\\"..Framework.GetCurrentMapName().."\\", ".lua"})
 Script.Load(gvBasePath.."\\s5CommunityLib\\lib\\UnlimitedArmySpawnGenerator.lua")
+Script.Load(gvBasePath.."\\s5CommunityLib\\lib\\UnlimitedArmyRecruiter.lua")
 Script.Load(gvBasePath.."\\extraGUI.lua")
 Script.Load(gvBasePath.."\\barb_tower.lua")
+Script.Load(gvBasePath.."\\polygon.lua")
 Script.Load(gvBasePath.."\\modus.lua")
 Script.Load(gvBasePath.."\\blende.lua")
 Script.Load(gvBasePath.."\\chapter1.lua")
 Script.Load(gvBasePath.."\\chapter2.lua")
+Script.Load(gvBasePath.."\\chapter3.lua")
 Script.Load(gvBasePath.."\\cutscenes.lua")
 Script.Load(gvBasePath.."\\barb_walls.lua")
 Script.Load(gvBasePath.."\\briefings.lua")
@@ -83,6 +86,8 @@ function InitWeatherGfxSets()
     CppLogic.Logic.SetStringTableText("names/PB_WoodMine2", "Holzwerkstatt")
     CppLogic.Logic.SetStringTableText("names/PB_WoodMine3", "Holzmanufaktur")
 	CppLogic.Logic.SetStringTableText("names/CB_Barbarian_Arena", "Barbarenarena")
+	CppLogic.Logic.SetStringTableText("names/CB_EvilBoat", "Nebelkriegerschiff")
+	CppLogic.Logic.SetStringTableText("names/XD_EvilBoat_Wreckage", "Schiffswrack")
 	
 	CppLogic.ModLoader.ReloadGUITexture("data\\graphics\\textures\\gui\\b_select_varg.png")
     CppLogic.ModLoader.ReloadGUITexture("data\\graphics\\textures\\gui\\b_statistics.png")
@@ -104,10 +109,8 @@ function InitWeatherGfxSets()
     if IsExisting(guard) then
     CppLogic.Entity.SetDisplayName(guard, "Mijörn")
     SetEntityOverheadWidget(guard,1)
-
-    XGUIEng.ShowWidget("ChapterInfo", 0)
-    XGUIEng.ShowWidget("ChapterInfo_BG", 0)
-
+    -- XGUIEng.ShowWidget("ChapterInfo", 0)
+    -- XGUIEng.ShowWidget("ChapterInfo_BG", 0)
     end
 
 
@@ -168,6 +171,7 @@ function FirstMapAction()
     --MapStart Funcs
     CreateDynamicFog("Nebel", 0 ); --Nebel am Spawn
 	CreateDynamicFog("fog", 0 );  --Nebel NV-Camp
+	CreateDynamicFog("seafog", 0 );  --Nebel NV-Camp
     Start_Chapter1()
     StartSimpleJob("GetSystemTime")
 
@@ -189,6 +193,83 @@ function FirstMapAction()
     StartReplaceOnNextTick() --Startet den ReplaceOnNextTick-Job
 	StartGateChangerJob() --Startet den GateJob
 
+end
+
+
+------------------------------------MoveStaticEntity----------------------------------------------------------
+MoveEntityData = {}
+MoveEntityData_TriggerID = nil
+function MoveStaticEntity(_entity,_posX,_posY,_dirX,_dirY)
+	assert(type(_entity) == "number" or "string", "_entity muss eine Number oder ein String sein.") 
+	assert(type(_posX) == "number" or "string", "_posX muss eine Number oder ein String sein.")
+	assert(type(_posY) == "number" or "string", "_posY muss eine Number oder ein String sein.")
+	assert(type(_dirX) == "boolean", "_dirX muss ein Boolean sein")
+	assert(type(_dirY) == "boolean", "_dirY muss ein Boolean sein")
+
+	
+	if not MoveEntityData_TriggerID then
+		MoveEntityData_TriggerID = Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_TURN,nil,"MoveAndDestroy",1)
+	end
+
+	local helper = {
+		id = GetID(_entity),
+	 	x = _posX,
+	 	y = _posY,
+	 	dirX = _dirX,
+	 	dirY = _dirY,
+	 	newY = 0,
+		newX = 0,
+	}
+	table.insert(MoveEntityData,helper)
+end
+
+function MoveAndDestroy()
+	for i = table.getn(MoveEntityData),1,-1 do
+		local data = MoveEntityData[i]
+		if data.dirY == true and data.y >= data.newY then --in positive Y-Richtung
+			local _,entityY = Logic.GetEntityPosition(data.id)
+			local ori = Logic.GetEntityOrientation(data.id)
+			local playerId = Logic.EntityGetPlayer(data.id)
+			local newY = entityY +31
+			local type = Logic.GetEntityType(data.id)
+			DestroyEntity(data.id)
+			local newId = Logic.CreateEntity(type,data.x,newY,ori,playerId)
+			data.newY = newY
+			data.id = newId
+		elseif data.dirX == true and data.x >= data.newX then --in positive X-Richtung
+			local entityX,_ = Logic.GetEntityPosition(data.id)
+			local ori = Logic.GetEntityOrientation(data.id)
+			local playerId = Logic.EntityGetPlayer(data.id)
+			local newX = entityX +31
+			local type = Logic.GetEntityType(data.id)
+			DestroyEntity(data.id)
+			local newId = Logic.CreateEntity(type,newX,data.y,ori,playerId)
+			data.newX = newX
+			data.id = newId
+		elseif data.dirY == false and data.y <= data.newY then  --in negative Y-Richtung
+			local _,entityY = Logic.GetEntityPosition(data.id)
+			local ori = Logic.GetEntityOrientation(data.id)
+			local playerId = Logic.EntityGetPlayer(data.id)
+			local newY = entityY -31
+			local type = Logic.GetEntityType(data.id)
+			DestroyEntity(data.id)
+			local newId = Logic.CreateEntity(type,data.x,newY,ori,playerId)
+			data.newY = newY
+			data.id = newId
+		elseif data.dirX == false and data.x <= data.newX then --in negative X-Richtung
+			local entityX,_ = Logic.GetEntityPosition(data.id)
+			local ori = Logic.GetEntityOrientation(data.id)
+			local playerId = Logic.EntityGetPlayer(data.id)
+			local newX = entityX -31
+			local type = Logic.GetEntityType(data.id)
+			DestroyEntity(data.id)
+			local newId = Logic.CreateEntity(type,newX,data.y,ori,playerId)
+			data.newX = newX
+			data.id = newId
+		else 
+			table.remove(MoveEntityData,i)
+		end
+	end
 end
 
 
@@ -278,13 +359,14 @@ function Update_GUIUpdate_HeroFindButtons()
 			--Create Table with all heroes
 			
 			local Hero = {}
-			
-			Logic.GetHeroes(PlayerID, Hero)
 
-			for n=1,table.getn(Hero),1 do  --Filtern nach Veteran ID´s und aus Hero table entfernen
-				if Hero[n] == GetID(trupp1) or Hero[n] == GetID(trupp2) or Hero[n] == GetID(trupp3) then
-					table.remove(Hero,Hero[n])
-					n= n-1
+			if IsExisting(varg) then
+				local pId_varg = Logic.EntityGetPlayer(varg)
+				if pId_varg == 1 then
+					local hero1_id = GetID(varg)
+					table.insert(Hero,hero1_id)
+				else
+					Hero[1] = nil
 				end
 			end
 
@@ -293,7 +375,7 @@ function Update_GUIUpdate_HeroFindButtons()
 			for j=1,6
 			do
 			
-				if  Hero[j] ~= nil then
+				if  Hero[j] ~= nil and GetID(Hero[j]) ~= GetID(trupp1) and GetID(Hero[j]) ~= GetID(trupp2) and GetID(Hero[j]) ~= GetID(trupp3) then
 					
 					XGUIEng.ShowWidget(gvGUI_WidgetID.HeroFindButtons[j],1)	
 					
@@ -360,6 +442,12 @@ end
 -----------------------------------LoseCondition--------------------------------------------------
 function AllHerosDead()
 	if IsDead(guard) and IsDead(varg) and IsDead(trupp1) and IsDead(trupp2) and IsDead(trupp3) then
+		Defeat()
+	end
+end
+
+function CastleDestroyed()
+	if IsDead("barb_castle") then
 		Defeat()
 	end
 end
@@ -460,9 +548,7 @@ end
 
 
 
--- Quest data
-MapEditor_QuestTitle				= "Yeet"
-MapEditor_QuestDescription 	= "Juhu"
+
 
 
 
@@ -938,3 +1024,99 @@ function Float2Int(fval)
 
 	return outval;
 end
+
+
+
+
+
+
+------------------------------------------------Countdown Comfort------------------------------------------------------------
+function StartCountdown(_Limit, _Callback, _Show)
+    assert(type(_Limit) == "number")
+    assert( not _Callback or type(_Callback) == "function" )
+ 
+    Counter.Index = (Counter.Index or 0) + 1
+ 
+    if _Show and CountdownIsVisisble() then
+        assert(false, "StartCountdown: A countdown is already visible")
+    end
+ 
+    Counter["counter" .. Counter.Index] = {Limit = _Limit, TickCount = 0, Callback = _Callback, Show = _Show, Finished = false}
+ 
+    if _Show then
+        MapLocal_StartCountDown(_Limit)
+    end
+ 
+    if Counter.JobId == nil then
+        Counter.JobId = StartSimpleJob("CountdownTick")
+    end
+ 
+    return Counter.Index
+end
+ 
+function StopCountdown(_Id)
+    if Counter.Index == nil then
+        return
+    end
+ 
+    if _Id == nil then
+        for i = 1, Counter.Index do
+            if Counter.IsValid("counter" .. i) then
+                if Counter["counter" .. i].Show then
+                    MapLocal_StopCountDown()
+                end
+                Counter["counter" .. i] = nil
+            end
+        end
+    else
+        if Counter.IsValid("counter" .. _Id) then
+            if Counter["counter" .. _Id].Show then
+                MapLocal_StopCountDown()
+            end
+            Counter["counter" .. _Id] = nil
+        end
+    end
+end
+ 
+function CountdownTick()
+    local empty = true
+    for i = 1, Counter.Index do
+        if Counter.IsValid("counter" .. i) then
+            if Counter.Tick("counter" .. i) then
+                Counter["counter" .. i].Finished = true
+            end
+ 
+            if Counter["counter" .. i].Finished and not IsBriefingActive() then
+                if Counter["counter" .. i].Show then
+                    MapLocal_StopCountDown()
+                end
+ 
+                -- callback function
+                if type(Counter["counter" .. i].Callback) == "function" then
+                    Counter["counter" .. i].Callback()
+                end
+ 
+                Counter["counter" .. i] = nil
+            end
+ 
+            empty = false
+        end
+    end
+ 
+    if empty then
+        Counter.JobId = nil
+        Counter.Index = nil
+        return true
+    end
+end
+ 
+function CountdownIsVisisble()
+    for i = 1, Counter.Index do
+        if Counter.IsValid("counter" .. i) and Counter["counter" .. i].Show then
+            return true
+        end
+    end
+ 
+    return false
+end
+
