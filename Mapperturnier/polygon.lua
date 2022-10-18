@@ -1,4 +1,6 @@
-
+function InitEntityTrigger()
+	EntityTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_CREATED,nil,"CheckEntityTable",1)
+end
 
 function CreatePolygon()
 	local xpoly1, ypoly1 = Logic.GetEntityPosition(GetID("Poly1"))
@@ -17,47 +19,55 @@ function CreatePolygon()
 		{X=xpoly6,Y=ypoly6},
 		{X=xpoly7,Y=ypoly7})
 	if EnableLavaDamage == true then
-	LavaTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_CREATED,nil,"CheckForEntityInPolygon",1)
+		LavaTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"CheckForEntityInPolygon",1)
 	elseif EnableLavaDamage == false and LavaTrigger ~= nil then
 		Trigger.UnrequestTrigger(LavaTrigger)
 	end
 end
 
+EntityTable = {}
+function CheckEntityTable()
+	local entityID = Event.GetEntityID()
+	if Logic.IsSettler(entityID) == 1 then
+		table.insert(EntityTable,entityID)
+	end
+	if Logic.IsBuilding(entityID) == 1 then
+		table.insert(EntityTable,entityID)
+	end
+end
+
 function CheckForEntityInPolygon()
 	if EnableLavaDamage == true then
-		local entityID = Event.GetEntityID()
-		local playerID = Logic.EntityGetPlayer(entityID)
-		if playerID == 1 then
-			local xPos, yPos = Logic.GetEntityPosition(entityID)
-			local entityTable = {X= xPos,Y=yPos}
-			local entityName = Logic.GetEntityTypeName(Logic.GetEntityType(entityID))
-			if Polygon1:IsPointInside(entityTable) == 1 and Logic.IsBuilding(entityID) == 1 and (string.find(entityName,"PB") ~= nil or string.find(entityName,"CB") ~= nil ) then
-				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler",1,nil,{entityID})
-				Message("Achtung: Es wurde ein Gebäude innerhalb der Lava gebaut!")
-			elseif Polygon1:IsPointInside(entityTable) == 1 and Logic.IsSettler(entityID) == 1 and (string.find(entityName,"PU") ~= nil or string.find(entityName,"CU") ~= nil or string.find(entityName,"PV") ~= nil ) then
-				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler",1,nil,{entityID})
+		for i = table.getn(EntityTable),1,-1 do
+			local playerID = Logic.EntityGetPlayer(EntityTable[i])
+			if playerID == 1 then
+				local xPos, yPos = Logic.GetEntityPosition(EntityTable[i])
+				local eTable = {X= xPos,Y=yPos}
+				local entityName = Logic.GetEntityTypeName(Logic.GetEntityType(EntityTable[i]))
+				if Polygon1:IsPointInside(eTable) == 1 and (string.find(entityName,"PB") ~= nil or string.find(entityName,"CB") ~= nil ) then
+					Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler",1,nil,{i})
+				elseif Polygon1:IsPointInside(eTable) == 1 and (string.find(entityName,"PU") ~= nil or string.find(entityName,"CU") ~= nil or string.find(entityName,"PV") ~= nil ) then
+					Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler",1,nil,{i})
+				end
 			end
 		end
 	end
 end
 
 
-function EntityHurtHandler(entityID)
-	local eID = entityID
-	if IsAlive(eID) then
+
+
+function EntityHurtHandler(i)
+	local eID = EntityTable[i]
+	local xPos, yPos = Logic.GetEntityPosition(eID)
+	local eTable = {X= xPos,Y=yPos}
+	if IsAlive(eID) and Polygon1:IsPointInside(eTable) == 1 then
 		Logic.HurtEntity(eID,30)
 		return false
 	elseif IsDead(eID) then
 		return true
 	end
 end
-
-
-
-
-
-
-
 
 
 

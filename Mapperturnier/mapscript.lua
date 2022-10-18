@@ -137,8 +137,8 @@ end
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -- This function is called on game start after all initialization is done
 function FirstMapAction()
-    
     TriggerFix.AllScriptsLoaded()
+	InitEntityTrigger()
 	Display.SetRenderLandscapeDebugInfo(0)   --Debug
     ActivateBriefingsExpansion()
     StartSimpleJob("BarbCounter")  --CounterJob für kaufbare Barbaren im BarbarenHQ
