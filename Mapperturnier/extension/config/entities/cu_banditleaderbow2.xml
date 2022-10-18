@@ -24,9 +24,9 @@
 			<ForceNoPlayer>false</ForceNoPlayer>
         <Hat/>
         <Cost>
-			  <Gold>250</Gold>
-			  <Iron>10</Iron>			  
-			  <Wood>80</Wood>			  
+			  <Gold>350</Gold>
+			  <Iron>40</Iron>			  
+			  <Wood>120</Wood>			  
         </Cost>
 
 		<ModifyArmor>
@@ -110,8 +110,8 @@
 	        
 	        <ProjectileEffectID>FXCrossBowArrow</ProjectileEffectID>
 	        <MaxRange>2700</MaxRange>
-	        <MinRange>0.0f</MinRange>	        
-	        <AutoAttackRange>2500</AutoAttackRange>
+	        <MinRange>500.0f</MinRange>	        
+	        <AutoAttackRange>2700</AutoAttackRange>
 	        
 			  <HealingPoints>7</HealingPoints>
 	        <HealingSeconds>3</HealingSeconds>

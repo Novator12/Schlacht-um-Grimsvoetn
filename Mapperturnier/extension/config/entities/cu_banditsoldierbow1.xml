@@ -100,9 +100,9 @@
 	        
 	        <ProjectileEffectID>FXArrow</ProjectileEffectID>
 	        
-	        <MaxRange>200.0f</MaxRange>
+	        <MaxRange>2500</MaxRange>
 	        <MinRange>0.0f</MinRange>
-	        <AutoAttackRange>2500</AutoAttackRange>
+	        
 	        
 		</Logic>
 	</Behavior>

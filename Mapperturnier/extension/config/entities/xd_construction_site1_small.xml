@@ -3,7 +3,7 @@
 	<Display classname="ED::CDisplayEntityProps">
 		<Class>ED::CDisplayStaticEntity</Class>
 		<Model>XD_Construction_Site1_Small</Model>
-		<RenderInFoW>true</RenderInFoW>
+		<RenderInFoW>false</RenderInFoW>
 	</Display>
 	<Logic classname="EGL::CGLEEntityProps">
 		<Class>EGL::CGLEEntity</Class>

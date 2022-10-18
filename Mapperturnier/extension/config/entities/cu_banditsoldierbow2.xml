@@ -103,7 +103,6 @@
 	        <ProjectileEffectID>FXCrossBowArrow</ProjectileEffectID>
 	        <MaxRange>2700</MaxRange>
 	        <MinRange>0.0f</MinRange>
-	        <AutoAttackRange>2500</AutoAttackRange>
 	        
 		</Logic>
 	</Behavior>
