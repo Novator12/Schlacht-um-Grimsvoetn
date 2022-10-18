@@ -1,3 +1,16 @@
+--Gibt dem Spieler massiv viele Ressourcen
+
+function DebugRes()
+    Logic.AddToPlayersGlobalResource(1,ResourceType.ClayRaw,1000000)
+    Logic.AddToPlayersGlobalResource(1,ResourceType.StoneRaw,1000000)
+    Logic.AddToPlayersGlobalResource(1,ResourceType.GoldRaw,1000000)
+    Logic.AddToPlayersGlobalResource(1,ResourceType.IronRaw,1000000)
+    Logic.AddToPlayersGlobalResource(1,ResourceType.WoodRaw,1000000)
+    Logic.AddToPlayersGlobalResource(1,ResourceType.SulfurRaw,1000000)
+end
+
+
+
 --Debug Alle Techs freischalten
 function DebugTech()
     Logic.SetTechnologyState(1,Technologies.GT_Alchemy,3)
