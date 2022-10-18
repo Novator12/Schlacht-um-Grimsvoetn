@@ -118,11 +118,11 @@ function StartBriefingChapter3()
             for i = 1,4,1 do
                 ReplaceEntity(GetID("gate"..i.."_id5"), Entities.XD_DarkWallStraightGate)
             end
-            ActivateSpawnerKI5()
-            ActivateRecruiterKI5()
             if mode == 2 or mode == 3 then
                 BuffKI5()
             end
+            ActivateSpawnerKI5()
+            ActivateRecruiterKI5()
             StartCutscene("vulcanenemie", VulkanEnemieCutsceneBrief)   
         end;
         NormalSpeedInBriefing()
