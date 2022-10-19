@@ -15,10 +15,9 @@ function Start_Chapter2()
      -- Start der Base Angriffe
     StartCountdown(60*5,StartBaseAttacks,false)
     --Barriere zum Lavabereich zerstören
-    CreatePolygon()
     DestroyEntity("barrier_lava")
     EnableLavaDamage = true; --Schaden in Lava nehmen = EIN
-    
+    CreatePolygon()
 end
 
 

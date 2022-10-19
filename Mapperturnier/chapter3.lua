@@ -118,6 +118,8 @@ function StartBriefingChapter3()
             for i = 1,4,1 do
                 ReplaceEntity(GetID("gate"..i.."_id5"), Entities.XD_DarkWallStraightGate)
             end
+            ResCheatKI5()
+            UpgradeKI5()
             if mode == 2 or mode == 3 then
                 BuffKI5()
             end
@@ -188,10 +190,42 @@ function DefenseCompleted()
         Logic.AddQuest(1, 1, MAINQUEST_CLOSED, "@color:255,0,0 Verteidigung von Reynivellir", "@cr Verteidigt das Dorf solange, bis Leonardo das Schutzserum fertig gestellt hat. Verliert ihr euer Burg oder alle eure Helden, habt Ihr das Spiel verloren.", 1)
         Message("Angriff!")
         EnableLavaDamage = false; --Schaden in Lava nehmen = AUS
+        return true
     end
 end
 
+function ResCheatKI5()
+    Logic.AddToPlayersGlobalResource(5,ResourceType.ClayRaw,1000000)
+    Logic.AddToPlayersGlobalResource(5,ResourceType.StoneRaw,1000000)
+    Logic.AddToPlayersGlobalResource(5,ResourceType.GoldRaw,1000000)
+    Logic.AddToPlayersGlobalResource(5,ResourceType.IronRaw,1000000)
+    Logic.AddToPlayersGlobalResource(5,ResourceType.WoodRaw,1000000)
+    Logic.AddToPlayersGlobalResource(5,ResourceType.SulfurRaw,1000000)
+end
 
+function UpgradeKI5()
+    for i=1,3,1 do --Schwert auf T4 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderSword, 5)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierSword, 5)
+    end
+
+    for i=1,3,1 do --Bogen auf T4 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBow, 5)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBow, 5)
+    end
+
+    for i=1,3,1 do --Speerträger auf T4 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderPoleArm, 5)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierPoleArm, 5)
+    end
+
+    --Scharfschützen auf T2 upgraden
+    GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderRifle, 5)  
+    GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierRifle, 5)
+    
+
+    
+end
 
 function BuffKI5()
     Logic.SetTechnologyState(5, Technologies.T_LeatherMailArmor, 3)
@@ -307,7 +341,7 @@ function ActivateRecruiterKI5()
     
 
         RecruiterKI5 = UnlimitedArmyRecruiter:New(KI5Army, {
-            Buildings = {GetID("archery_id5"),GetID("baracks_id5"),GetID("foundry_id5")}, -- mehr gebäude einfach hier rein
+            Buildings = {GetID("archery_id5"),GetID("barracks_id5"),GetID("foundry_id5")}, -- mehr gebäude einfach hier rein
             ArmySize = ki5_table[1],
             UCats = {
                 {UCat=UpgradeCategories.LeaderSword, SpawnNum=2, Looped=true},

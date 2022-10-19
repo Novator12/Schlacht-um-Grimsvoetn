@@ -117,7 +117,7 @@ function VargNearGuard()
     if Logic.CheckEntitiesDistance(GetID(varg),GetID("guard"),4000) == 1 then
         Logic.SetDiplomacyState(8, 6, 3)
         Message("@color:255,0,0 Schlachtet sie alle ab!")
-        Logic.GroupAttack(GetID("guard"), GetPosition("nv_start_patrol2").X, GetPosition("nv_start_patrol2").Y)
+        Logic.GroupAttackMove(GetID("guard"), GetPosition("nv_start_patrol2").X, GetPosition("nv_start_patrol2").Y,0)
         return true;
     end
 end

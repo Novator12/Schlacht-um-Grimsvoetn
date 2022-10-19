@@ -129,8 +129,6 @@ end
 function InitPlayerColorMapping()
     Logic.SetPlayerRawName(1, "Varg")
 	Display.SetPlayerColorMapping(1, NEPHILIM_COLOR)
-    Display.SetPlayerColorMapping(6, ROBBERS_COLOR)
-    Display.SetPlayerColorMapping(7, KERBEROS_COLOR)
     Display.SetPlayerColorMapping(8, ENEMY_COLOR2)
 end
 	
@@ -619,9 +617,10 @@ function SetupAI(_aiTable)
 			if notNeutral[i] == p then
 				neutral = false;
 			end
-		end
-		if neutral then
-			SetNeutral(ai.id, p);
+		
+			if neutral then
+				SetNeutral(ai.id, p);
+			end
 		end
 	end
  
