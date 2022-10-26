@@ -3,6 +3,11 @@ function Start_Chapter4()
     chapterText = "Schlacht um Grimsvötn @cr Der Anführer der Schattenkrieger ist geflohen. Findet einen Weg die Schattenfeste zu zerstören."
     ResetQuestBook(1)
     EndJob("DefeatJob1")
+    DestroyEntity(varg)
+    DestroyEntity(guard)
+    DestroyEntity(trupp3)
+    DestroyEntity(trupp1)
+    DestroyEntity(trupp2)
     Logic.AddQuest(1, 1, MAINQUEST_OPEN, "@color:255,0,0 Die Feste im Schatten", "@cr Der Anführer der Schattenkrieger ist geflohen. Sucht einen Weg zur Schattenfeste!", 1)  
     varg = Logic.CreateEntity(Entities.CU_Barbarian_Hero, GetPosition("varg_chap4").X, GetPosition("varg_chap4").Y, 0, 1)
     trupp1 = Logic.CreateEntity(Entities.CU_VeteranLieutenant, GetPosition("trupp1_chap4").X,GetPosition("trupp1_chap4").Y,0, 1)
@@ -657,6 +662,16 @@ function TheodorVargBriefing2()
             AddTribute(Tribut_DrawBridgeNorth)
             AddTribute(Tribut_DrawBridgeLava)
             AddTribute(Tribut_BackdoorGate)
+            Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Finalschlacht", "@cr Ihr habt nun die volle Kontrolle über die Zuwege zur Schattenfeste. Setzt diese weise ein. Besiegt alle Militärgebäude und zerstört die Feste.", 1) 
+            BuffKI4()
+            UpgradeKI4()
+            ResCheatKI4()
+            ActivateKI4Attacks()
+            KI4RecruitSerfs()
+            if mode == 3 then
+                ActivateSuperTentKI4()
+            end
+            VictoryJob = StartSimpleJob("KI4Defeated")
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
@@ -672,7 +687,107 @@ BridgesTable = {
     Silver = 0
 }
 
+function KI4RecruitSerfs()
+    if IsExisting("hq_id4") then
+        for i=1,8,1 do
+            CppLogic.Entity.Building.HQBuySerf("hq_id4")
+        end
+        StartSimpleJob("KI4SerfChecker")
+    end
+end
 
+function KI4SerfChecker()
+    if Logic.GetPlayerEntities(4,Entities.PU_Serf,8) == 0 and IsExisting("hq_id4") then
+        KI4RecruitSerfs()
+        return true
+    elseif IsDead("hq_id4") then
+        return true
+    end
+end
+
+
+function ResCheatKI4()
+    Logic.AddToPlayersGlobalResource(4,ResourceType.ClayRaw,1000000)
+    Logic.AddToPlayersGlobalResource(4,ResourceType.StoneRaw,1000000)
+    Logic.AddToPlayersGlobalResource(4,ResourceType.GoldRaw,1000000)
+    Logic.AddToPlayersGlobalResource(4,ResourceType.IronRaw,1000000)
+    Logic.AddToPlayersGlobalResource(4,ResourceType.WoodRaw,1000000)
+    Logic.AddToPlayersGlobalResource(4,ResourceType.SulfurRaw,1000000)
+end
+
+function UpgradeKI4()
+    if mode == 3 then
+    for i=1,3,1 do --Schwert auf T4 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderSword, 4)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierSword, 4)
+    end
+
+    for i=1,3,1 do --Bogen auf T4 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBow, 4)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBow, 4)
+    end
+
+    for i=1,3,1 do --Speerträger auf T4 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderPoleArm, 4)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierPoleArm, 4)
+    end
+
+    --Scharfschützen auf T2 upgraden
+    GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderRifle, 4)  
+    GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierRifle, 4)
+
+    elseif mode<3 then
+        for i=1,2,1 do --Schwert auf T3 upgraden
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderSword, 4)  
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierSword, 4)
+        end
+    
+        for i=1,2,1 do --Bogen auf T3 upgraden
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBow, 4)  
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBow, 4)
+        end
+    
+        for i=1,2,1 do --Speerträger auf T3 upgraden
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderPoleArm, 4)  
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierPoleArm, 4)
+        end
+    
+        --Scharfschützen auf T2 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderRifle, 4)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierRifle, 4)
+    end
+
+    
+end
+
+function BuffKI4()
+    Logic.SetTechnologyState(4, Technologies.T_LeatherMailArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_ChainMailArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_PlateMailArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_SoftArcherArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_PaddedArcherArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_LeatherArcherArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_MasterOfSmithery, 3)
+    Logic.SetTechnologyState(4, Technologies.T_IronCasting, 3)
+    Logic.SetTechnologyState(4, Technologies.T_Fletching, 3)
+    Logic.SetTechnologyState(4, Technologies.T_BodkinArrow, 3)
+    Logic.SetTechnologyState(4, Technologies.T_WoodAging, 3)
+    Logic.SetTechnologyState(4, Technologies.T_Turnery, 3)
+    Logic.SetTechnologyState(4, Technologies.T_EnhancedGunPowder, 3)
+    Logic.SetTechnologyState(4, Technologies.T_BlisteringCannonballs, 3)
+    Logic.SetTechnologyState(4, Technologies.T_BetterTrainingBarracks, 3)
+    Logic.SetTechnologyState(4, Technologies.T_BetterTrainingArchery, 3)
+    Logic.SetTechnologyState(4, Technologies.T_Shoeing, 3)
+    Logic.SetTechnologyState(4, Technologies.T_Masonry, 3)
+    if mode == 3 then
+        Logic.SetTechnologyState(4, Technologies.T_SuperTechnology, 3)
+    end
+    
+    Logic.SetTechnologyState(4, Technologies.T_FleeceArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_FleeceLinedLeatherArmor, 3)
+    Logic.SetTechnologyState(4, Technologies.T_LeadShot, 3)
+    Logic.SetTechnologyState(4, Technologies.T_Sights, 3)
+end
 
 
 function ActivateTributesChapter4()
@@ -747,4 +862,288 @@ end
 
 
 
+function ActivateKI4Attacks()
 
+    function SoeldnerMove2(self)
+        if not self:IsIdle() then
+            return false
+        end
+        local numbertable = { 1, 2, 3, 4, 5 }
+        table.remove(numbertable, self.LastPoint)
+        for k, v in pairs(numbertable) do
+            if v == self.CurrentPoint then
+                self.LastPoint = table.remove(numbertable, k)
+                break;
+            end
+        end
+        self.CurrentPoint = numbertable[math.random(1, 3)]
+        return false, UnlimitedArmy.CreateCommandMove(self.Points[self.CurrentPoint], false)
+    end
+
+
+    if mode == 1 then
+        KIRecruitTable = {
+            [1] = 10 --Größe der Armee/ Leaderanzahl
+        }
+    elseif mode == 2 then
+        KIRecruitTable = {
+            [1] = 15 --Größe der Armee/ Leaderanzahl
+        }
+    elseif mode == 3 then
+        KIRecruitTable = {
+            [1] = 20 --Größe der Armee/ Leaderanzahl
+        }
+    end
+
+
+    KI4RecruitingArmy = LazyUnlimitedArmy:New({
+        -- benötigt
+        Player = 4,
+        Area = 100000,
+        -- optional
+        AutoDestroyIfEmpty = true,
+        TransitAttackMove = true,
+        Formation = UnlimitedArmy.Formations.Lines,
+        AIActive = true,
+        AutoRotateRange = 100000,
+        HiResJob = true
+    }, 20, NumberUA)
+    --LkavPoint1
+    KI4RecruitingArmy.Points = { 
+        GetPosition("id4_attack1"), 
+        GetPosition("id4_attack2"), 
+        GetPosition("id4_attack3"),
+        GetPosition("id4_attack4"), 
+        GetPosition("id4_attack5") }
+    KI4RecruitingArmy.LastPoint = nil
+    KI4RecruitingArmy.CurrentPoint = math.random(1, 5)
+
+    RecruiterKI4 = UnlimitedArmyRecruiter:New(KI4RecruitingArmy, {
+        Buildings = { GetID("archery_id4"), GetID("barracks_id4"), GetID("foundry_id4"), GetID("stables_id4") }, -- mehr gebäude einfach hier rein
+        ArmySize = KIRecruitTable[1],
+        UCats = {
+            { UCat = UpgradeCategories.Cannon4, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderSword, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.LeaderBow, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.LeaderCavalry, SpawnNum = 2, Looped = true },
+            { UCat = UpgradeCategories.LeaderHeavyCavalry, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.Cannon3, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderPoleArm, SpawnNum = 2, Looped = true },
+            { UCat = UpgradeCategories.LeaderSword, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderRifle, SpawnNum = 2, Looped = true },
+            { UCat = UpgradeCategories.LeaderBow, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.Cannon3, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderCavalry, SpawnNum = 2, Looped = true },
+            { UCat = UpgradeCategories.LeaderHeavyCavalry, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.Cannon4, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderSword, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.LeaderBow, SpawnNum = 3, Looped = true },
+        },
+        ResCheat = true,
+        ReorderAllowed = false,
+        DoNotRemoveIfDeadOrEmpty = true
+    })
+
+    KI4RecruitingArmy:AddCommandMove(GetPosition("id4_attack" .. KI4RecruitingArmy.CurrentPoint), false)
+    KI4RecruitingArmy:AddCommandWaitForIdle(false)
+    local numbertable = { 1, 2, 3, 4, 5 }
+    KI4RecruitingArmy.LastPoint = table.remove(numbertable, KI4RecruitingArmy.CurrentPoint)
+    local nextpoint = numbertable[math.random(1, 4)]
+    KI4RecruitingArmy:AddCommandMove(GetPosition("id4_attack" .. nextpoint), false)
+    KI4RecruitingArmy.CurrentPoint = nextpoint
+    KI4RecruitingArmy:AddCommandLuaFunc(SoeldnerMove2, true)
+
+
+end
+
+function ActivateSuperTentKI4()
+    SuperTentArmy = LazyUnlimitedArmy:New({
+        -- benötigt
+        Player = 4,
+        Area = 100000,
+        -- optional
+        AutoDestroyIfEmpty = true,
+        TransitAttackMove = true,
+        Formation = UnlimitedArmy.Formations.Lines,
+        AIActive = true,
+        AutoRotateRange = 100000,
+        HiResJob = true
+    }, 21, NumberUA)
+
+    SuperTentSpawner = UnlimitedArmySpawnGenerator:New(SuperTentArmy, {
+        -- benötigt:
+        Position = GetPosition("super_tent_spawn"), --position
+        ArmySize = 1, --armysize
+        SpawnCounter = 180,  --spawncounter
+        SpawnLeaders = 1,   --spawnleaders
+        LeaderDesc = {
+            {LeaderType = Entities.PU_LeaderSword1, SoldierNum = 0 , SpawnNum = 1, Looped = true, Experience = 3},
+        },
+        -- optional:
+        Generator = "super_tent",  --generator
+    })
+
+    SuperTentArmy: AddCommandMove(GetPosition("barb_castle"), true);
+    SuperTentArmy: AddCommandWaitForIdle(true);
+
+end
+
+
+function KI4Defeated()
+    if IsDestroyed("barracks_id4") and IsDestroyed("archery_id4") and IsDestroyed("stables_id4") and IsDestroyed("foundry_id4") and IsDestroyed("tower1_id4") and IsDestroyed("tower2_id4") and IsDestroyed("inv_tower2") and IsDestroyed("hq_id4") then
+        if KI4RecruitingArmy:IsDead() == -1 and KI4ArmyTable[1][1] == -1  and KI4ArmyTable[2][1] == -1 and KI4ArmyTable[3][1] == -1 and KI4ArmyTable[4][1] == -1 and KI4ArmyTable[5][1] == -1 and KI4ArmyTable[6][1] == -1 and KI4ArmyTable[7][1] == -1 and KI4ArmyTable[8][1] == -1 then
+            StartVictoryBriefing()
+            return true
+        end
+    end
+end
+
+
+function StartVictoryBriefing()
+    EndJob(DefeatJob1)
+    ReplaceEntity("boat2",Entities.XD_Dragonboat)
+    Logic.RotateEntity(GetID("boat2"),85)
+    DestroyEntity(varg)
+    DestroyEntity(guard)
+    DestroyEntity(trupp3)
+    DestroyEntity(trupp1)
+    DestroyEntity(trupp2)
+    DestroyEntity(leonardo)
+    varg = Logic.CreateEntity(Entities.CU_Barbarian_Hero, GetPosition("spawn_varg").X, GetPosition("spawn_varg").Y, 0, 1)
+    trupp1 = Logic.CreateEntity(Entities.CU_VeteranLieutenant, GetPosition("spawn_trupp1").X,GetPosition("spawn_trupp1").Y,0, 1)
+    trupp2 = Logic.CreateEntity(Entities.CU_VeteranLieutenant, GetPosition("spawn_trupp2").X,GetPosition("spawn_trupp2").Y,0, 1)
+    trupp3 = Logic.CreateEntity(Entities.CU_VeteranLieutenant, GetPosition("spawn_trupp3").X,GetPosition("spawn_trupp3").Y,0, 1)
+    Logic.EntityLookAt(varg, trupp1)
+    Logic.EntityLookAt(trupp1,varg)
+    Logic.EntityLookAt(trupp2, varg)
+    Logic.EntityLookAt(trupp3, varg)
+    guard = Logic.CreateEntity(Entities.CU_VeteranLieutenant, GetPosition("spawn_trupp4").X,GetPosition("spawn_trupp4").Y,0, 1)
+    Logic.EntityLookAt(guard, varg)
+    leonardo = Logic.CreateEntity(Entities.CU_Leonardo,GetPosition("spawn_trupp5").X,GetPosition("spawn_trupp5").Y,0,3 )
+    Logic.EntityLookAt(leonardo, varg)
+
+    local briefing = {}
+    local AP = function(_page) table.insert(briefing, _page) return _page end
+    local page1 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Männer! Ich bin stolz auf euch. Wir waren siegreich.",
+        position = GetPosition(varg),
+        explore = 2000,
+    }
+    local page2 = AP{
+        title	= "@color:255,0,0 Helgar",
+        text	= "@color:255,136,0 Hurra...(jauchz)...den haben wir es ordentlich gezeigt.",
+        position = GetPosition(trupp1),
+        explore = 2000,
+    }
+    local page3 = AP{
+        title	= "@color:255,0,0 Wolfgang",
+        text	= "@color:255,136,0 Aber sowas von. Niemand sollte sich mit unserem neuen Anführer: VARG, Sohn des Jarg anlegen.",
+        position = GetPosition(trupp2)
+    }
+    local page4 = AP{
+        title	= "@color:255,0,0 Rüdiger",
+        text	= "@color:255,136,0 Har Har, Reynivellir erstrahlt im neuen glanz und ist sicherer den je!",
+        position = GetPosition(trupp3)
+    }
+    local page5 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Genau und das haben wir uns alles zusammen erarbeitet. Stimmts Leonardo?",
+        position = GetPosition(varg)
+    }
+    local page6 = AP{
+        title	= "@color:255,0,0 Leonardo",
+        text	= "@color:255,136,0 Aber sowasvon...Nur ich habe leider schlechte Kunde für euch...",
+        position = GetPosition(leonardo)
+    }
+    local page7 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Was soll denn sein?",
+        position = GetPosition(varg)
+    }
+    local page8 = AP{
+        title	= "@color:255,0,0 Leonardo",
+        text	= "@color:255,136,0 Ihr erinnert euch doch noch an die Geschenisse in Thalgrund. Wo Mary de Mortfichet Kerberos von den Toten zurückgeholt hat.",
+        position = GetPosition(leonardo)
+    }
+    local page9 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Wie könnte ich das nur vergessen. Ich war froh, all diese Menschen hinter mir zu lassen...",
+        position = GetPosition(varg)
+    }
+    local page10 = AP{
+        title	= "@color:255,0,0 Leonardo",
+        text	= "@color:255,136,0 Dario hat seinen Falken zu mir entsandt mit einer Botschaft für euch:",
+        position = GetPosition(leonardo)
+    }
+    local page11 = AP{
+        title	= "Darios Botschaft",
+        text	= "Varg mein alter Freund. Wir haben Kerberos hoch in den Norden über das kalte Meer verfolgt. Noch weiter nördlich als deine Heimat Grimsvötn. Kerberos hat sich hier in den Nordlanden verkrochen und sich an deinen Vetter gewandt. Ihr müsst uns zur Hilfe kommen!",
+        position = GetPosition(leonardo)
+    }
+    local page12 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Er bittet uns um Hilfe gegen Kerberos noch ein weiteres mal in den Krieg zu ziehen. Was haltet Ihr davon Männer?",
+        position = GetPosition(leonardo)
+    }
+    local page13 = AP{
+        title	= "@color:255,0,0 Helgar",
+        text	= "@color:255,136,0 Wir sollten Ihnen helfen. Auch wenn ich diesen Dario nicht kenne. Jedoch steht dort auch was von eurem Vetter, also es geht um die Familie!",
+        position = GetPosition(trupp1),
+        explore = 2000,
+    }
+    local page14= AP{
+        title	= "@color:255,0,0 Wolfgang",
+        text	= "@color:255,136,0 Da stimme ich Helgar zu. Die Familie ist alles!",
+        position = GetPosition(trupp2)
+    }
+    local page15 = AP{
+        title	= "@color:255,0,0 Rüdiger",
+        text	= "@color:255,136,0 Ich will doch nur etwas Met trinken....",
+        position = GetPosition(trupp3)
+    }
+    local page16 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Dann steht es fest. Wir segeln noch höher in den Norden! Leonardo begleitest du uns?",
+        position = GetPosition(varg)
+    }
+    local page17 = AP{
+        title	= "@color:255,0,0 Leonardo",
+        text	= "@color:255,136,0 Na klar! Und Rüdiger, ich habe da eine kleine Überraschung für dich:",
+        position = GetPosition(leonardo)
+    }
+    local page18 = AP{
+        title	= "@color:255,0,0 Leonardo",
+        text	= "@color:255,136,0 GAAAANNNNZZZ VIEL MEEEEET! ",
+        position = GetPosition("met2"),
+        action = function() 
+            Logic.CreateEntity(Entities.XD_MiscBarrel2,GetPosition("met1").X,GetPosition("met1").Y,0,0)
+            Logic.CreateEntity(Entities.XD_MiscBarrel2,GetPosition("met2").X,GetPosition("met2").Y,0,0)
+            Logic.CreateEntity(Entities.XD_MiscBarrel2,GetPosition("met3").X,GetPosition("met3").Y,0,0)
+        end
+    }
+    local page19 = AP{
+        title	= "@color:255,0,0 Rüdiger",
+        text	= "@color:255,136,0 JAAAAAAA!!!!",
+        position = GetPosition(trupp3),
+        action = function()
+            Logic.CreateEntity(Entities.XD_Dragonboat,GetPosition("end_pos").X,GetPosition("end_pos").Y,0,0)
+        end
+    }
+    local page20 = AP{
+        title	= "Mentor",
+        text	= "Und so segelte die Gruppe in Richtung Norden, um Dario zur Unterstützung zu eilen.",
+        position = GetPosition("end_pos"),
+        explore = 2000
+    }
+    local page21 = AP{
+        title	= "Fortsetzung folgt...",
+        text	= "Vielen Dank für das Spielen meiner Karte. Ich hoffe ihr hattet Spaß. Liebe Grüße Novator12",
+        position = GetPosition("end_pos")
+    }
+        briefing.finished = function()  
+           Victory()
+        end;
+        NormalSpeedInBriefing()
+        StartBriefing(briefing)
+end

@@ -187,7 +187,7 @@ function FirstMapAction()
 	Tribute_Comforts() --Aktivierung der Tribut Comfort
 
 	--Anzahl UAs
-	NumberUA = 19
+	NumberUA = 21
     --Vulkanfeuer 
 	x_vulc,y_vulc = Logic.EntityGetPos(GetID("vulc_middle"))
 
