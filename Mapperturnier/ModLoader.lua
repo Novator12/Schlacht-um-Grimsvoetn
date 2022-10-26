@@ -49,6 +49,11 @@ ModLoader = {
 			Entities.PB_GenericMine,
 			Entities.CU_VeteranLieutenant,
 			Entities.XD_BuildBlockScriptEntity,
+			Entities.XD_Sparkles,
+			Entities.XD_Driftwood1,
+			Entities.XD_Driftwood2,
+			Entities.PU_Thief,
+			Entities.XD_PalisadeGate2,
 			Entities.XD_BlendingFog,
 			--
 			Entities.CU_BanditLeaderBow1,
@@ -65,6 +70,7 @@ ModLoader = {
 			"CB_EvilBoat",
 			"XD_EvilBoat_Wreckage",
 			Entities.PU_LeaderCavalry2,
+			"CU_Sauron"
 		},
 		--- EffectTypes to load or reload. put in a string to load, and a number to reload (GGL_Effects.Typename).
 		EffectTypes = {
@@ -168,6 +174,7 @@ ModLoader = {
 			"XD_Construction_SiteTower",
 			"CB_EvilBoat",
 			"XD_EvilBoat_Wreckage",
+			"CU_Sauron"
 		},
 		--- Animations to load or reload. put in a string to load, and a number to reload (Animations.Typename).
 		Animations = {

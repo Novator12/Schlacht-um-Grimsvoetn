@@ -254,7 +254,12 @@
     <TerrainVertexColorPortion>1</TerrainVertexColorPortion>
   </Model>
 
-
+  <Model id="CU_Sauron">
+    <Effect>SkinnedObject</Effect>
+    <OcclusionReceiver>True</OcclusionReceiver>
+    <SelectionRadius>100</SelectionRadius>
+    <SelectionTexture>Selection_hero</SelectionTexture>
+  </Model>
   
   <Model id="CU_LeaderOutlaw1">
     <Effect>SettlerPlayerColorSpecular</Effect>

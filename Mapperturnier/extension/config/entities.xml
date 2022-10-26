@@ -181,7 +181,7 @@
 	   COMPUTERPLAYERUNITS
 	************************************************-->
 
-
+		<Entity>CU_Sauron</Entity>
         <Entity>CU_BlackKnight_SoldierSword3</Entity>
 		<Entity>CU_BanditLeaderSword1</Entity>
 		<Entity>CU_BanditSoldierSword1</Entity>
