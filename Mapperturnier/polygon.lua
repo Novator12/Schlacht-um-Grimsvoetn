@@ -25,6 +25,8 @@ function CreatePolygon()
 	end
 end
 
+
+
 EntityTable = {}
 function CheckEntityTable()
 	local entityID = Event.GetEntityID()
@@ -70,6 +72,138 @@ function EntityHurtHandler(i)
 end
 
 
+--ÜBERARBEITEN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-----------------------------------LavaGeheimgang-------------------------------------------------------------
+
+function CreateSecretPolygon()
+
+	--Polygon1
+	local Axpoly1,_ = Logic.GetEntityPosition(GetID("1poly1"))
+	local Axpoly2,_ = Logic.GetEntityPosition(GetID("1poly2"))
+	local Axpoly3,_ = Logic.GetEntityPosition(GetID("1poly3"))
+	local Axpoly4,_ = Logic.GetEntityPosition(GetID("1poly4"))
+	local _,Aypoly1 = Logic.GetEntityPosition(GetID("1poly1"))
+	local _,Aypoly2 = Logic.GetEntityPosition(GetID("1poly2"))
+	local _,Aypoly3 = Logic.GetEntityPosition(GetID("1poly3"))
+	local _,Aypoly4 = Logic.GetEntityPosition(GetID("1poly4"))
+
+	--Polygon2
+	local Bxpoly1,_ = Logic.GetEntityPosition(GetID("2poly1"))
+	local Bxpoly2,_ = Logic.GetEntityPosition(GetID("2poly2"))
+	local Bxpoly3,_ = Logic.GetEntityPosition(GetID("2poly3"))
+	local Bxpoly4,_ = Logic.GetEntityPosition(GetID("2poly4"))
+	local _,Bypoly1 = Logic.GetEntityPosition(GetID("2poly1"))
+	local _,Bypoly2 = Logic.GetEntityPosition(GetID("2poly2"))
+	local _,Bypoly3 = Logic.GetEntityPosition(GetID("2poly3"))
+	local _,Bypoly4 = Logic.GetEntityPosition(GetID("2poly4"))
+
+	--Polygon3
+	local Cxpoly1,_ = Logic.GetEntityPosition(GetID("3poly1"))
+	local Cxpoly2,_ = Logic.GetEntityPosition(GetID("3poly2"))
+	local Cxpoly3,_ = Logic.GetEntityPosition(GetID("3poly3"))
+	local Cxpoly4,_ = Logic.GetEntityPosition(GetID("3poly4"))
+	local _,Cypoly1 = Logic.GetEntityPosition(GetID("3poly1"))
+	local _,Cypoly2 = Logic.GetEntityPosition(GetID("3poly2"))
+	local _,Cypoly3 = Logic.GetEntityPosition(GetID("3poly3"))
+	local _,Cypoly4 = Logic.GetEntityPosition(GetID("3poly4"))
+
+		PolygonSecretTable =   {PolygonSecret1 = {Polygon.New({X=Axpoly1,Y=Aypoly1},{X=Axpoly2,Y=Aypoly2}, {X=Axpoly3,Y=Aypoly3}, {X=Axpoly4,Y=Aypoly4})},
+								PolygonSecret2 = {Polygon.New({X=Bxpoly1,Y=Bypoly1},{X=Bxpoly2,Y=Bypoly2}, {X=Bxpoly3,Y=Bypoly3}, {X=Bxpoly4,Y=Bypoly4})},
+								PolygonSecret3 = {Polygon.New({X=Cxpoly1,Y=Cypoly1},{X=Cxpoly2,Y=Cypoly2}, {X=Cxpoly3,Y=Cypoly3}, {X=Cxpoly4,Y=Cypoly4})},
+								LavaTrigger1 = {Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"CheckForEntityInPolygonSecret1",1)},
+								LavaTrigger2 = {Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"CheckForEntityInPolygonSecret2",1)},
+								LavaTrigger3 = {Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"CheckForEntityInPolygonSecret3",1)},
+								}
+end
+
+
+
+
+function CheckForEntityInPolygonSecret1()
+	for y = table.getn(EntityTable),1,-1 do
+		local playerID = Logic.EntityGetPlayer(EntityTable[y])
+		if playerID == 1 then
+			local xPos, yPos = Logic.GetEntityPosition(EntityTable[y])
+			local eTable = {X= xPos,Y=yPos}
+			local entityName = Logic.GetEntityTypeName(Logic.GetEntityType(EntityTable[y]))
+			if PolygonSecretTable.PolygonSecret1[1]:IsPointInside(eTable) == 1 and (string.find(entityName,"PB") ~= nil or string.find(entityName,"CB") ~= nil ) then
+				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler1",1,nil,{y})
+			elseif PolygonSecretTable.PolygonSecret1[1]:IsPointInside(eTable) == 1 and (string.find(entityName,"PU") ~= nil or string.find(entityName,"CU") ~= nil or string.find(entityName,"PV") ~= nil ) then
+				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler1",1,nil,{y})
+			end
+		end
+	end
+end
+
+
+function CheckForEntityInPolygonSecret2()
+	for y = table.getn(EntityTable),1,-1 do
+		local playerID = Logic.EntityGetPlayer(EntityTable[y])
+		if playerID == 1 then
+			local xPos, yPos = Logic.GetEntityPosition(EntityTable[y])
+			local eTable = {X= xPos,Y=yPos}
+			local entityName = Logic.GetEntityTypeName(Logic.GetEntityType(EntityTable[y]))
+			if PolygonSecretTable.PolygonSecret2[1]:IsPointInside(eTable) == 1 and (string.find(entityName,"PB") ~= nil or string.find(entityName,"CB") ~= nil ) then
+				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler2",1,nil,{y})
+			elseif PolygonSecretTable.PolygonSecret2[1]:IsPointInside(eTable) == 1 and (string.find(entityName,"PU") ~= nil or string.find(entityName,"CU") ~= nil or string.find(entityName,"PV") ~= nil ) then
+				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler2",1,nil,{y})
+			end
+		end
+	end
+end
+
+function CheckForEntityInPolygonSecret3()
+	for y = table.getn(EntityTable),1,-1 do
+		local playerID = Logic.EntityGetPlayer(EntityTable[y])
+		if playerID == 1 then
+			local xPos, yPos = Logic.GetEntityPosition(EntityTable[y])
+			local eTable = {X= xPos,Y=yPos}
+			local entityName = Logic.GetEntityTypeName(Logic.GetEntityType(EntityTable[y]))
+			if PolygonSecretTable.PolygonSecret3[1]:IsPointInside(eTable) == 1 and (string.find(entityName,"PB") ~= nil or string.find(entityName,"CB") ~= nil ) then
+				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler3",1,nil,{y})
+			elseif PolygonSecretTable.PolygonSecret3[1]:IsPointInside(eTable) == 1 and (string.find(entityName,"PU") ~= nil or string.find(entityName,"CU") ~= nil or string.find(entityName,"PV") ~= nil ) then
+				Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"EntityHurtHandler3",1,nil,{y})
+			end
+		end
+	end
+end
+
+
+function EntityHurtHandler1(y)
+	local eID = EntityTable[y]
+	local xPos, yPos = Logic.GetEntityPosition(eID)
+	local eTable = {X= xPos,Y=yPos}
+	if IsAlive(eID) and PolygonSecretTable.PolygonSecret1[1]:IsPointInside(eTable) == 1 then
+		Logic.HurtEntity(eID,30)
+		return false
+	elseif IsDead(eID) then
+		return true
+	end
+end
+
+function EntityHurtHandler2(y)
+	local eID = EntityTable[y]
+	local xPos, yPos = Logic.GetEntityPosition(eID)
+	local eTable = {X= xPos,Y=yPos}
+	if IsAlive(eID) and PolygonSecretTable.PolygonSecret2[1]:IsPointInside(eTable) == 1 then
+		Logic.HurtEntity(eID,30)
+		return false
+	elseif IsDead(eID) then
+		return true
+	end
+end
+
+function EntityHurtHandler3(y)
+	local eID = EntityTable[y]
+	local xPos, yPos = Logic.GetEntityPosition(eID)
+	local eTable = {X= xPos,Y=yPos}
+	if IsAlive(eID) and PolygonSecretTable.PolygonSecret3[1]:IsPointInside(eTable) == 1 then
+		Logic.HurtEntity(eID,30)
+		return false
+	elseif IsDead(eID) then
+		return true
+	end
+end
 
 
 --- author:mcb		current maintainer:mcb		v1.0
