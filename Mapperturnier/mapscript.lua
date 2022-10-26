@@ -6,11 +6,15 @@
 --------------------------------------------------------------------------------
 -- Include main function
 
+
 Script.Load("data/script/maptools/main.lua");
 Script.Load("data/script/maptools/mapeditortools.lua");
 Script.Load("data/maps/externalmap/mainmapscript.lua");
 
 gvBasePath = Folders.Map;
+
+TriggerFixCppLogicExtension_UseRecommendedFixes = true;
+
 Script.Load(gvBasePath.."\\s5CommunityLib\\packer\\devLoad.lua")
 table.insert(mcbPacker.Paths, {"data\\maps\\user\\"..Framework.GetCurrentMapName().."\\", ".lua"})
 Script.Load(gvBasePath.."\\s5CommunityLib\\lib\\UnlimitedArmySpawnGenerator.lua")
@@ -23,6 +27,7 @@ Script.Load(gvBasePath.."\\blende.lua")
 Script.Load(gvBasePath.."\\chapter1.lua")
 Script.Load(gvBasePath.."\\chapter2.lua")
 Script.Load(gvBasePath.."\\chapter3.lua")
+Script.Load(gvBasePath.."\\chapter4.lua")
 Script.Load(gvBasePath.."\\cutscenes.lua")
 Script.Load(gvBasePath.."\\barb_walls.lua")
 Script.Load(gvBasePath.."\\briefings.lua")
@@ -47,12 +52,12 @@ end
 -- This function is called from main script to init all resources for player(s)
 function InitResources()
     -- set some resources
-    AddGold  (1000)
-    AddSulfur(1000)
-    AddIron  (1000)
-    AddWood  (1000)	
-    AddStone (1000)	
-    AddClay  (1000)	
+    AddGold  (0)
+    AddSulfur(0)
+    AddIron  (0)
+    AddWood  (0)
+    AddStone (0)
+    AddClay  (0)
 end
 
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -96,6 +101,8 @@ function InitWeatherGfxSets()
 	CppLogic.ModLoader.ReloadGUITexture("data\\graphics\\textures\\gui\\bg_top.png")
 	CppLogic.ModLoader.ReloadGUITexture("data\\graphics\\textures\\gui\\bg_top_heros.png")
 
+
+
     BarbName1 = "Helgar der Barbar"
     BarbName2 = "Wolfgang der Barbar"
     BarbName3 = "Rüdiger der Barbar"
@@ -109,13 +116,39 @@ function InitWeatherGfxSets()
     if IsExisting(guard) then
     CppLogic.Entity.SetDisplayName(guard, "Mijörn")
     SetEntityOverheadWidget(guard,1)
-    -- XGUIEng.ShowWidget("ChapterInfo", 0)
-    -- XGUIEng.ShowWidget("ChapterInfo_BG", 0)
+    end
+
+	XGUIEng.ShowWidget("ChapterInfo", 1)
+	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
+
+	---Check für THief Quest Chapter 4
+
+	if ThiefQuest == true and XGUIEng.IsWidgetShown("ThiefCollectables") == 0 then
+        XGUIEng.ShowWidget("ThiefCollectables", 1)
+        GUI.SetControlledPlayer(2)
+        Logic.ActivateUpdateOfExplorationForAllPlayers()
+        if IsDestroyed("vulc_water") then
+            XGUIEng.ShowWidget("Collectable1Done", 1)
+        end
+        if IsDestroyed("vulc_glut") then
+            XGUIEng.ShowWidget("Collectable2Done", 1)
+        end
+        if IsDestroyed("sheep_hair") then
+            XGUIEng.ShowWidget("Collectable3Done", 1)
+        end
+        if IsDestroyed("scratch_parts") then
+            XGUIEng.ShowWidget("Collectable4Done", 1)
+        end
+		if IsDestroyed("Kurbel1_1") then
+            XGUIEng.ShowWidget("KurbelADone", 1)
+        end
+		if IsDestroyed("Kurbel2_1") then
+            XGUIEng.ShowWidget("KurbelBDone", 1)
+        end
     end
 
 
-	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
-
+	
 end
 
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -130,6 +163,10 @@ function InitPlayerColorMapping()
     Logic.SetPlayerRawName(1, "Varg")
 	Display.SetPlayerColorMapping(1, NEPHILIM_COLOR)
     Display.SetPlayerColorMapping(8, ENEMY_COLOR2)
+	Display.SetPlayerColorMapping(4, KERBEROS_COLOR)
+	Display.SetPlayerColorMapping(5, ENEMY_COLOR1)
+	Display.SetPlayerColorMapping(6, EVIL_GOVERNOR_COLOR)
+	Display.SetPlayerColorMapping(7, ROBBERS_COLOR)
 end
 	
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -148,6 +185,9 @@ function FirstMapAction()
 	--Logic.SetTechnologyState(1,Technologies.GT_BarbarianBuildings,3) --Aktivierung der Selektierbarkeit des Baumenüs von Serfs
 	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
 	Tribute_Comforts() --Aktivierung der Tribut Comfort
+
+	--Anzahl UAs
+	NumberUA = 19
     --Vulkanfeuer 
 	x_vulc,y_vulc = Logic.EntityGetPos(GetID("vulc_middle"))
 
@@ -190,6 +230,16 @@ function FirstMapAction()
 	--Trigger für neue Comforts	
     StartReplaceOnNextTick() --Startet den ReplaceOnNextTick-Job
 	StartGateChangerJob() --Startet den GateJob
+
+	--Wetterwechselverbot
+	Logic.SetTechnologyState(1,Technologies.B_PowerPlant,0)
+
+	--WoodPiles
+	CreateWoodPile( "woodpile1", 50000 )
+	CreateWoodPile( "woodpile2", 50000 )
+
+	--Lava Damage auf SecretPath
+	CreateSecretPolygon()
 
 end
 
@@ -1119,3 +1169,56 @@ function CountdownIsVisisble()
     return false
 end
 
+
+
+function SetMapResource(_resourceTable)
+    for i = 1,table.getn(_resourceTable) do
+        for eId in CppLogic.Entity.EntityIterator(CppLogic.Entity.Predicates.OfType(_resourceTable[i][1])) do
+            Logic.SetResourceDoodadGoodAmount(eId, _resourceTable[i][2]);
+        end
+    end
+end
+
+
+
+------------------------------------------Schmelings Stuff-----------------------------------------------------------------------
+
+
+
+--------------------------------------WoodPiles--------------------------------------------------
+
+function CreateWoodPile( _posEntity, _resources )
+    assert( type( _posEntity ) == "string" )
+    assert( type( _resources ) == "number" )
+    gvWoodPiles = gvWoodPiles or {
+        JobID = Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"ControlWoodPiles",0,nil,nil),
+    }
+    local pos = GetPosition( _posEntity )
+    local pile_id = Logic.CreateEntity( Entities.XD_Rock3, pos.X, pos.Y, 0, 0 )
+
+    SetEntityName( pile_id, _posEntity.."_WoodPile" )
+
+    local newE = ReplaceEntity( _posEntity, Entities.XD_ResourceTree )
+    Logic.SetModelAndAnimSet(newE, Models.XD_SignalFire1)
+    Logic.SetResourceDoodadGoodAmount( GetEntityId( _posEntity ), _resources*10 )
+    Logic.SetModelAndAnimSet(pile_id, Models.Effects_XF_ChopTree)
+    table.insert( gvWoodPiles, { ResourceEntity = _posEntity, PileEntity = _posEntity.."_WoodPile", ResourceLimit = _resources*9 } )
+end
+
+function ControlWoodPiles()
+    for i = table.getn( gvWoodPiles ),1,-1 do
+        if Logic.GetResourceDoodadGoodAmount( GetEntityId( gvWoodPiles[i].ResourceEntity ) ) <= gvWoodPiles[i].ResourceLimit then
+            DestroyWoodPile( gvWoodPiles[i], i )
+        end
+    end
+end
+
+function DestroyWoodPile( _piletable, _index )
+    local pos = GetPosition( _piletable.ResourceEntity )
+    DestroyEntity( _piletable.ResourceEntity )
+    DestroyEntity( _piletable.PileEntity )
+    Logic.CreateEffect( GGL_Effects.FXCrushBuilding, pos.X, pos.Y, 0 )
+    table.remove( gvWoodPiles, _index )
+end
+
+--------------------------------------------------------------------------------------------------------------------------------------

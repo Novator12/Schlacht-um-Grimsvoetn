@@ -63,6 +63,32 @@ function GUIButtonAction_StartGame()
     XGUIEng.ShowWidget("Normal", 1)
     XGUIEng.ShowWidget("Modus", 0)
     Message("@center @color:0,252,255 Schwierigkeit: "..mode_text1.." @color:0,252,255 wurde ausgewählt!")
+
+    if mode == 1 then
+        ResourceTable = {
+            {Entities.XD_Stone1, 4000},
+            {Entities.XD_Iron1, 4000},
+            {Entities.XD_Clay1, 4000},
+            {Entities.XD_Sulfur1, 4000}
+        }
+    elseif mode == 2 then
+        ResourceTable = {
+            {Entities.XD_Stone1, 2000},
+            {Entities.XD_Iron1, 2000},
+            {Entities.XD_Clay1, 2000},
+            {Entities.XD_Sulfur1, 2000}
+        }
+    elseif mode == 3 then
+        ResourceTable = {
+            {Entities.XD_Stone1, 1000},
+            {Entities.XD_Iron1, 1000},
+            {Entities.XD_Clay1, 1000},
+            {Entities.XD_Sulfur1, 1000}
+        }
+    end
+    
+    SetMapResource(ResourceTable)
+
     CreateNVStart()
 end
 

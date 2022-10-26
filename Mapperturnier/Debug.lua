@@ -1,5 +1,53 @@
---Gibt dem Spieler massiv viele Ressourcen
+function DebugDestroyKI5()
+    DestroyEntity("barracks_id5")
+    DestroyEntity("foundry_id5")
+    DestroyEntity("archery_id5")
+    DestroyEntity("village_id5")
+    DestroyEntity("hq_id5")
+    DestroyEntity("spawner_bandit1_id5")
+    DestroyEntity("spawner_bandit2_id5")
+end
 
+
+
+--Erstellt euch Verstärkungstruppen
+
+function DebugTroups()
+    CreateMilitaryGroup(1,Entities.PU_LeaderBow4,8,GetPosition("debug_help1"),"hilfe1")
+    CreateMilitaryGroup(1,Entities.PU_LeaderBow4,8,GetPosition("debug_help1"),"hilfe2")
+    CreateMilitaryGroup(1,Entities.PU_LeaderBow4,8,GetPosition("debug_help1"),"hilfe3")
+    CreateMilitaryGroup(1,Entities.PU_LeaderBow4,8,GetPosition("debug_help1"),"hilfe4")
+
+    CreateMilitaryGroup(1,Entities.PU_LeaderSword4,8,GetPosition("debug_help2"),"hilfe5")
+    CreateMilitaryGroup(1,Entities.PU_LeaderSword4,8,GetPosition("debug_help2"),"hilfe6")
+    CreateMilitaryGroup(1,Entities.PU_LeaderSword4,8,GetPosition("debug_help2"),"hilfe7")
+    CreateMilitaryGroup(1,Entities.PU_LeaderSword4,8,GetPosition("debug_help2"),"hilfe8")
+end
+
+
+
+--Öffnet alle Wege
+function DebugOpen()
+    ReplaceEntity("dw1", Entities.PB_DrawBridgeClosed1)
+    DestroyEntity("b1")
+    DestroyEntity("b2")
+    for i=1,4,1 do
+        DestroyEntity("r"..i)
+    end
+    DestroyEntity("stein1")
+    DestroyEntity("barrier_lava")
+    for i = 1,4,1 do
+        ReplaceEntity(GetID("gate"..i.."_id5"), Entities.XD_DarkWallStraightGate)
+    end
+    DestroyEntity(GetID("block1"))
+    DestroyEntity(GetID("block2"))
+    DestroyEntity("useless_tree")
+    DestroyEntity("shortcut1")
+    DestroyEntity("shortcut2")
+    DestroyEntity("barrier_lava2")
+end 
+
+--Gibt dem Spieler massiv viele Ressourcen
 function DebugRes()
     Logic.AddToPlayersGlobalResource(1,ResourceType.ClayRaw,1000000)
     Logic.AddToPlayersGlobalResource(1,ResourceType.StoneRaw,1000000)
