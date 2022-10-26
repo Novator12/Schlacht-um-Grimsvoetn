@@ -166,17 +166,17 @@ function ActivateBandits()
     if mode == 1 then
         bandit_table = {
             [1] = 2, --Größe der Armee/ Leaderanzahl
-            [2] = 120 --Respawnzeit
+            [2] = 180 --Respawnzeit
         }
     elseif mode == 2 then
         bandit_table = {
             [1] = 3, --Größe der Armee/ Leaderanzahl
-            [2] = 80 --Respawnzeit
+            [2] = 180 --Respawnzeit
         }
     elseif mode == 3 then
         bandit_table = {
             [1] = 4, --Größe der Armee/ Leaderanzahl
-            [2] = 60 --Respawnzeit
+            [2] = 180 --Respawnzeit
         }
     end
     
@@ -190,7 +190,7 @@ function ActivateBandits()
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Lines,
             AIActive = true,
-            AutoRotateRange = 100000,
+            AutoRotateRange = 6000,
             HiResJob = true
         },i+0,NumberUA)
     
@@ -305,7 +305,7 @@ function ActivateNVCamp()
     if mode == 1 then
         nv_table = {
             [1] = 2, --Größe der Armee/ Leaderanzahl
-            [2] = 120 --Respawnzeit
+            [2] = 180 --Respawnzeit
         }
         SetHealth("nv_spawner2", 20)
         for i=1,6,1 do 
@@ -314,7 +314,7 @@ function ActivateNVCamp()
     elseif mode == 2 then
         nv_table = {
             [1] = 3, --Größe der Armee/ Leaderanzahl
-            [2] = 80 --Respawnzeit
+            [2] = 180 --Respawnzeit
         }
         SetHealth("nv_spawner2", 35)
         for i=1,6,1 do 
@@ -323,7 +323,7 @@ function ActivateNVCamp()
     elseif mode == 3 then
         nv_table = {
             [1] = 4, --Größe der Armee/ Leaderanzahl
-            [2] = 60 --Respawnzeit
+            [2] = 180 --Respawnzeit
         }
         SetHealth("nv_spawner2", 50)
     end
@@ -338,7 +338,7 @@ function ActivateNVCamp()
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Chaotic,
             AIActive = true,
-            AutoRotateRange = 100000,
+            AutoRotateRange = 6000,
             HiResJob = true
         },i+4,NumberUA)
     

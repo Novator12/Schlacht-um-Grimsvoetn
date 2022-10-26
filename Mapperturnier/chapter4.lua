@@ -310,7 +310,7 @@ function StartPatrolKI4()
             [4] = { "stables_id4", "spawn_stables_id4", Entities.PU_LeaderCavalry2, 6 },
             [5] = { "tower1_id4", "spawn_tower1_id4", Entities.CU_BanditLeaderSword2, 8 },
             [6] = { "tower2_id4", "spawn_tower2_id4", Entities.CU_BanditLeaderBow2, 8 },
-            [7] = { "hq_id4", "spawn_hq_id4", Entities.CU_VeteranMajor, 0 },
+            [7] = { "hq_id4", "spawn_hq_id4", Entities.CU_VeteranMajor, 4 },
             [8] = { "inv_tower2", "spawn_inv_tower2", Entities.CU_VeteranMajor, 4 },
         }
 
@@ -736,6 +736,12 @@ function UpgradeKI4()
     GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderRifle, 4)  
     GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierRifle, 4)
 
+    --Reiter auf T2 upgraden
+    GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderCavalry, 4)  
+    GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierCavalry, 4)
+    GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderHeavyCavalry, 4)  
+    GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierHeavyCavalry, 4)
+
     elseif mode<3 then
         for i=1,2,1 do --Schwert auf T3 upgraden
             GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderSword, 4)  
@@ -755,6 +761,12 @@ function UpgradeKI4()
         --Scharfschützen auf T2 upgraden
         GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderRifle, 4)  
         GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierRifle, 4)
+
+        --Reiter auf T2 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderCavalry, 4)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierCavalry, 4)
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderHeavyCavalry, 4)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierHeavyCavalry, 4)
     end
 
     
@@ -887,11 +899,11 @@ function ActivateKI4Attacks()
         }
     elseif mode == 2 then
         KIRecruitTable = {
-            [1] = 15 --Größe der Armee/ Leaderanzahl
+            [1] = 20 --Größe der Armee/ Leaderanzahl
         }
     elseif mode == 3 then
         KIRecruitTable = {
-            [1] = 20 --Größe der Armee/ Leaderanzahl
+            [1] = 30 --Größe der Armee/ Leaderanzahl
         }
     end
 

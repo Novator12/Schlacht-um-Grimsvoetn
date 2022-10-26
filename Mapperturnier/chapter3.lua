@@ -433,8 +433,8 @@ function ActivateRecruiterKI5()
             Buildings = {GetID("archery_id5"),GetID("barracks_id5"),GetID("foundry_id5")}, -- mehr gebäude einfach hier rein
             ArmySize = ki5_table[1],
             UCats = {
-                {UCat=UpgradeCategories.Cannon4, SpawnNum=1, Looped=true},
                 {UCat=UpgradeCategories.LeaderSword, SpawnNum=3, Looped=true},
+                {UCat=UpgradeCategories.Cannon4, SpawnNum=1, Looped=true},
                 {UCat=UpgradeCategories.LeaderBow, SpawnNum=3, Looped=true},
                 {UCat=UpgradeCategories.LeaderCavalry, SpawnNum=2, Looped=true},
                 {UCat=UpgradeCategories.LeaderHeavyCavalry, SpawnNum=1, Looped=true},

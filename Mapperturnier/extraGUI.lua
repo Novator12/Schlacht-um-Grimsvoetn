@@ -1501,7 +1501,7 @@ end
 
 
 function GUI_SetTooltipText()
-	XGUIEng.SetText("TooltipChapterText", "@color:255,0,0 Kapitel @color:255,255,255 "..chapterID.." @color:255,0,0 von @color:255,255,255 X @cr @color:255,136,0 "..chapterText.." @cr @cr @color:255,255,0 Spielzeit =  @color:255,255,255 "..systemtime)
+	XGUIEng.SetText("TooltipChapterText", "@color:255,0,0 Kapitel @color:255,255,255 "..chapterID.." @color:255,0,0 von @color:255,255,255 4 @cr @color:255,136,0 "..chapterText.." @cr @cr @color:255,255,0 Spielzeit =  @color:255,255,255 "..systemtime)
 end
 
 
