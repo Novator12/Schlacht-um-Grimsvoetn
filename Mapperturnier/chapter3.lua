@@ -15,6 +15,19 @@ end
 
 
 function StartBriefingChapter3()
+    --SetupAI5 
+    --KI5 aktivieren
+    SetupAI(SetupPlayer5)
+    KI5RecruitSerfs()
+    ResCheatKI5()
+    UpgradeKI5()
+    if mode == 2 or mode == 3 then
+        BuffKI5()
+    end
+    ActivateSpawnerKI5()
+    ActivateRecruiterKI5()
+    
+
     --SetupBrief
     Logic.EntityLookAt(varg,leonardo)
     Logic.EntityLookAt(leonardo,varg)
@@ -56,7 +69,7 @@ function StartBriefingChapter3()
         local page5 = AP{
             title	= "@color:255,0,0 Scout",
             text	= "@color:255,136,0 Sie kommen! Eine riesige Armee von der Schattenseite des Vulkans.",
-            position = GetPosition(Scout),
+            position = GetPosition(varg),
         }
         local page6 = AP{
             title	= "@color:255,0,0 Varg",
@@ -66,7 +79,7 @@ function StartBriefingChapter3()
         local page7 = AP{
             title	= "@color:255,0,0 Scout",
             text	= "@color:255,136,0 Ja Herr, ich war gerade an den Gebirgshängen die Gegend ausspähen und konnte Ihre Truppenbewegungen sichten.",
-            position = GetPosition(Scout),
+            position = GetPosition(varg),
         }
         local page8 = AP{
             title	= "@color:255,0,0 Varg",
@@ -86,7 +99,7 @@ function StartBriefingChapter3()
         local page11 = AP{
             title	= "@color:255,0,0 Scout",
             text	= "@color:255,136,0 Herr! Ich zeige euch einen Einblick in Ihr Lager. Vielleicht hilft uns das weiter, wie wir taktisch vorgehen sollten.",
-            position = GetPosition(Scout),
+            position = GetPosition(varg),
         }
         local page12 = AP{
             title	= "@color:255,0,0 Varg",
@@ -104,7 +117,7 @@ function StartBriefingChapter3()
         briefing.finished = function()  
             ResolveBriefing(page1);
             ResolveBriefing(page2);
-            SetupAI(SetupPlayer5)
+            Logic.SetOnScreenInformation(Scout,0)
             headline_defendbar = "@center Forschung" --Überschrift Defendbar
             XGUIEng.SetText("DefendProgressBarText", headline_defendbar, 1)
             if mode == 1 then
@@ -114,17 +127,6 @@ function StartBriefingChapter3()
             elseif mode == 3 then 
                 maxDefendBar = 60*25
             end
-            --KI5 aktivieren
-            for i = 1,4,1 do
-                ReplaceEntity(GetID("gate"..i.."_id5"), Entities.XD_DarkWallStraightGate)
-            end
-            ResCheatKI5()
-            UpgradeKI5()
-            if mode == 2 or mode == 3 then
-                BuffKI5()
-            end
-            ActivateSpawnerKI5()
-            ActivateRecruiterKI5()
             StartCutscene("vulcanenemie", VulkanEnemieCutsceneBrief)   
         end;
         NormalSpeedInBriefing()
@@ -156,6 +158,23 @@ SetupPlayer5 = {
     explore = false,
 }
 
+function KI5RecruitSerfs()
+    if IsExisting("hq_id5") then
+        for i=1,8,1 do
+            CppLogic.Entity.Building.HQBuySerf("hq_id5")
+        end
+        StartSimpleJob("KI5SerfChecker")
+    end
+end
+
+function KI5SerfChecker()
+    if Logic.GetPlayerEntities(5,Entities.PU_Serf,8) == 0 and IsExisting("hq_id5") then
+        KI5RecruitSerfs()
+        return true
+    elseif IsDead("hq_id5") then
+        return true
+    end
+end
 
 function VulkanEnemieCutsceneBrief()
     local briefing = {}
@@ -177,7 +196,22 @@ function VulkanEnemieCutsceneBrief()
             CountDefendJob = StartSimpleJob("StartDefendCounter")
             DefenseCompletedJob = StartSimpleJob("DefenseCompleted")
             Logic.AddQuest(1, 1, MAINQUEST_OPEN, "@color:255,0,0 Verteidigung von Reynivellir", "@cr Verteidigt das Dorf solange, bis Leonardo das Schutzserum fertig gestellt hat. Verliert ihr euer Burg oder alle eure Helden, habt Ihr das Spiel verloren.", 1)
-        
+            --KI5 startet Angriff
+            for i = 1,4,1 do
+                ReplaceEntity(GetID("gate"..i.."_id5"), Entities.XD_DarkWallStraightGate)
+            end
+            ActivateSpawnerBanditsKI5()
+            StartSimpleJob("KI5Defeated")
+            --Diebe-Angriff aktivieren
+            if mode == 1 then
+                Thiefticks = 10
+            elseif mode == 2 then
+                Thiefticks = 6
+            elseif mode == 3 then
+                Thiefticks = 3
+            end
+            EnableThiefAttack = true
+            StartCountdown(60*2,InitThiefAttack,false)
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
@@ -188,10 +222,40 @@ function DefenseCompleted()
     if DefendCounter == maxDefendBar then
         XGUIEng.ShowWidget("DefendProgressContainer", 0)
         Logic.AddQuest(1, 1, MAINQUEST_CLOSED, "@color:255,0,0 Verteidigung von Reynivellir", "@cr Verteidigt das Dorf solange, bis Leonardo das Schutzserum fertig gestellt hat. Verliert ihr euer Burg oder alle eure Helden, habt Ihr das Spiel verloren.", 1)
-        Message("Angriff!")
+        LeoResearchDoneBrief()
         EnableLavaDamage = false; --Schaden in Lava nehmen = AUS
         return true
     end
+end
+
+function LeoResearchDoneBrief()
+    local briefing = {}
+    local AP = function(_page) table.insert(briefing, _page) return _page end
+    local page1 = AP{
+        title	= "@color:255,0,0 Leonardo",
+        text	= "@color:255,136,0 Es ist vollbracht. Ich habe das Schutzserum fertiggestellt. Eure Männer und Gebäude sollten nun in der Hitze der Lava geschützt sein.",
+        position = GetPosition(leonardo),
+        explore = 2000,
+    }
+    local page2 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Na dann Männer. Auf in die Schlacht!",
+        position = GetPosition(varg),
+        explore = 2000,
+        action = function()
+            Sound.Play2DSound(1146,0,150) 
+        end
+    }
+    briefing.finished = function()  
+        ResolveBriefing(page1);
+        ResolveBriefing(page2);
+        --ActivateShortcut
+        DestroyEntity("shortcut1")
+        DestroyEntity("shortcut2")
+        Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Angriff auf die Schattenkrieger", "@cr Bekämpft die Schattenkrieger und zerstört Ihre Militärgebäude und die Burg.", 1) 
+    end;
+    NormalSpeedInBriefing()
+    StartBriefing(briefing)
 end
 
 function ResCheatKI5()
@@ -204,6 +268,7 @@ function ResCheatKI5()
 end
 
 function UpgradeKI5()
+    if mode == 3 then
     for i=1,3,1 do --Schwert auf T4 upgraden
         GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderSword, 5)  
         GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierSword, 5)
@@ -222,7 +287,27 @@ function UpgradeKI5()
     --Scharfschützen auf T2 upgraden
     GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderRifle, 5)  
     GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierRifle, 5)
+
+    elseif mode<3 then
+        for i=1,2,1 do --Schwert auf T3 upgraden
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderSword, 5)  
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierSword, 5)
+        end
     
+        for i=1,2,1 do --Bogen auf T3 upgraden
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderBow, 5)  
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierBow, 5)
+        end
+    
+        for i=1,2,1 do --Speerträger auf T3 upgraden
+            GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderPoleArm, 5)  
+            GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierPoleArm, 5)
+        end
+    
+        --Scharfschützen auf T2 upgraden
+        GUI.UpgradeSettlerCategory(UpgradeCategories.LeaderRifle, 5)  
+        GUI.UpgradeSettlerCategory(UpgradeCategories.SoldierRifle, 5)
+    end
 
     
 end
@@ -273,7 +358,7 @@ function ActivateSpawnerKI5()
     elseif mode == 3 then
         KI5_Spawner_Table = {
             [1] = 6, --Größe der Armee/ Leaderanzahl
-            [2] = 10 --Respawnzeit
+            [2] = 160 --Respawnzeit
         }
     end
     
@@ -289,7 +374,7 @@ function ActivateSpawnerKI5()
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
-        },7,10)
+        },8,NumberUA)
     
 
         SpawnerKI5 = UnlimitedArmySpawnGenerator:New(KI5SpawnerArmy, {
@@ -300,11 +385,15 @@ function ActivateSpawnerKI5()
             SpawnLeaders = KI5_Spawner_Table[1],   --spawnleaders
             LeaderDesc = {
                 {LeaderType = Entities.PU_LeaderHeavyCavalry2, SoldierNum = 3 , SpawnNum = 3, Looped = true, Experience = 3},
-                {LeaderType = Entities.PU_LeaderCavalry2, SoldierNum = 6 , SpawnNum = 3, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderCavalry2, SoldierNum = 6 , SpawnNum = 2, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderSword1, SoldierNum = 0 , SpawnNum = 1, Looped = true, Experience = 3},
             },
             -- optional:
             Generator = "hq_id5",  --generator
         })
+
+        KI5SpawnerArmy: AddCommandMove(GetPosition("barb_castle"), true);
+        KI5SpawnerArmy: AddCommandWaitForIdle(true);
 end
 
 
@@ -337,7 +426,7 @@ function ActivateRecruiterKI5()
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
-        },8,10)
+        },9,NumberUA)
     
 
         RecruiterKI5 = UnlimitedArmyRecruiter:New(KI5Army, {
@@ -356,4 +445,206 @@ function ActivateRecruiterKI5()
             ReorderAllowed = true,
             DoNotRemoveIfDeadOrEmpty = true
         })
+end
+
+function ActivateSpawnerBanditsKI5()
+
+
+    if mode == 1 then
+        KI5_SpawnerBandits_Table = {
+            [1] = 1, --Größe der Armee/ Leaderanzahl
+            [2] = 60 --Respawnzeit
+        }
+    elseif mode == 2 then
+        KI5_SpawnerBandits_Table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 60 --Respawnzeit
+        }
+    elseif mode == 3 then
+        KI5_SpawnerBandits_Table = {
+            [1] = 3, --Größe der Armee/ Leaderanzahl
+            [2] = 60 --Respawnzeit
+        }
+    end
+    
+    for i = 1,2,1 do
+    _G["KI5SpawnerBanditArmy"..i] = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 5,
+            Area = 100000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Lines,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true
+        },9+i,NumberUA)
+    
+
+        _G["SpawnerBanditKI5_"..i] = UnlimitedArmySpawnGenerator:New(_G["KI5SpawnerBanditArmy"..i], {
+            -- benötigt:
+            Position = GetPosition("spawn_bandit"..i.."_id5"), --position
+            ArmySize = KI5_SpawnerBandits_Table[1], --armysize
+            SpawnCounter = KI5_SpawnerBandits_Table[2],  --spawncounter
+            SpawnLeaders = KI5_SpawnerBandits_Table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.CU_BanditLeaderSword2, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_BanditLeaderBow2, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_BanditLeaderSword2, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_BanditLeaderBow2, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_BanditLeaderSword2, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_BanditLeaderBow2, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+            },
+            -- optional:
+            Generator = "spawner_bandit"..i.."_id5",  --generator
+        })
+
+        _G["KI5SpawnerBanditArmy"..i]: AddCommandMove(GetPosition("barb_castle"), true);
+        _G["KI5SpawnerBanditArmy"..i]: AddCommandWaitForIdle(true);
+    end
+end
+
+
+
+
+ThiefTable = {}
+
+function InitThiefAttack()
+    if IsExisting("barb_castle") and EnableThiefAttack == true then
+        local rand = GetRandom(1,6)
+        for i =1,2,1 do
+            _G["thief_id5_"..i] = Logic.CreateEntity(Entities.PU_Thief,GetPosition("thief_spawn"..rand).X,GetPosition("thief_spawn"..rand).Y,0,5)
+            table.insert(ThiefTable,_G["thief_id5_"..i])
+            if IsExisting(_G["thief_id5_"..i]) then
+                CppLogic.Entity.Settler.CommandSabotage(_G["thief_id5_"..i], GetID("barb_castle"))
+            end
+        end
+        CastleHurtTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_HURT_ENTITY,nil,"ThiefDestroiedCastle",1)
+        ThiefAliveTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_EVERY_SECOND,nil,"ThiefAlive",1)
+        
+    end
+end
+
+Thiefticks = 5
+
+function ThiefAlive()
+    for n = table.getn(ThiefTable),1,-1 do
+      if IsDead(ThiefTable[n]) then
+        table.remove(ThiefTable,n)
+      end
+    end
+    if table.getn(ThiefTable) == 0 then
+          ThiefCountdown = StartCountdown(60*Thiefticks,InitThiefAttack,false)
+          Trigger.UnrequestTrigger(CastleHurtTrigger)
+          return true
+    end
+end
+
+function ThiefDestroiedCastle()
+    local damageType = Event.AttackSource
+    local bID = Event.GetEntityID2()
+    if (Logic.GetEntityTypeName(Logic.GetEntityType(bID)) == "CB_Barbarian_Castle1" 
+    or Logic.GetEntityTypeName(Logic.GetEntityType(bID)) == "CB_Barbarian_Castle2" 
+    or  Logic.GetEntityTypeName(Logic.GetEntityType(bID)) == "CB_Barbarian_Castle3") 
+    and damageType == AdvancedDealDamageSource.AbilitySabotageSingleTarget then
+        for i = table.getn(ThiefTable),1,-1 do
+            if IsAlive(ThiefTable[i]) then
+                DestroyEntity(ThiefTable[i])
+                return true
+            end
+        end
+    end
+end
+
+
+
+function KI5Defeated()
+    if IsDestroyed("archery_id5") and IsDestroyed("hq_id5") and IsDestroyed("foundry_id5") and IsDestroyed("barracks_id5") and IsDestroyed("village_id5") and IsDestroyed("spawner_bandit1_id5") and IsDestroyed("spawner_bandit2_id5") then
+        EnableThiefAttack = false
+        if ThiefCountdown then
+            StopCountdown(ThiefCountdown)
+        end
+        garek = Logic.CreateEntity(Entities.CU_ChiefIdle,GetPosition("garek_pos1").X,GetPosition("garek_pos1").Y,0,3)
+        Move(garek,"backdoor_player4",400)
+        StartSimpleJob("GarekNearEscape")
+        GarekFleeBrief()
+        return true;
+    end
+end
+
+function GarekNearEscape()
+    if IsNear(garek,"backdoor_player4",500) then
+        ReplaceEntity("backdoor_player4",Entities.XD_DarkWallStraightGate)
+        Move(garek,"garek_pos2",100)
+        StartCountdown(4,CloseBackdoorGate,false)
+        return true
+    end
+end
+
+function CloseBackdoorGate()
+    ReplaceEntity("backdoor_player4",Entities.XD_DarkWallStraightGate_Closed)
+end
+
+
+function GarekFleeBrief()
+    local briefing = {}
+    local AP = function(_page) table.insert(briefing, _page) return _page end
+    local page2
+    local page1 = AP{
+        title	= "Mentor",
+        text	= "Seht nur Herr, Ihr Anführer will fliehen. Schnell. Ihm nach!",
+        position = GetPosition(garek),
+        explore = 2000,
+        action = function()
+            Display.SetRenderFogOfWar(0)
+            page2.npc = { id = GetEntityId(garek),isObserved = true }
+        end
+    }
+    page2 = AP{
+        title	= "Mentor",
+        text	= "Er flüchtet in den Norden. Noch höher in die rauen, kargen Berge im Schatten des Vulkans.",
+        npc = { id = GetEntityId(garek),
+            isObserved = true },
+    }
+    local page3 = AP{
+        title	= "Mentor",
+        text	= "Mist. Er ist entkommen. Wir müssen einen Weg durch dieses Tor finden oder einen andern zur Feste.",
+        position = GetPosition("backdoor_player4"),
+        explore = 2000
+    }
+    
+    briefing.finished = function()  
+        ResolveBriefing(page1);
+        ResolveBriefing(page2);
+        ResolveBriefing(page3);
+        Display.SetRenderFogOfWar(1)
+        Logic.SetOnScreenInformation(garek,0)
+        StartCutscene("schattenfeste", SchattenfesteCutsceneEnd)   
+    end;
+    NormalSpeedInBriefing()
+    StartBriefing(briefing)
+end
+
+
+function SchattenfesteCutsceneEnd()
+    local briefing = {}
+    local AP = function(_page) table.insert(briefing, _page) return _page end
+    local page1 = AP{
+        title	= "Mentor",
+        text	= "Herr, Ihr nähert euch bald dem Endkampf. Macht euch bereit und rüstet eure Männer.",
+        position = GetPosition("barb_castle"),
+        explore = 2000
+    }
+    briefing.finished = function()  
+        ResolveBriefing(page1);
+        StartBlende(
+            "@center @color:255,0,0 Schlacht um Grimsvötn", 
+            "@center @color:255,255,255 @cr @cr Nach einem erbitternden Kampf gegen die Schattenkrieger konnte Ihr Anführer in die Schattenfeste im Gebirge des Vulkans fliehen. Varg und seine Mitstreiter versuchten Ihn zu verfolgen, wurden jedoch von den massiven Toren der Feste aufgehalten. Nun heißt es eine Belagerung auf die Feste zu vollführen und dem Schrecken ein Ende zu setzen. Wird es Varg, dem neuen Anführer der Barbaren gelingen? ", 
+            function() Start_Chapter4() end, 
+    
+            2)--muss später höher
+    end;
+    NormalSpeedInBriefing()
+    StartBriefing(briefing)
 end

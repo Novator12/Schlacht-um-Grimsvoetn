@@ -22,9 +22,9 @@ end
 
 
 function StartBaseAttacks()
-    WreckageBoat2 = ReplaceEntity("boat2",Entities.XD_Wreckage)
-    SVLib.SetEntitySize(WreckageBoat2,1.15)
-    Logic.RotateEntity(WreckageBoat2,275)
+    ReplaceEntity("boat2",Entities.XD_Wreckage)
+    SVLib.SetEntitySize(GetID("boat2"),1.15)
+    Logic.RotateEntity(GetID("boat2"),275)
     WreckageBoat1 = ReplaceEntity("boat1",Entities.XD_Wreckage)
     Logic.RotateEntity(WreckageBoat1,317)
     NvAttackState = true
@@ -112,12 +112,22 @@ function CheckNvBaseAttack1()
             end
         end
 
-        ChangeDynamicFog("Nebel", 0, 5 );
-        Message("Der Nebel am Anlegesteg verblasst...")
+
+        StartSimpleJob("CountFogNvBase")
     end
 end
 
+countFog1 = 0
 
+function CountFogNvBase()
+    if countFog1 > 5 then
+        ChangeDynamicFog("Nebel", 0, 5 );
+        Message("Der Nebel am Anlegesteg verblasst...")
+        return true
+    else
+        countFog1 = countFog1 +1
+    end
+end
 
 function ActivateNvAttackSignalFire()
     if NvAttackState then
@@ -195,11 +205,22 @@ function CheckNvBaseAttack2()
                 EndJob(NvBaseAttackJob2)
             end
         end
-        ChangeDynamicFog("seafog", 0, 5 );
-        Message("Der Nebel am Signalfeuer verblasst...")
+        
+        StartSimpleJob("CountFogNvSea")
     end
 end
 
+countFog2 = 0
+
+function CountFogNvSea()
+    if countFog2 > 5 then
+        ChangeDynamicFog("seafog", 0, 5 );
+        Message("Der Nebel am Signalfeuer verblasst...")
+        return true
+    else
+        countFog2 = countFog2 +1
+    end
+end
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -481,7 +502,7 @@ function CreateNVIronPit()
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
-        }, 6,10)
+        }, 7,NumberUA)
     
 
         SpawnerNVIronArmy = UnlimitedArmySpawnGenerator:New(NVIronArmy, {
@@ -730,6 +751,9 @@ function MoveRockBrief()
             DestroyEntity(GetID("stick2"))
             DestroyEntity(GetID("stick3"))
             MoveStaticEntity("rock_leo",GetPosition("stone_target").X,GetPosition("stone_target").Y,true,false)
+            Counter.SetLimit("DelaySmoke1",1)
+            Counter.SetLimit("DelaySmoke2",2)
+            Counter.SetLimit("DelaySmoke3",3)
             StartSimpleJob("StoneInMovement")
         end  
     }
@@ -747,22 +771,23 @@ function MoveRockBrief()
     StartBriefing(briefing)
 end
 
+
 function StoneInMovement()
     local spot1 = GetID("smoke1")
     local spot2 = GetID("smoke2")
     local spot3 = GetID("stone_target")
-    if IsNear(MoveEntityData[1].id,spot1,200) then
+    if Counter.Tick2("DelaySmoke1",1) then
         Logic.CreateEffect(GGL_Effects.FXBuildingSmokeLarge, GetPosition(spot1).X, GetPosition(spot1).Y, 1)
     end
-    if IsNear(MoveEntityData[1].id,spot2,200) then
+    if Counter.Tick2("DelaySmoke2",2) then
         Logic.CreateEffect(GGL_Effects.FXBuildingSmokeLarge, GetPosition(spot2).X, GetPosition(spot2).Y, 1)
     end
-    if IsNear(MoveEntityData[1].id,spot3,100) then
-        Sound.Play2DSound(1069,0,150) 
+    if Counter.Tick2("DelaySmoke3",3) then
+        Sound.Play2DSound(1069,0,150)
+        Logic.CreateEffect(GGL_Effects.FXBuildingSmokeLarge, GetPosition(spot3).X, GetPosition(spot3).Y, 1) 
         return true;
     end
-end
-
+ end
 
 
 

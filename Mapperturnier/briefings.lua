@@ -97,8 +97,8 @@ function StrandBriefing()
         position = GetPosition(trupp1),
     }
     local page8 =AP{
-        title	= "Hinweis",
-        text	= "Sterben Varg und seine Begleiter ist das Spiel verloren. Dies gilt für die gesamte Dauer der Karte.",
+        title	= "@color:255,0,0 Hinweis",
+        text	= "Sind Varg und seine Begleiter alle @color:255,136,0 !Gleichzeitig! @color:255,255,255 tot, habt Ihr das Spiel verloren. Dies gilt für die gesamte Dauer der Karte.",
         position = GetPosition(trupp1),
     }
 
@@ -953,10 +953,10 @@ function BombExplosion()
     if IsDead("stein1") then
             for i=1,4,1 do
                 DestroyEntity("r"..i)
-                Sound.Play2DSound(1072,0,200)
-                Logic.CreateEffect(GGL_Effects.FXExplosion, GetPosition("explosion1").X, GetPosition("explosion1").Y, 1)
-                Logic.CreateEffect(GGL_Effects.FXExplosion, GetPosition("explosion2").X, GetPosition("explosion2").Y, 1)
             end
+            Sound.Play2DSound(1072,0,200)
+            Logic.CreateEffect(GGL_Effects.FXExplosion, GetPosition("explosion1").X, GetPosition("explosion1").Y, 1)
+            Logic.CreateEffect(GGL_Effects.FXExplosion, GetPosition("explosion2").X, GetPosition("explosion2").Y, 1)
         return true;
     end
 end
@@ -1070,6 +1070,29 @@ function VargNearNvChest()
         Logic.SetTechnologyState(1,Technologies.B_Claymine,2)
         Logic.SetTechnologyState(1,Technologies.B_Woodmine,2)
         Logic.SetTechnologyState(1,Technologies.B_Village,2)
+
+        if mode == 1 then
+            Logic.AddToPlayersGlobalResource(1,ResourceType.ClayRaw,1500)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.StoneRaw,1200)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.GoldRaw,1200)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.IronRaw,800)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.WoodRaw,1500)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.SulfurRaw,800)
+        elseif mode == 2 then
+            Logic.AddToPlayersGlobalResource(1,ResourceType.ClayRaw,1000)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.StoneRaw,800)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.GoldRaw,800)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.IronRaw,300)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.WoodRaw,1000)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.SulfurRaw,300)
+        elseif mode == 3 then
+            Logic.AddToPlayersGlobalResource(1,ResourceType.ClayRaw,800)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.StoneRaw,600)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.GoldRaw,600)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.IronRaw,100)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.WoodRaw,600)
+            Logic.AddToPlayersGlobalResource(1,ResourceType.SulfurRaw,0)
+        end
         return true;
     end
     return false;

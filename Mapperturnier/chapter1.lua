@@ -31,7 +31,6 @@ function ActivateStartingFog()
 end
 
 ---Schwierigkeit
-
 function ModeSelection()
     XGUIEng.ShowWidget("Normal", 0)
     XGUIEng.ShowWidget("Modus", 1)
@@ -193,7 +192,7 @@ function ActivateBandits()
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
-        },i+0,10)
+        },i+0,NumberUA)
     
 
         _G["SpawnerBandit"..i] = UnlimitedArmySpawnGenerator:New(_G["BanditArmy"..i], {
@@ -341,7 +340,7 @@ function ActivateNVCamp()
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
-        },i+4,10)
+        },i+4,NumberUA)
     
 
         _G["SpawnerNvCampArmy"..i] = UnlimitedArmySpawnGenerator:New(_G["NvCampArmy"..i], {
