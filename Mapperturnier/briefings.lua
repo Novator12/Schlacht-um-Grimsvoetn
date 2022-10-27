@@ -414,11 +414,12 @@ function HermitBriefing()
                         CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_varg"),"help4")
                     elseif mode == 2 then
                         CreateMilitaryGroup(1,Entities.CU_Barbarian_LeaderClub1,8,GetPosition("spawn_trupp1"),"help1")
-                        CreateMilitaryGroup(1,Entities.CU_Barbarian_LeaderClub1,8,GetPosition("spawn_trupp2"),"help2")
+                        CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_trupp2"),"help2")
                         CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_trupp3"),"help3")
                     elseif mode == 3 then
                         CreateMilitaryGroup(1,Entities.CU_Barbarian_LeaderClub1,8,GetPosition("spawn_trupp1"),"help1")
                         CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_trupp2"),"help2")
+                        CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_trupp3"),"help3")
                     end
                 end  
             };
@@ -908,6 +909,7 @@ function LeoasBombBriefing()
                                     CreateMilitaryGroup(1,Entities.CU_Barbarian_LeaderClub1,8,GetPosition("spawn_trupp2"),"haupt_help2")
                                     CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_trupp3"),"haupt_help3")
                                     CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_varg"),"haupt_help4")
+                                    CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("spawn_varg"),"haupt_help5")
                                 end
                             end  
                         };
