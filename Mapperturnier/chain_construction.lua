@@ -1,4 +1,4 @@
-
+--by Novator12 , angelehnt an Kimichuras construction chain
 
 CHAIN_CONSTRUCTION_MAX_DISTANCE = 3500;
 

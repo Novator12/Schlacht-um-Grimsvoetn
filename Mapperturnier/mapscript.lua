@@ -192,7 +192,7 @@ function FirstMapAction()
 	Tribute_Comforts() --Aktivierung der Tribut Comfort
 
 	--Anzahl UAs
-	NumberUA = 21+1
+	NumberUA = 24
 
 	--CC aktivieren
 	ActivateCC()

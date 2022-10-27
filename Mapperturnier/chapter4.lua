@@ -225,7 +225,7 @@ function ActivateThiefQuest() --Wechselt zu Spieler 2
     GUI.SetControlledPlayer(2)
     Logic.ActivateUpdateOfExplorationForAllPlayers()
     StartPatrolKI4()
-
+    ThiefPointer1 = Logic.CreateEffect(GGL_Effects.FXTerrainPointer,GetPosition("thief_pos1").X,GetPosition("thief_pos1").Y,1)
 end
 
 function StartPatrolKI4()
@@ -349,6 +349,7 @@ AllBridgesActivated = false
 function TheodorNearSecretEntrance()
     if IsNear(theodor,"thief_pos1",300) then
         GUI.DestroyMinimapPulse(GetPosition("thief_pos1").X,GetPosition("thief_pos1").Y)
+        Logic.DestroyEffect(ThiefPointer1)
         DestroyEntity(theodor)
         theodor = Logic.CreateEntity(Entities.PU_Thief,GetPosition("thief_pos2").X,GetPosition("thief_pos2").Y,0,2)
         Message("Tada...Da bin ich!")
@@ -587,6 +588,7 @@ function StartBriefingThiefEscape()
             ResolveBriefing(page1)
             ResolveBriefing(page2)
             StartSimpleJob("ThiefSecretEscape")
+            ThiefPointer2 = Logic.CreateEffect(GGL_Effects.FXTerrainPointer,GetPosition("thief_pos2").X,GetPosition("thief_pos2").Y,1)
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
@@ -594,6 +596,7 @@ end
 
 function ThiefSecretEscape()
     if IsNear(theodor,"thief_pos2",300) then
+        Logic.DestroyEffect(ThiefPointer2)
         XGUIEng.ShowWidget("ThiefCollectables",0)
         ThiefQuest = false
         GUI.DestroyMinimapPulse(GetPosition("thief_pos2").X,GetPosition("thief_pos2").Y)
@@ -617,6 +620,9 @@ function ThiefNearVarg()
         Logic.EntityLookAt(trupp2,theodor)
         Logic.EntityLookAt(trupp3,theodor)
         Logic.EntityLookAt(guard,theodor)
+        if XGUIEng.IsWidgetShown("ThiefCollectables") == 1 then
+            XGUIEng.ShowWidget("ThiefCollectables",0)
+        end
         return true
     end
 end
@@ -652,6 +658,16 @@ function TheodorVargBriefing2()
         text	= "@color:255,136,0 Dann lasst uns in den Krieg ziehen!",
         position = GetPosition(varg)
     }
+    local page6 = AP{
+        title	= "@color:255,0,0 Eisenklaue",
+        text	= "@color:255,136,0 Bevor ich es vergesse. Ich habe beim erkunden der Feste beobachten können, dass Ihre Militärgebäude durch Dampfmaschinen geschützt werden. Wir benötigen wohl Fernkämpfer um Ihre Rekrutierungsgebäude zerstörbar zu machen.",
+        position = GetPosition(theodor)
+    }
+    local page7 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 Gut zu wissen. Danke Eisenklaue",
+        position = GetPosition(varg)
+    }
         briefing.finished = function()  
             ResolveBriefing(page1) 
             ResolveBriefing(page2) 
@@ -666,7 +682,7 @@ function TheodorVargBriefing2()
             AddTribute(Tribut_DrawBridgeNorth)
             AddTribute(Tribut_DrawBridgeLava)
             AddTribute(Tribut_BackdoorGate)
-            Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Finalschlacht", "@cr Ihr habt nun die volle Kontrolle über die Zuwege zur Schattenfeste. Setzt diese weise ein. Besiegt alle Militärgebäude und zerstört die Feste.", 1) 
+            Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Finalschlacht", "@cr Ihr habt nun die volle Kontrolle über die Zuwege zur Schattenfeste. Setzt diese weise ein. Besiegt alle Militärgebäude und zerstört die Feste. @cr @cr @color:255,255,0 Wichtig: @color:255,255,255  Die Militärgebäude der Schattenfeste werden durch Dampfmaschinen geschützt. Zerstört diese zuerst, damit die Militärgebäude zerstört werden können!", 1) 
             BuffKI4()
             UpgradeKI4()
             ResCheatKI4()
@@ -675,11 +691,60 @@ function TheodorVargBriefing2()
             if mode == 3 then
                 ActivateSuperTentKI4()
             end
+
+            ---Def Generatoren
+            Logic.SetEntityInvulnerabilityFlag(GetID("barracks_id4"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("archery_id4"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("stables_id4"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("foundry_id4"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("tower1_id4"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("tower2_id4"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("hq_id4"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("support_army1"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("support_army2"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("def_hq1"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("def_hq2"),1)
+            Logic.SetEntityInvulnerabilityFlag(GetID("support_army2"),1)
+            SteamDefTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED,nil,"SteamDefAlive",1)
+            KI4BarracksJob = StartSimpleJob("DefBarracks")
+            KI4ArcheryJob = StartSimpleJob("DefArchery")
+            KI4StablesJob = StartSimpleJob("DefStables")
+            KI4FoundryJob = StartSimpleJob("DefFoundry")
+            KI4HqJob = StartSimpleJob("DefHq")
+            --SupportArmy
+            SupportArmyTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED,nil,"ActivateSupportArmys",1)
+            --
             VictoryJob = StartSimpleJob("KI4Defeated")
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
 end
+
+function SteamDefAlive()
+    if IsDestroyed("def_archery") then
+        Logic.SetEntityInvulnerabilityFlag(GetID("archery_id4"),0)
+    end
+    if IsDestroyed("def_barracks") then
+        Logic.SetEntityInvulnerabilityFlag(GetID("barracks_id4"),0)
+    end
+    if IsDestroyed("def_foundry") then
+        Logic.SetEntityInvulnerabilityFlag(GetID("foundry_id4"),0)
+    end
+    if IsDestroyed("def_stables") then
+        Logic.SetEntityInvulnerabilityFlag(GetID("stables_id4"),0)
+    end
+    if IsDestroyed("def_hq1") and IsDestroyed("def_hq2") then
+        Logic.SetEntityInvulnerabilityFlag(GetID("tower1_id4"),0)
+        Logic.SetEntityInvulnerabilityFlag(GetID("tower2_id4"),0)
+        Logic.SetEntityInvulnerabilityFlag(GetID("hq_id4"),0)
+        Logic.SetEntityInvulnerabilityFlag(GetID("support_army1"),0)
+        Logic.SetEntityInvulnerabilityFlag(GetID("support_army2"),0)
+    end
+    if IsDestroyed("def_archery") and IsDestroyed("def_barracks") and IsDestroyed("def_foundry") and IsDestroyed("def_stables") and IsDestroyed("def_hq1") and IsDestroyed("def_hq2") then
+        Trigger.UnrequestTrigger(SteamDefTrigger)
+    end
+end
+
 
 BridgesTable = {
     Gold = 0,
@@ -1004,6 +1069,171 @@ function ActivateSuperTentKI4()
     SuperTentArmy: AddCommandWaitForIdle(true);
 
 end
+
+function ActivateSupportArmys()
+    if IsDestroyed("barracks_id4") and IsDestroyed("archery_id4") and IsDestroyed("stables_id4") and IsDestroyed("foundry_id4") then
+        Message("@color:255,0,0 Achtung: @color:255,255,255 Die Schattenfeste macht einen Ausfall.")
+        ActivateSupportArmy1()
+        ActivateSupportArmy2()
+        Logic.SetEntityInvulnerabilityFlag(GetID("def_hq1"),0)
+        Logic.SetEntityInvulnerabilityFlag(GetID("def_hq2"),0)
+        return true
+    end
+end
+
+function ActivateSupportArmy1()
+
+    SupportArmy1Table = {} 
+
+    if mode == 1 then
+        SupportArmy1Table = {
+            [1] = 180,  --Spawnzeit
+            [2] = 6,   --Armeegröße
+            [3] = {Entities.PU_LeaderSword3,8,1},
+            [4] = {Entities.PU_LeaderBow3,8,1},
+            [5] = {Entities.PV_Cannon2,0,1},
+            [6] = {Entities.PV_Cannon1,0,1},
+            [7] = {Entities.PU_LeaderRifle1,4,1},
+            [8] = {Entities.PU_LeaderRifle1,4,1},
+        }
+    elseif mode == 2 then
+        SupportArmy1Table = {
+            [1] = 120,  --Spawnzeit
+            [2] = 10,   --Armeegröße
+            [3] = {Entities.PU_LeaderSword3,8,2},
+            [4] = {Entities.PU_LeaderBow3,8,2},
+            [5] = {Entities.PV_Cannon2,0,2},
+            [6] = {Entities.PV_Cannon3,0,2},
+            [7] = {Entities.PU_LeaderRifle1,4,1},
+            [8] = {Entities.PU_LeaderRifle1,4,1},
+        }
+    elseif mode == 3 then
+        SupportArmy1Table = {
+            [1] = 60,  --Spawnzeit
+            [2] = 18,   --Armeegröße
+            [3] = {Entities.PU_LeaderSword4,8,3},
+            [4] = {Entities.PU_LeaderBow4,8,3},
+            [5] = {Entities.PV_Cannon3,0,3},
+            [6] = {Entities.PV_Cannon4,0,3},
+            [7] = {Entities.PU_LeaderRifle1,4,3},
+            [8] = {Entities.PU_LeaderRifle1,4,3},
+        }
+    end
+
+
+    SupportArmy1 = LazyUnlimitedArmy:New({
+        -- benötigt
+        Player = 4,
+        Area = 4000,
+        -- optional
+        AutoDestroyIfEmpty = true,
+        TransitAttackMove = true,
+        Formation = UnlimitedArmy.Formations.Lines,
+        AIActive = true,
+        AutoRotateRange = 100000,
+        HiResJob = true
+    }, 22, NumberUA)
+
+    SupportArmy1Spawner = UnlimitedArmySpawnGenerator:New(SupportArmy1, {
+        -- benötigt:
+        Position = GetPosition("spawn_support_army1"), --position
+        ArmySize = SupportArmy1Table[2], --armysize
+        SpawnCounter = SupportArmy1Table[1],  --spawncounter
+        SpawnLeaders = SupportArmy1Table[2],   --spawnleaders
+        LeaderDesc = {
+            {LeaderType = SupportArmy1Table[3][1], SoldierNum = SupportArmy1Table[3][2] , SpawnNum = SupportArmy1Table[3][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy1Table[4][1], SoldierNum = SupportArmy1Table[4][2] , SpawnNum = SupportArmy1Table[4][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy1Table[5][1], SoldierNum = SupportArmy1Table[5][2] , SpawnNum = SupportArmy1Table[5][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy1Table[6][1], SoldierNum = SupportArmy1Table[6][2] , SpawnNum = SupportArmy1Table[6][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy1Table[7][1], SoldierNum = SupportArmy1Table[7][2] , SpawnNum = SupportArmy1Table[7][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy1Table[8][1], SoldierNum = SupportArmy1Table[8][2] , SpawnNum = SupportArmy1Table[8][3], Looped = true, Experience = 3},
+        },
+        -- optional:
+        Generator = "support_army1",  --generator
+    })
+
+    SupportArmy1: AddCommandMove(GetPosition("barb_castle"), true);
+    SupportArmy1: AddCommandWaitForIdle(true);
+
+end
+
+
+function ActivateSupportArmy2()
+
+    SupportArmy2Table = {} 
+
+    if mode == 1 then
+        SupportArmy2Table = {
+            [1] = 180,  --Spawnzeit
+            [2] = 6,   --Armeegröße
+            [3] = {Entities.PU_LeaderSword3,8,1},
+            [4] = {Entities.PU_LeaderBow3,8,1},
+            [5] = {Entities.PV_Cannon2,0,1},
+            [6] = {Entities.PV_Cannon1,0,1},
+            [7] = {Entities.PU_LeaderRifle1,4,1},
+            [8] = {Entities.PU_LeaderRifle1,4,1},
+        }
+    elseif mode == 2 then
+        SupportArmy2Table = {
+            [1] = 120,  --Spawnzeit
+            [2] = 10,   --Armeegröße
+            [3] = {Entities.PU_LeaderSword3,8,2},
+            [4] = {Entities.PU_LeaderBow3,8,2},
+            [5] = {Entities.PV_Cannon2,0,2},
+            [6] = {Entities.PV_Cannon3,0,2},
+            [7] = {Entities.PU_LeaderRifle1,4,1},
+            [8] = {Entities.PU_LeaderRifle1,4,1},
+        }
+    elseif mode == 3 then
+        SupportArmy2Table = {
+            [1] = 60,  --Spawnzeit
+            [2] = 18,   --Armeegröße
+            [3] = {Entities.PU_LeaderSword4,8,3},
+            [4] = {Entities.PU_LeaderBow4,8,3},
+            [5] = {Entities.PV_Cannon3,0,3},
+            [6] = {Entities.PV_Cannon4,0,3},
+            [7] = {Entities.PU_LeaderRifle1,4,3},
+            [8] = {Entities.PU_LeaderRifle1,4,3},
+        }
+    end
+
+
+    SupportArmy2 = LazyUnlimitedArmy:New({
+        -- benötigt
+        Player = 4,
+        Area = 4000,
+        -- optional
+        AutoDestroyIfEmpty = true,
+        TransitAttackMove = true,
+        Formation = UnlimitedArmy.Formations.Lines,
+        AIActive = true,
+        AutoRotateRange = 100000,
+        HiResJob = true
+    }, 23, NumberUA)
+
+    SupportArmy2Spawner = UnlimitedArmySpawnGenerator:New(SupportArmy2, {
+        -- benötigt:
+        Position = GetPosition("spawn_support_army2"), --position
+        ArmySize = SupportArmy2Table[2], --armysize
+        SpawnCounter = SupportArmy2Table[1],  --spawncounter
+        SpawnLeaders = SupportArmy2Table[2],   --spawnleaders
+        LeaderDesc = {
+            {LeaderType = SupportArmy2Table[3][1], SoldierNum = SupportArmy2Table[3][2] , SpawnNum = SupportArmy2Table[3][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy2Table[4][1], SoldierNum = SupportArmy2Table[4][2] , SpawnNum = SupportArmy2Table[4][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy2Table[5][1], SoldierNum = SupportArmy2Table[5][2] , SpawnNum = SupportArmy2Table[5][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy2Table[6][1], SoldierNum = SupportArmy2Table[6][2] , SpawnNum = SupportArmy2Table[6][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy2Table[7][1], SoldierNum = SupportArmy2Table[7][2] , SpawnNum = SupportArmy2Table[7][3], Looped = true, Experience = 3},
+            {LeaderType = SupportArmy2Table[8][1], SoldierNum = SupportArmy2Table[8][2] , SpawnNum = SupportArmy2Table[8][3], Looped = true, Experience = 3},
+        },
+        -- optional:
+        Generator = "support_army2",  --generator
+    })
+
+    SupportArmy2: AddCommandMove(GetPosition("barb_castle"), true);
+    SupportArmy2: AddCommandWaitForIdle(true);
+
+end
+
 
 
 function KI4Defeated()
