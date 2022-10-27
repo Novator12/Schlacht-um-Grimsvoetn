@@ -49,7 +49,7 @@ function ActivateNvAttackBase()
             _G["NVAttackArmy"..n] = UnlimitedArmy:New({					
                 -- benötigt
                 Player = 6,
-                Area = 5000,
+                Area = 4000,
                 -- optional
                 AutoDestroyIfEmpty = true,
                 TransitAttackMove = true,
@@ -59,7 +59,7 @@ function ActivateNvAttackBase()
                 --LeaderFormation,
                 AIActive = false,
                 --DefendDoNotHelpHeroes,
-                AutoRotateRange = 1500,
+                AutoRotateRange = 100000,
                 --DoNotNormalizeSpeed,
                 --IgnoreFleeing,
                 --HiResJob,
@@ -154,7 +154,7 @@ function ActivateNvAttackSignalFire()
                 --LeaderFormation,
                 AIActive = false,
                 --DefendDoNotHelpHeroes,
-                AutoRotateRange = 1500,
+                AutoRotateRange = 100000,
                 --DoNotNormalizeSpeed,
                 --IgnoreFleeing,
                 --HiResJob,
@@ -494,7 +494,7 @@ function CreateNVIronPit()
         NVIronArmy = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 6,
-            Area = 2000,
+            Area = 4000,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,

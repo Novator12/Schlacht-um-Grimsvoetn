@@ -67,7 +67,7 @@ function CreateNVStart()
     nvStartArmy = UnlimitedArmy:New({					
 			-- benötigt
 			Player = 6,
-			Area = 1500,
+			Area = 4000,
 			-- optional
 			AutoDestroyIfEmpty = true,
 			TransitAttackMove = true,
@@ -77,7 +77,7 @@ function CreateNVStart()
 			--LeaderFormation,
 			AIActive = false,
 			--DefendDoNotHelpHeroes,
-			AutoRotateRange = 1500,
+			AutoRotateRange = 100000,
 			--DoNotNormalizeSpeed,
 			--IgnoreFleeing,
 			--HiResJob,
@@ -165,17 +165,17 @@ function ActivateBandits()
 
     if mode == 1 then
         bandit_table = {
-            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [1] = 1, --Größe der Armee/ Leaderanzahl
             [2] = 180 --Respawnzeit
         }
     elseif mode == 2 then
         bandit_table = {
-            [1] = 3, --Größe der Armee/ Leaderanzahl
+            [1] = 2, --Größe der Armee/ Leaderanzahl
             [2] = 180 --Respawnzeit
         }
     elseif mode == 3 then
         bandit_table = {
-            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [1] = 3, --Größe der Armee/ Leaderanzahl
             [2] = 180 --Respawnzeit
         }
     end
@@ -184,13 +184,14 @@ function ActivateBandits()
         _G["BanditArmy"..i] = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 7,
-            Area = 2000,
+            Area = 4000,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Lines,
+            LeaderFormation = 4,
             AIActive = true,
-            AutoRotateRange = 6000,
+            AutoRotateRange = 100000,
             HiResJob = true
         },i+0,NumberUA)
     
@@ -202,8 +203,8 @@ function ActivateBandits()
             SpawnCounter = bandit_table[2],  --spawncounter
             SpawnLeaders = bandit_table[1],   --spawnleaders
             LeaderDesc = {
-                {LeaderType = Entities.CU_BanditLeaderSword1, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
-                {LeaderType = Entities.CU_BanditLeaderBow1, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_BanditLeaderSword1, SoldierNum = 4 , SpawnNum = 1, Looped = true, Experience = 1},
+                {LeaderType = Entities.CU_BanditLeaderBow1, SoldierNum = 4 , SpawnNum = 1, Looped = true, Experience = 1},
             },
             -- optional:
             Generator = "bandit"..i,  --generator
@@ -304,7 +305,7 @@ function ActivateNVCamp()
 
     if mode == 1 then
         nv_table = {
-            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [1] = 1, --Größe der Armee/ Leaderanzahl
             [2] = 180 --Respawnzeit
         }
         SetHealth("nv_spawner2", 20)
@@ -313,7 +314,7 @@ function ActivateNVCamp()
         end
     elseif mode == 2 then
         nv_table = {
-            [1] = 3, --Größe der Armee/ Leaderanzahl
+            [1] = 2, --Größe der Armee/ Leaderanzahl
             [2] = 180 --Respawnzeit
         }
         SetHealth("nv_spawner2", 35)
@@ -322,7 +323,7 @@ function ActivateNVCamp()
         end
     elseif mode == 3 then
         nv_table = {
-            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [1] = 3, --Größe der Armee/ Leaderanzahl
             [2] = 180 --Respawnzeit
         }
         SetHealth("nv_spawner2", 50)
@@ -332,13 +333,13 @@ function ActivateNVCamp()
         _G["NvCampArmy"..i] = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 6,
-            Area = 2000,
+            Area = 4000,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Chaotic,
             AIActive = true,
-            AutoRotateRange = 6000,
+            AutoRotateRange = 100000,
             HiResJob = true
         },i+4,NumberUA)
     

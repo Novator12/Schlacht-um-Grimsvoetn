@@ -18,8 +18,8 @@ function StartBriefingChapter3()
     --SetupAI5 
     --KI5 aktivieren
     SetupAI(SetupPlayer5)
-    KI5RecruitSerfs()
     ResCheatKI5()
+    KI5RecruitSerfs()
     UpgradeKI5()
     if mode == 2 or mode == 3 then
         BuffKI5()
@@ -192,6 +192,7 @@ function VulkanEnemieCutsceneBrief()
     }
         briefing.finished = function()  
             ResolveBriefing(page1);
+            LeonardoResearch = true
             XGUIEng.ShowWidget("DefendProgressContainer", 1)
             CountDefendJob = StartSimpleJob("StartDefendCounter")
             DefenseCompletedJob = StartSimpleJob("DefenseCompleted")
@@ -220,10 +221,11 @@ end
 
 function DefenseCompleted()
     if DefendCounter == maxDefendBar then
+        LeonardoResearch = false
         XGUIEng.ShowWidget("DefendProgressContainer", 0)
         Logic.AddQuest(1, 1, MAINQUEST_CLOSED, "@color:255,0,0 Verteidigung von Reynivellir", "@cr Verteidigt das Dorf solange, bis Leonardo das Schutzserum fertig gestellt hat. Verliert ihr euer Burg oder alle eure Helden, habt Ihr das Spiel verloren.", 1)
-        LeoResearchDoneBrief()
         EnableLavaDamage = false; --Schaden in Lava nehmen = AUS
+        LeoResearchDoneBrief()
         return true
     end
 end
@@ -348,12 +350,12 @@ function ActivateSpawnerKI5()
     if mode == 1 then
         KI5_Spawner_Table = {
             [1] = 2, --Größe der Armee/ Leaderanzahl
-            [2] = 60 --Respawnzeit
+            [2] = 120 --Respawnzeit
         }
     elseif mode == 2 then
         KI5_Spawner_Table = {
             [1] = 4, --Größe der Armee/ Leaderanzahl
-            [2] = 30 --Respawnzeit
+            [2] = 120 --Respawnzeit
         }
     elseif mode == 3 then
         KI5_Spawner_Table = {
@@ -366,11 +368,12 @@ function ActivateSpawnerKI5()
         KI5SpawnerArmy = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 5,
-            Area = 100000,
+            Area = 4000,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Lines,
+            LeaderFormation = 4,
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
@@ -413,48 +416,48 @@ function ActivateRecruiterKI5()
             [1] = 20 --Größe der Armee/ Leaderanzahl
         }
     end
-    
-   
-        KI5Army = LazyUnlimitedArmy:New({					
-            -- benötigt
-            Player = 5,
-            Area = 100000,
-            -- optional
-            AutoDestroyIfEmpty = true,
-            TransitAttackMove = true,
-            Formation = UnlimitedArmy.Formations.Lines,
-            AIActive = true,
-            AutoRotateRange = 100000,
-            HiResJob = true
-        },9,NumberUA)
-    
 
-        RecruiterKI5 = UnlimitedArmyRecruiter:New(KI5Army, {
-            Buildings = {GetID("archery_id5"),GetID("barracks_id5"),GetID("foundry_id5")}, -- mehr gebäude einfach hier rein
-            ArmySize = ki5_table[1],
-            UCats = {
-                {UCat=UpgradeCategories.LeaderSword, SpawnNum=3, Looped=true},
-                {UCat=UpgradeCategories.Cannon4, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.LeaderBow, SpawnNum=3, Looped=true},
-                {UCat=UpgradeCategories.LeaderCavalry, SpawnNum=2, Looped=true},
-                {UCat=UpgradeCategories.LeaderHeavyCavalry, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.Cannon3, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.LeaderPoleArm, SpawnNum=2, Looped=true},
-                {UCat=UpgradeCategories.LeaderSword, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.LeaderRifle, SpawnNum=2, Looped=true},
-                {UCat=UpgradeCategories.LeaderBow, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.Cannon3, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.LeaderCavalry, SpawnNum=2, Looped=true},
-                {UCat=UpgradeCategories.LeaderHeavyCavalry, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.Cannon4, SpawnNum=1, Looped=true},
-                {UCat=UpgradeCategories.LeaderSword, SpawnNum=3, Looped=true},
-                {UCat=UpgradeCategories.LeaderBow, SpawnNum=3, Looped=true},
-            },
-            ResCheat = true,
-            ReorderAllowed = false,
-            DoNotRemoveIfDeadOrEmpty = true
-        })
+
+    KI5Army = LazyUnlimitedArmy:New({
+        -- benötigt
+        Player = 5,
+        Area = 4000,
+        -- optional
+        AutoDestroyIfEmpty = true,
+        TransitAttackMove = true,
+        Formation = UnlimitedArmy.Formations.Lines,
+        LeaderFormation = 4,
+        AIActive = true,
+        AutoRotateRange = 100000,
+        HiResJob = true
+    }, 9, NumberUA)
+
+
+    RecruiterKI5 = UnlimitedArmyRecruiter:New(KI5Army, {
+        Buildings = { GetID("archery_id5"), GetID("barracks_id5"), GetID("foundry_id5") }, -- mehr gebäude einfach hier rein
+        ArmySize = ki5_table[1],
+        UCats = {
+            { UCat = UpgradeCategories.LeaderSword, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.Cannon4, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderBow, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.Cannon3, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderPoleArm, SpawnNum = 2, Looped = true },
+            { UCat = UpgradeCategories.LeaderSword, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderRifle, SpawnNum = 2, Looped = true },
+            { UCat = UpgradeCategories.LeaderBow, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.Cannon3, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderSword, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.LeaderBow, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.Cannon4, SpawnNum = 1, Looped = true },
+            { UCat = UpgradeCategories.LeaderSword, SpawnNum = 3, Looped = true },
+            { UCat = UpgradeCategories.LeaderBow, SpawnNum = 3, Looped = true },
+        },
+        ResCheat = true,
+        ReorderAllowed = false,
+        DoNotRemoveIfDeadOrEmpty = true
+    })
 end
+
 
 function ActivateSpawnerBanditsKI5()
 
@@ -480,11 +483,12 @@ function ActivateSpawnerBanditsKI5()
     _G["KI5SpawnerBanditArmy"..i] = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 5,
-            Area = 100000,
+            Area = 4000,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Lines,
+            LeaderFormation = 4,
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true

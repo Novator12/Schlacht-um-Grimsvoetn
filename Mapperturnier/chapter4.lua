@@ -273,11 +273,12 @@ function StartPatrolKI4()
         KI4ArmyTable[i][1] = LazyUnlimitedArmy:New({
             -- benötigt
             Player = 4,
-            Area = 2000,
+            Area = 4000,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
             Formation = UnlimitedArmy.Formations.Chaotic,
+            LeaderFormation = 4,
             AIActive = true,
             AutoRotateRange = 100000,
             HiResJob = true
@@ -449,6 +450,8 @@ end
 
 function ThiefIsDead()
     if IsDestroyed(theodor) == true then
+        GUI.SetControlledPlayer(1)
+        Logic.ActivateUpdateOfExplorationForAllPlayers()
         Defeat()
         return true
     end
@@ -592,6 +595,7 @@ end
 function ThiefSecretEscape()
     if IsNear(theodor,"thief_pos2",300) then
         XGUIEng.ShowWidget("ThiefCollectables",0)
+        ThiefQuest = false
         GUI.DestroyMinimapPulse(GetPosition("thief_pos2").X,GetPosition("thief_pos2").Y)
         EndJob(ThiefDeadJob)
         DestroyEntity(theodor)
@@ -911,11 +915,12 @@ function ActivateKI4Attacks()
     KI4RecruitingArmy = LazyUnlimitedArmy:New({
         -- benötigt
         Player = 4,
-        Area = 100000,
+        Area = 4000,
         -- optional
         AutoDestroyIfEmpty = true,
         TransitAttackMove = true,
         Formation = UnlimitedArmy.Formations.Lines,
+        LeaderFormation = 4,
         AIActive = true,
         AutoRotateRange = 100000,
         HiResJob = true
@@ -972,7 +977,7 @@ function ActivateSuperTentKI4()
     SuperTentArmy = LazyUnlimitedArmy:New({
         -- benötigt
         Player = 4,
-        Area = 100000,
+        Area = 4000,
         -- optional
         AutoDestroyIfEmpty = true,
         TransitAttackMove = true,
