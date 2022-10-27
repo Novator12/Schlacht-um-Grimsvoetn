@@ -32,6 +32,7 @@ Script.Load(gvBasePath.."\\cutscenes.lua")
 Script.Load(gvBasePath.."\\barb_walls.lua")
 Script.Load(gvBasePath.."\\briefings.lua")
 Script.Load(gvBasePath.."\\buildingSelection.lua")
+Script.Load(gvBasePath.."\\chain_construction.lua")
 Script.Load(gvBasePath.."\\Debug.lua")
 
 
@@ -120,7 +121,11 @@ function InitWeatherGfxSets()
 
 	XGUIEng.ShowWidget("ChapterInfo", 1)
 	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
+	--Check für Leonardo Research Chapter 3
 
+	if LeonardoResearch == true then
+            XGUIEng.ShowWidget("DefendProgressContainer", 1)
+	end
 	---Check für THief Quest Chapter 4
 
 	if ThiefQuest == true and XGUIEng.IsWidgetShown("ThiefCollectables") == 0 then
@@ -187,7 +192,10 @@ function FirstMapAction()
 	Tribute_Comforts() --Aktivierung der Tribut Comfort
 
 	--Anzahl UAs
-	NumberUA = 21
+	NumberUA = 21+1
+
+	--CC aktivieren
+	ActivateCC()
     --Vulkanfeuer 
 	x_vulc,y_vulc = Logic.EntityGetPos(GetID("vulc_middle"))
 
