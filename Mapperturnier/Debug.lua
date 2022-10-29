@@ -22,8 +22,15 @@ function DebugTroups()
     CreateMilitaryGroup(1,Entities.PU_LeaderSword4,8,GetPosition("debug_help2"),"hilfe6")
     CreateMilitaryGroup(1,Entities.PU_LeaderSword4,8,GetPosition("debug_help2"),"hilfe7")
     CreateMilitaryGroup(1,Entities.PU_LeaderSword4,8,GetPosition("debug_help2"),"hilfe8")
+
 end
 
+function DebugTroups2()
+    CreateMilitaryGroup(1,Entities.PU_LeaderCavalry1,3,GetPosition("debug_help1"),"hilfe1")
+    CreateMilitaryGroup(1,Entities.PU_LeaderCavalry2,6,GetPosition("debug_help1"),"hilfe2")
+    CreateMilitaryGroup(1,Entities.PU_LeaderHeavyCavalry1,3,GetPosition("debug_help1"),"hilfe3")
+    CreateMilitaryGroup(1,Entities.PU_LeaderHeavyCavalry2,3,GetPosition("debug_help1"),"hilfe4")
+end
 
 
 --Öffnet alle Wege
@@ -56,8 +63,18 @@ function DebugRes()
     Logic.AddToPlayersGlobalResource(1,ResourceType.WoodRaw,1000000)
     Logic.AddToPlayersGlobalResource(1,ResourceType.SulfurRaw,1000000)
 end
+--Debug Test für zu bauende Sachen
 
-
+function DebugBuild()
+    Debug1()
+    DebugOpen()
+    DebugSerf()
+    DebugSerf()
+    DebugSerf()
+    DebugSerf()
+    DebugRes()
+    DebugTech()
+end
 
 --Debug Alle Techs freischalten
 function DebugTech()
@@ -85,6 +102,15 @@ function DebugTech()
     Logic.SetTechnologyState(1,Technologies.GT_Taxation,3)
     Logic.SetTechnologyState(1,Technologies.GT_Trading,3)
     Logic.SetTechnologyState(1,Technologies.GT_Literacy,3)
+    Logic.SetTechnologyState(1,Technologies.B_BarbVillage,2)
+    Logic.SetTechnologyState(1,Technologies.B_BarbTower,2)
+    Logic.SetTechnologyState(1,Technologies.B_BarbArena,2)
+    Logic.SetTechnologyState(1,Technologies.B_Residence,2)
+    Logic.SetTechnologyState(1,Technologies.B_Farm,2)
+    Logic.SetTechnologyState(1,Technologies.B_University,2)
+    Logic.SetTechnologyState(1,Technologies.B_Claymine,2)
+    Logic.SetTechnologyState(1,Technologies.B_Woodmine,2)
+    Logic.SetTechnologyState(1,Technologies.B_Village,2)
 end
 
 
