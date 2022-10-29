@@ -494,7 +494,7 @@ function CreateNVIronPit()
         NVIronArmy = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 6,
-            Area = 4000,
+            Area = 1500,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
@@ -580,11 +580,11 @@ function SetPitAmount()
     if string.find(pitName,"Pit1") then
         pitCounter2 = pitCounter2 + 1
         if mode == 1 then
-         pitAmount = 100000
+         pitAmount = 45000
         elseif mode == 2 then
-            pitAmount = 50000
+            pitAmount = 30000
         elseif mode == 3 then
-            pitAmount = 10000
+            pitAmount = 15000
         end
         Logic.SetResourceDoodadGoodAmount(pitId,pitAmount)
     end

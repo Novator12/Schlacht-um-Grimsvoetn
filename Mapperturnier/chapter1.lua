@@ -166,17 +166,17 @@ function ActivateBandits()
     if mode == 1 then
         bandit_table = {
             [1] = 1, --Größe der Armee/ Leaderanzahl
-            [2] = 180 --Respawnzeit
+            [2] = 120 --Respawnzeit
         }
     elseif mode == 2 then
         bandit_table = {
             [1] = 2, --Größe der Armee/ Leaderanzahl
-            [2] = 180 --Respawnzeit
+            [2] = 120 --Respawnzeit
         }
     elseif mode == 3 then
         bandit_table = {
             [1] = 3, --Größe der Armee/ Leaderanzahl
-            [2] = 180 --Respawnzeit
+            [2] = 60 --Respawnzeit
         }
     end
     
@@ -184,7 +184,7 @@ function ActivateBandits()
         _G["BanditArmy"..i] = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 7,
-            Area = 4000,
+            Area = 2700,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,
@@ -204,7 +204,7 @@ function ActivateBandits()
             SpawnLeaders = bandit_table[1],   --spawnleaders
             LeaderDesc = {
                 {LeaderType = Entities.CU_BanditLeaderSword1, SoldierNum = 4 , SpawnNum = 1, Looped = true, Experience = 1},
-                {LeaderType = Entities.CU_BanditLeaderBow1, SoldierNum = 4 , SpawnNum = 1, Looped = true, Experience = 1},
+                {LeaderType = Entities.CU_BanditLeaderBow1, SoldierNum = 6 , SpawnNum = 2, Looped = true, Experience = 1},
             },
             -- optional:
             Generator = "bandit"..i,  --generator
@@ -306,7 +306,7 @@ function ActivateNVCamp()
     if mode == 1 then
         nv_table = {
             [1] = 1, --Größe der Armee/ Leaderanzahl
-            [2] = 180 --Respawnzeit
+            [2] = 120 --Respawnzeit
         }
         SetHealth("nv_spawner2", 20)
         for i=1,6,1 do 
@@ -315,7 +315,7 @@ function ActivateNVCamp()
     elseif mode == 2 then
         nv_table = {
             [1] = 2, --Größe der Armee/ Leaderanzahl
-            [2] = 180 --Respawnzeit
+            [2] = 120 --Respawnzeit
         }
         SetHealth("nv_spawner2", 35)
         for i=1,6,1 do 
@@ -324,7 +324,7 @@ function ActivateNVCamp()
     elseif mode == 3 then
         nv_table = {
             [1] = 3, --Größe der Armee/ Leaderanzahl
-            [2] = 180 --Respawnzeit
+            [2] = 90 --Respawnzeit
         }
         SetHealth("nv_spawner2", 50)
     end
@@ -333,7 +333,7 @@ function ActivateNVCamp()
         _G["NvCampArmy"..i] = LazyUnlimitedArmy:New({					
             -- benötigt
             Player = 6,
-            Area = 4000,
+            Area = 2700,
             -- optional
             AutoDestroyIfEmpty = true,
             TransitAttackMove = true,

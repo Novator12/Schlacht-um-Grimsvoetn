@@ -668,17 +668,17 @@ function TheodorVargBriefing2()
         text	= "@color:255,136,0 Gut zu wissen. Danke Eisenklaue",
         position = GetPosition(varg)
     }
-        briefing.finished = function()  
-            ResolveBriefing(page1) 
-            ResolveBriefing(page2) 
+        briefing.finished = function()
+            ResolveBriefing(page1)
+            ResolveBriefing(page2)
             ResetQuestBook(2)
             GUI.SetControlledPlayer(1)
             Logic.ActivateUpdateOfExplorationForAllPlayers()
             theodor = ChangePlayer(theodor,1)
-            Tools.ExploreArea(GetPosition("dw4").X,GetPosition("dw4").Y,600)
-            Tools.ExploreArea(GetPosition("dw2").X,GetPosition("dw2").Y,600)
-            Tools.ExploreArea(GetPosition("dw3").X,GetPosition("dw3").Y,600)
-            Tools.ExploreArea(GetPosition("backdoor_player4").X,GetPosition("backdoor_player4").Y,600)
+            Tools.ExploreArea(GetPosition("dw4").X,GetPosition("dw4").Y,7)
+            Tools.ExploreArea(GetPosition("dw2").X,GetPosition("dw2").Y,7)
+            Tools.ExploreArea(GetPosition("dw3").X,GetPosition("dw3").Y,7)
+            Tools.ExploreArea(GetPosition("backdoor_player4").X,GetPosition("backdoor_player4").Y,7)
             AddTribute(Tribut_DrawBridgeNorth)
             AddTribute(Tribut_DrawBridgeLava)
             AddTribute(Tribut_BackdoorGate)
@@ -706,11 +706,6 @@ function TheodorVargBriefing2()
             Logic.SetEntityInvulnerabilityFlag(GetID("def_hq2"),1)
             Logic.SetEntityInvulnerabilityFlag(GetID("support_army2"),1)
             SteamDefTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED,nil,"SteamDefAlive",1)
-            KI4BarracksJob = StartSimpleJob("DefBarracks")
-            KI4ArcheryJob = StartSimpleJob("DefArchery")
-            KI4StablesJob = StartSimpleJob("DefStables")
-            KI4FoundryJob = StartSimpleJob("DefFoundry")
-            KI4HqJob = StartSimpleJob("DefHq")
             --SupportArmy
             SupportArmyTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED,nil,"ActivateSupportArmys",1)
             --
@@ -719,6 +714,7 @@ function TheodorVargBriefing2()
         NormalSpeedInBriefing()
         StartBriefing(briefing)
 end
+
 
 function SteamDefAlive()
     if IsDestroyed("def_archery") then
@@ -1336,8 +1332,7 @@ function StartVictoryBriefing()
     local page13 = AP{
         title	= "@color:255,0,0 Helgar",
         text	= "@color:255,136,0 Wir sollten Ihnen helfen. Auch wenn ich diesen Dario nicht kenne. Jedoch steht dort auch was von eurem Vetter, also es geht um die Familie!",
-        position = GetPosition(trupp1),
-        explore = 2000,
+        position = GetPosition(trupp1)
     }
     local page14= AP{
         title	= "@color:255,0,0 Wolfgang",

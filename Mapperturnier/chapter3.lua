@@ -456,6 +456,10 @@ function ActivateRecruiterKI5()
         ReorderAllowed = false,
         DoNotRemoveIfDeadOrEmpty = true
     })
+
+    KI5Army: AddCommandMove(GetPosition("barb_castle"), true);
+    KI5Army: AddCommandWaitForIdle(true);
+
 end
 
 
