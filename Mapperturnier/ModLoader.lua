@@ -70,7 +70,11 @@ ModLoader = {
 			"CB_EvilBoat",
 			"XD_EvilBoat_Wreckage",
 			Entities.PU_LeaderCavalry2,
-			"CU_Sauron"
+			"CU_Sauron",
+			Entities.CU_Evil_LeaderBearman1,
+			Entities.CU_Evil_LeaderSkirmisher1,
+			Entities.CU_Evil_SoldierBearman1,
+			Entities.CU_Evil_SoldierSkirmisher1,
 		},
 		--- EffectTypes to load or reload. put in a string to load, and a number to reload (GGL_Effects.Typename).
 		EffectTypes = {
