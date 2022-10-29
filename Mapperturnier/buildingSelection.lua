@@ -10,8 +10,19 @@ function HelgarBombSelection()
     end
 end
 
-
-
+function CalvaryFormationSelection()
+    GameCallback_GUI_SelectionChangedCalvary = GameCallback_GUI_SelectionChanged
+    function GameCallback_GUI_SelectionChanged()
+        GameCallback_GUI_SelectionChangedCalvary()
+        local EntityId = GUI.GetSelectedEntity()
+        if Logic.GetEntityTypeName(Logic.GetEntityType(EntityId)) == "PU_LeaderCavalry1" or
+            Logic.GetEntityTypeName(Logic.GetEntityType(EntityId)) == "PU_LeaderCavalry2" or
+            Logic.GetEntityTypeName(Logic.GetEntityType(EntityId)) == "PU_LeaderHeavyCavalry1" or
+            Logic.GetEntityTypeName(Logic.GetEntityType(EntityId)) == "PU_LeaderHeavyCavalry2" then
+            XGUIEng.ShowWidget(gvGUI_WidgetID.SelectionLeader, 1)
+        end
+    end
+end
 
 
 
@@ -161,6 +172,7 @@ function WoodMineSelection1()
 			if Logic.IsConstructionComplete(sel)==1 then -- ui nicht anzeigen, wenn gebäude im bau, musst du bei denanderen neuen gebäuden vermutlich auch machen
 				XGUIEng.ShowWidget("Woodmine", 1)
                 XGUIEng.ShowWidget("Upgrade_Woodmine1", 1)
+                XGUIEng.ShowWidget("WoodMineAmount", 1)
 			end
             local VideoName = "data\\graphics\\videos\\pb_sawmill1.bik"
                 XGUIEng.StartVideoPlayback( gvGUI_WidgetID.VideoPreview, VideoName, 1 )
@@ -180,6 +192,7 @@ function WoodMineSelection2()
 				XGUIEng.ShowWidget("Woodmine", 1)
                 XGUIEng.ShowWidget("Upgrade_Woodmine1", 0)
                 XGUIEng.ShowWidget("Upgrade_Woodmine2", 1)
+                XGUIEng.ShowWidget("WoodMineAmount", 1)
 			end
             local VideoName = "data\\graphics\\videos\\pb_sawmill1.bik"
                 XGUIEng.StartVideoPlayback( gvGUI_WidgetID.VideoPreview, VideoName, 1 )
@@ -199,6 +212,7 @@ function WoodMineSelection3()
 				XGUIEng.ShowWidget("Woodmine", 1)
                 XGUIEng.ShowWidget("Upgrade_Woodmine1", 0)
                 XGUIEng.ShowWidget("Upgrade_Woodmine2", 0)
+                XGUIEng.ShowWidget("WoodMineAmount", 1)
 			end
             local VideoName = "data\\graphics\\videos\\pb_sawmill2.bik"
                 XGUIEng.StartVideoPlayback( gvGUI_WidgetID.VideoPreview, VideoName, 1 )
@@ -254,4 +268,5 @@ function InitBuildingSelection()
     WoodMineSelection2()
     WoodMineSelection3()
     BarbArenaSelection()
+    CalvaryFormationSelection()
 end
