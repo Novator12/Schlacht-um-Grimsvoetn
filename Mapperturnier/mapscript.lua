@@ -24,6 +24,9 @@ Script.Load(gvBasePath.."\\barb_tower.lua")
 Script.Load(gvBasePath.."\\polygon.lua")
 Script.Load(gvBasePath.."\\modus.lua")
 Script.Load(gvBasePath.."\\blende.lua")
+Script.Load(gvBasePath.."\\extractBuildings.lua")
+Script.Load(gvBasePath.."\\daily_cycle.lua")
+Script.Load(gvBasePath.."\\daily_cycle_rain.lua")
 Script.Load(gvBasePath.."\\chapter1.lua")
 Script.Load(gvBasePath.."\\chapter2.lua")
 Script.Load(gvBasePath.."\\chapter3.lua")
@@ -75,8 +78,10 @@ function InitWeatherGfxSets()
     CppLogic_ResetGlobal()
     GUI_Initialize()
     
+	--WeatherSetup
+	InitDaylyCycleGFXRain()
+	InitDaylyCycleGFX()
 
-	SetupNormalWeatherGfxSet()
 
 	CppLogic.Logic.SetStringTableText("names/CB_Barbarian_Castle1", "Burg")
 	CppLogic.Logic.SetStringTableText("names/CB_Barbarian_Castle2", "Festung")
@@ -159,7 +164,25 @@ end
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -- This function is called on game start you should setup your weather periods here
 function InitWeather()
-	AddPeriodicSummer(10)
+	 --WeatherSetup
+        
+    --2 * Sommertage (16min = 1 Tag)
+	for i = 1,2,1 do
+		AddPeriodicSummer(6*60);
+		AddPeriodicTransitionSunrise(60);
+		AddPeriodicSunrise(60)
+		AddPeriodicNight(6*60);
+		AddPeriodicSunrise(60)
+		AddPeriodicTransitionSunrise(60);
+	end
+	
+    --Regentage (11min = 1 Tag)
+    AddPeriodicNormalRain(4*60);
+    AddPeriodicTransitionSunriseRain(60);
+    AddPeriodicSunriseRain(60)
+    AddPeriodicNightRain(4*60);
+    AddPeriodicSunriseRain(60)
+    AddPeriodicTransitionSunriseRain(60);
 end
 
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -223,7 +246,6 @@ function FirstMapAction()
 
 
 	---Gebäude auf Spieler 0 
-	Score.Player[0] = {buildings=0,all=0}
 	MapTools.WallsToPlayerZero(Entities.XD_DarkWallStraightGate,
 		Entities.XD_DarkWallStraightGate_Closed, 
 		Entities.XD_DarkWallCorner, 
@@ -249,10 +271,58 @@ function FirstMapAction()
 	--Lava Damage auf SecretPath
 	CreateSecretPolygon()
 
+	---Stadtwachenfix
+	GameCallback_OnTechnologyResearchedOriginal = GameCallback_OnTechnologyResearched
+    function GameCallback_OnTechnologyResearched( _PlayerID, _TechnologyType )
+        GameCallback_OnTechnologyResearchedOriginal( _PlayerID,_TechnologyType)
+        if _TechnologyType == Technologies.T_TownGuard then
+        Logic.SetTechnologyState(_PlayerID,Technologies.T_CityGuard, 3)
+        end
+    end
+
+
+	---Ruinenabbau aktivieren
+	ActivateRuinExtraction()
+
+	--Holzmine (verbleibende Ressourcen)
+	StartSimpleJob("WoodMineState")
+
+end
+
+function ThiefLimiter()
+	if mode ==2 and Logic.GetPlayerEntities(1,Entities.PU_Thief,48) >= 2 then
+		Logic.SetTechnologyState(1,Technologies.MU_Thief,0) 
+		XGUIEng.DoManualButtonUpdate(gvGUI_WidgetID.InGame)
+	elseif mode ==2 then
+		Logic.SetTechnologyState(1,Technologies.MU_Thief,2) 
+		XGUIEng.DoManualButtonUpdate(gvGUI_WidgetID.InGame)
+	end
+
+	if mode ==3 and Logic.GetPlayerEntities(1,Entities.PU_Thief,48) >= 1 then
+		Logic.SetTechnologyState(1,Technologies.MU_Thief,0) 
+		XGUIEng.DoManualButtonUpdate(gvGUI_WidgetID.InGame)
+	elseif mode == 3 then
+		Logic.SetTechnologyState(1,Technologies.MU_Thief,2) 
+		XGUIEng.DoManualButtonUpdate(gvGUI_WidgetID.InGame)
+	end
 end
 
 
-------------------------------------MoveStaticEntity----------------------------------------------------------
+---------------------------------------Ressourcenmenge Holz--------------------------------------------------
+
+function WoodMineState()
+	local woodID = GetID("holzschacht")
+	if IsExisting(woodID) then
+		woodmineAmount = Logic.GetResourceDoodadGoodAmount(woodID)
+		XGUIEng.SetText("WoodMineAmount", "@center @color:143,91,64 Holzmenge: @color:255,255,255  "..woodmineAmount, 1)
+		return false
+	else
+		return true
+	end
+end
+
+
+-----------------------------------MoveStaticEntity----------------------------------------------------------
 MoveEntityData = {}
 MoveEntityData_TriggerID = nil
 function MoveStaticEntity(_entity,_posX,_posY,_dirX,_dirY)
@@ -1230,3 +1300,4 @@ function DestroyWoodPile( _piletable, _index )
 end
 
 --------------------------------------------------------------------------------------------------------------------------------------
+
