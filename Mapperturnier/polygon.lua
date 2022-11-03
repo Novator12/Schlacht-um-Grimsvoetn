@@ -174,8 +174,25 @@ function EntityHurtHandler1(y)
 	local xPos, yPos = Logic.GetEntityPosition(eID)
 	local eTable = {X= xPos,Y=yPos}
 	if IsAlive(eID) and PolygonSecretTable.PolygonSecret1[1]:IsPointInside(eTable) == 1 then
-		Logic.HurtEntity(eID,30)
-		return false
+		if Logic.IsLeader(eID) == 1 then
+			local soldiers = {Logic.GetSoldiersAttachedToLeader(eID)}
+			local dmg = 10
+			if soldiers[1] > 0 then
+				local changedDmg
+				for i = soldiers[1]+1,2,-1 do
+					local currentHP = Logic.GetEntityHealth(soldiers[i])
+					changedDmg = math.min(currentHP,dmg)
+					Logic.HurtEntity(soldiers[i],changedDmg)
+					dmg = dmg - changedDmg
+					if dmg <= 0 then
+						break;
+					end
+				end
+			end
+			Logic.HurtEntity(eID,dmg)
+		else
+			Logic.HurtEntity(eID,10)
+		end
 	elseif IsDead(eID) then
 		return true
 	end
@@ -186,8 +203,25 @@ function EntityHurtHandler2(y)
 	local xPos, yPos = Logic.GetEntityPosition(eID)
 	local eTable = {X= xPos,Y=yPos}
 	if IsAlive(eID) and PolygonSecretTable.PolygonSecret2[1]:IsPointInside(eTable) == 1 then
-		Logic.HurtEntity(eID,30)
-		return false
+		if Logic.IsLeader(eID) == 1 then
+			local soldiers = {Logic.GetSoldiersAttachedToLeader(eID)}
+			local dmg = 10
+			if soldiers[1] > 0 then
+				local changedDmg
+				for i = soldiers[1]+1,2,-1 do
+					local currentHP = Logic.GetEntityHealth(soldiers[i])
+					changedDmg = math.min(currentHP,dmg)
+					Logic.HurtEntity(soldiers[i],changedDmg)
+					dmg = dmg - changedDmg
+					if dmg <= 0 then
+						break;
+					end
+				end
+			end
+			Logic.HurtEntity(eID,dmg)
+		else
+			Logic.HurtEntity(eID,10)
+		end
 	elseif IsDead(eID) then
 		return true
 	end
@@ -198,8 +232,25 @@ function EntityHurtHandler3(y)
 	local xPos, yPos = Logic.GetEntityPosition(eID)
 	local eTable = {X= xPos,Y=yPos}
 	if IsAlive(eID) and PolygonSecretTable.PolygonSecret3[1]:IsPointInside(eTable) == 1 then
-		Logic.HurtEntity(eID,30)
-		return false
+		if Logic.IsLeader(eID) == 1 then
+			local soldiers = {Logic.GetSoldiersAttachedToLeader(eID)}
+			local dmg = 10
+			if soldiers[1] > 0 then
+				local changedDmg
+				for i = soldiers[1]+1,2,-1 do
+					local currentHP = Logic.GetEntityHealth(soldiers[i])
+					changedDmg = math.min(currentHP,dmg)
+					Logic.HurtEntity(soldiers[i],changedDmg)
+					dmg = dmg - changedDmg
+					if dmg <= 0 then
+						break;
+					end
+				end
+			end
+			Logic.HurtEntity(eID,dmg)
+		else
+			Logic.HurtEntity(eID,10)
+		end
 	elseif IsDead(eID) then
 		return true
 	end
