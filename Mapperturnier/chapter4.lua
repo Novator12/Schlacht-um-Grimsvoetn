@@ -1095,7 +1095,7 @@ function ChangeBackdoorGate()
 end
 
 
-
+UAControlState = {Attacking=1, Refill=2}
 
 function ActivateKI4Attacks()
 
@@ -1113,7 +1113,6 @@ function ActivateKI4Attacks()
             [1] = 30 --Größe der Armee/ Leaderanzahl
         }
     end
-
 
     KI4RecruitingArmy = LazyUnlimitedArmy:New({
         -- benötigt
@@ -1157,44 +1156,56 @@ function ActivateKI4Attacks()
         DoNotRemoveIfDeadOrEmpty = true
     })
 
-
-    KI4RecruitingArmy:AddCommandLuaFunc(HandleArmy,true)
+    KI4RecruitingArmy.ControlState= UAControlState.Refill
+    KI4RecruitingArmy:AddCommandLuaFunc(HandleArmy,true).Def = UnlimitedArmy.CreateCommandDefend(GetPosition("def_pos_army4"), 12000)
 
     
 end
 
 
 
-
-function HandleArmy(self)
-    if IsOnSide(self) and (StatusBridgeNorth == 1 or StatusBridgeLava == 1 or StatusBackdoorGate == 1) then
-        if self:IsIdle() then
-            return true, UnlimitedArmy.CreateCommandMove(GetPosition("barb_castle"))
-        end
-    elseif IsOnSide(self) and StatusBridgeNorth == 0 and StatusBridgeLava == 0 and StatusBackdoorGate == 0 then
-        if self:IsIdle() then
-            return true, UnlimitedArmy.CreateCommandMove(GetPosition("barb_castle"))
-        end
-    else
-        return true, UnlimitedArmy.CreateCommandDefend(GetPosition("def_pos_army4"), 12000)
+function HandleArmy(self, cmd)
+    if self.ControlState ~= UAControlState.Refill and self:IsDead() then
+        self.SpawnerActive = true
+        self.ControlState = UAControlState.Refill
+        Message("now refilling, cmd move home")
+        return false, UnlimitedArmy.CreateCommandMove(GetPosition("def_pos_army4"))
     end
+    if self.ControlState == UAControlState.Refill then
+        if self:GetSize() >= self.Spawner.ArmySize then
+            self.SpawnerActive = false
+            self.ControlState = UAControlState.Attacking
+            Message("now attacking")
+        else
+            Message("cmd def")
+            return false, cmd.Def
+        end
+    end
+    if self.ControlState == UAControlState.Attacking then
+        if IsOnSide(self) then
+            if self:IsIdle() then
+                Message("cmd move attack")
+                return false, UnlimitedArmy.CreateCommandMove(GetPosition("barb_castle"))
+            end
+        else
+            Message("no way, def")
+            return false, cmd.Def
+        end
+    end
+    Message("no cmd")
+    return false
 end
 
-
+---@param self UnlimitedArmy
 function IsOnSide(self)
-    local armyPos = self:GetPosition()
-    _,KI4Pos = Logic.GetEntitiesInArea(Entities.XD_ScriptEntity,armyPos.X,armyPos.Y,1,1)
-    if not IsExisting(KI4Pos) then
-        KI4Pos = Logic.CreateEntity(Entities.XD_ScriptEntity,armyPos.X,armyPos.Y,0,4)
+    --local armyPos = self:GetPosition()
+    --local sec = CppLogic.Logic.LandscapeGetSector(armyPos)
+    local firstleader = self:Iterator()()
+    local sec = 0
+    if IsValid(firstleader) then
+        sec = Logic.GetSector(firstleader)
     end
-    if Logic.GetSector(GetID("barb_castle")) == Logic.GetSector(KI4Pos) then
-        if GetID("def_pos_army4") ~= GetID(KI4Pos) then
-            DestroyEntity(KI4Pos)
-        end
-        return true
-    else
-        return false
-    end
+    return Logic.GetSector(GetID("barb_castle")) == sec
 end
 
 
