@@ -333,10 +333,6 @@ function BuffKI5()
     Logic.SetTechnologyState(5, Technologies.T_BetterTrainingArchery, 3)
     Logic.SetTechnologyState(5, Technologies.T_Shoeing, 3)
     Logic.SetTechnologyState(5, Technologies.T_Masonry, 3)
-    if mode == 3 then
-        Logic.SetTechnologyState(5, Technologies.T_SuperTechnology, 3)
-    end
-    
     Logic.SetTechnologyState(5, Technologies.T_FleeceArmor, 3)
     Logic.SetTechnologyState(5, Technologies.T_FleeceLinedLeatherArmor, 3)
     Logic.SetTechnologyState(5, Technologies.T_LeadShot, 3)
@@ -389,7 +385,7 @@ function ActivateSpawnerKI5()
             LeaderDesc = {
                 {LeaderType = Entities.PU_LeaderHeavyCavalry2, SoldierNum = 3 , SpawnNum = 3, Looped = true, Experience = 3},
                 {LeaderType = Entities.PU_LeaderCavalry2, SoldierNum = 6 , SpawnNum = 2, Looped = true, Experience = 3},
-                {LeaderType = Entities.PU_LeaderSword1, SoldierNum = 0 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderHeavyCavalry2, SoldierNum = 3 , SpawnNum = 3, Looped = true, Experience = 3},
             },
             -- optional:
             Generator = "hq_id5",  --generator
@@ -526,7 +522,6 @@ end
 
 
 ThiefTable = {}
-
 function InitThiefAttack()
     if IsExisting("barb_castle") and EnableThiefAttack == true then
         local rand = GetRandom(1,6)
@@ -542,6 +537,9 @@ function InitThiefAttack()
         
     end
 end
+
+
+
 
 Thiefticks = 5
 

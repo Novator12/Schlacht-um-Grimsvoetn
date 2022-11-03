@@ -3,6 +3,12 @@ function Start_Chapter2()
     chapterText = "Wiederaufbau von Reynivellir @cr Varg muss das Dorf wieder aufbauen und das Leuchtfeuer entzünden."
     DestroyEntity(GetID("block1"))
     DestroyEntity(GetID("block2"))
+    for i=1,4,1 do
+        DestroyEntity("dt"..i)
+    end
+    for i =1,9,1 do
+        DestroyEntity("be"..i)
+    end
     ResetQuestBook(1)
     varg = Logic.CreateEntity(Entities.CU_Barbarian_Hero, GetPosition("varg_chapter2").X, GetPosition("varg_chapter2").Y, 0, 1)
     trupp1 = Logic.CreateEntity(Entities.CU_VeteranLieutenant, GetPosition("helgar_chapter2").X,GetPosition("helgar_chapter2").Y,0, 1)
@@ -16,6 +22,9 @@ function Start_Chapter2()
     StartCountdown(60*5,StartBaseAttacks,false)
     --Barriere zum Lavabereich zerstören
     DestroyEntity("barrier_lava")
+    for i=1,4,1 do
+        DestroyEntity("ae"..i)
+    end
     EnableLavaDamage = true; --Schaden in Lava nehmen = EIN
     CreatePolygon()
 end
