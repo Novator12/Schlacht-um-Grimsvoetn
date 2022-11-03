@@ -82,6 +82,9 @@ function InitWeatherGfxSets()
 	InitDaylyCycleGFXRain()
 	InitDaylyCycleGFX()
 
+	LocalMusic.UseSet = HIGHLANDMUSIC
+	--LocalMusic.UseSet = EVELANCEMUSIC
+
 
 	CppLogic.Logic.SetStringTableText("names/CB_Barbarian_Castle1", "Burg")
 	CppLogic.Logic.SetStringTableText("names/CB_Barbarian_Castle2", "Festung")
@@ -157,6 +160,22 @@ function InitWeatherGfxSets()
         end
     end
 
+
+	--Endboss Safe
+	if IsExisting("Endgegner") then
+		--Setup Endboss
+		CppLogic.Entity.SetDamage(GetID("Endgegner"), 30)
+		CppLogic.Entity.SetArmor(GetID("Endgegner"), 20)
+		CppLogic.Entity.Leader.SetTroopHealth(GetID("Endgegner"), 1000)
+		--
+	end
+
+	if BridgeSystemActive == true then
+		XGUIEng.ShowWidget("BridgeCooldown", 1)
+		XGUIEng.SetText("CountdownBridgeNorth", "@center @color:124,252,0 Fertig!", 1)
+		XGUIEng.SetText("CountdownBridgeLava", "@center @color:124,252,0 Fertig!", 1)
+		XGUIEng.SetText("CountdownGateSouth", "@center @color:124,252,0 Fertig!", 1)
+	end
 
 	
 end
@@ -307,7 +326,50 @@ function ThiefLimiter()
 	end
 end
 
+---------------------------------------Cutscene Fix----------------------------------------------------------
 
+StartCutscene = function(_Name, _Callback)
+
+	-- Remember callback
+	CutsceneCallback = _Callback
+
+	-- -- Stop trigger system
+	-- Trigger.DisableTriggerSystem(1)
+
+	-- Invulnerability for all entities
+	Logic.SetGlobalInvulnerability(1)
+
+	--	forbid feedback sounds
+
+	GUI.SetFeedbackSoundOutputState(0)
+
+	-- no shapes during cutscene
+	Display.SetProgramOptionRenderOcclusionEffect(0)
+
+	-- cutscene input mode
+	Input.CutsceneMode()
+
+	-- Start cutscene
+	Cutscene.Start(_Name)
+
+	assert(cutsceneIsActive ~= true)
+	cutsceneIsActive = true
+
+	LocalMusic_UpdateMusic()
+
+	--	backup
+	Cutscene.Effect = Sound.GetVolumeAdjustment(3)
+	Cutscene.Ambient = Sound.GetVolumeAdjustment(5)
+	Cutscene.Music = Music.GetVolumeAdjustment()
+
+	--	half volume
+	Sound.SetVolumeAdjustment(3, Cutscene.Effect * 0.5)
+	Sound.SetVolumeAdjustment(5, Cutscene.Ambient * 0.5)
+	Music.SetVolumeAdjustment(Cutscene.Music * 0.5)
+
+	--	stop feedback sounds
+	Sound.PlayFeedbackSound(0,0)
+end
 ---------------------------------------Ressourcenmenge Holz--------------------------------------------------
 
 function WoodMineState()
@@ -1301,3 +1363,68 @@ end
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
+--##################################################################--
+--################ Cannon / Serf Heal by P4F #######################--
+--##################################################################--
+
+function ComfortsStart()
+	SerfTablePlayer1={}
+	CannonTablePlayer1={}
+	Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_CREATED,"","EV_ON_ENTITY_CREATED",1)
+	StartSimpleJob("SJ_Refresh_Hp_Of_Serfs_And_Cannons_Player1")
+	--
+end
+
+-- Player 1
+function SJ_Refresh_Hp_Of_Serfs_And_Cannons_Player1()
+	for i = table.getn(SerfTablePlayer1), 1, -1 do
+		if IsAlive(SerfTablePlayer1[i]) then
+			if GetHealth(SerfTablePlayer1[i]) < 100 then
+				SetHealth(SerfTablePlayer1[i], GetHealth(SerfTablePlayer1[i]) + 1 )
+			end
+		else
+			table.remove(SerfTablePlayer1, i)
+		end
+	end
+
+	for i = table.getn(CannonTablePlayer1), 1, -1 do
+		if IsAlive(CannonTablePlayer1[i]) then
+			if GetHealth(CannonTablePlayer1[i]) < 100 then
+				SetHealth(CannonTablePlayer1[i], GetHealth(CannonTablePlayer1[i]) + 1 )
+			end
+		else
+			table.remove(CannonTablePlayer1, i)
+		end
+	end
+end
+
+
+function EV_ON_ENTITY_CREATED()
+	local ent_ID = Event.GetEntityID()
+	local ent_typ = Logic.GetEntityTypeName(Logic.GetEntityType(ent_ID))
+	local ent_P = GetPlayer(ent_ID)
+		
+	if ent_P == 1 then
+		if ent_typ == "PU_Serf" then
+		table.insert(SerfTablePlayer1,ent_ID)
+		elseif ent_typ == "PV_Cannon1" or ent_typ == "PV_Cannon2" or ent_typ == "PV_Cannon3" or ent_typ == "PV_Cannon4" then
+		table.insert(CannonTablePlayer1,ent_ID)
+		end
+	end
+end
+
+--##################################################################--
+--##################################################################--
+
+function GetHealth( _entity )
+    local entityID = GetEntityId( _entity )
+    if not Tools.IsEntityAlive( entityID ) then
+        return 0
+    end
+    local MaxHealth = Logic.GetEntityMaxHealth( entityID )
+    local Health = Logic.GetEntityHealth( entityID )
+    return ( Health / MaxHealth ) * 100
+end
+
+--##################################################################--
+--##################################################################--
