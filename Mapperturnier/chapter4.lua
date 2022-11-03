@@ -20,7 +20,6 @@ function Start_Chapter4()
     MakeDefInvulnerable()
     SetupAI(SetupPlayer4)
     StartBriefingChapter4()
-    ActivateTributesChapter4()
 end
 
 
@@ -194,6 +193,9 @@ function StartBriefingChapter4()
         ResolveBriefing(page2);
         Logic.SetOnScreenInformation(theodor,0)
         DestroyEntity("barrier_lava2")
+        for i = 1,15,1 do
+            DestroyEntity("ev"..i)
+        end
         ActivateThiefQuest()
         StartSimpleJob("TheodorNearSecretEntrance")
         Logic.AddQuest(2, 1, MAINQUEST_OPEN, "@color:255,0,0 Die Intrige", "Eisenklaue soll die Verteidigungsanlagen der Schattenfeste schwächen. Diese Mission unterteilt sich in zwei Bereiche: @cr @cr 1) Die Kontrolle über die Zugbrückenmechanismen @cr @cr 2) Die Sabotage der Dampfmaschine der süd-östlichen Verteidigungsanlage", 1) 
@@ -224,6 +226,7 @@ end
 function ActivateThiefQuest() --Wechselt zu Spieler 2
     GUI.SetControlledPlayer(2)
     Logic.ActivateUpdateOfExplorationForAllPlayers()
+    CppLogic.Logic.PlayerSetTaxLevel(1, 2) --Steuern auf normal gesetzt
     StartPatrolKI4()
     ThiefPointer1 = Logic.CreateEffect(GGL_Effects.FXTerrainPointer,GetPosition("thief_pos1").X,GetPosition("thief_pos1").Y,1)
 end
@@ -307,12 +310,12 @@ function StartPatrolKI4()
         KI4SpawnerTable = {
             [1] = { "barracks_id4", "spawn_barracks_id4", Entities.PU_LeaderSword4, 8 },
             [2] = { "archery_id4", "spawn_archery_id4", Entities.PU_LeaderBow4, 8 },
-            [3] = { "foundry_id4", "spawn_foundry_id4", Entities.PV_Cannon4, 0 },
+            [3] = { "foundry_id4", "spawn_foundry_id4", Entities.PV_Cannon3, 0 },
             [4] = { "stables_id4", "spawn_stables_id4", Entities.PU_LeaderCavalry2, 6 },
             [5] = { "tower1_id4", "spawn_tower1_id4", Entities.CU_BanditLeaderSword2, 8 },
             [6] = { "tower2_id4", "spawn_tower2_id4", Entities.CU_BanditLeaderBow2, 8 },
             [7] = { "hq_id4", "spawn_hq_id4", Entities.CU_VeteranMajor, 4 },
-            [8] = { "inv_tower2", "spawn_inv_tower2", Entities.CU_VeteranMajor, 4 },
+            [8] = { "inv_tower2", "spawn_inv_tower2", Entities.PU_LeaderCavalry2, 6 },
         }
 
         KI4ArmyTable[i][2] = UnlimitedArmySpawnGenerator:New(KI4ArmyTable[i][1], {
@@ -484,6 +487,7 @@ function ThiefCollectable3()
     if IsNear(theodor,"sheep_hair",200) then
         DestroyEntity("sheep_hair")
         XGUIEng.ShowWidget("Collectable3Done", 1)
+        Sound.Play2DSound(1155,0,150) 
         Message("Tut mir leid, liebes Schafi.")
         collectedCollectables = collectedCollectables + 1
         return true
@@ -551,6 +555,7 @@ function StartBriefingSteamMachine()
             for i = 1,4,1 do
                 Logic.SetEntityInvulnerabilityFlag(GetID("inv_tower"..i),0)
             end
+            Logic.SetEntityInvulnerabilityFlag(GetID("inv_tower2"),1)
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
@@ -645,7 +650,7 @@ function TheodorVargBriefing2()
     }
     local page3 = AP{
         title	= "@color:255,0,0 Eisenklaue",
-        text	= "@color:255,136,0 Ein Klacks war es nict, aber ja, die Verteidigungsanlagen sind sabotiert. ",
+        text	= "@color:255,136,0 Ein Klacks war es nicht, aber ja, die Verteidigungsanlagen sind sabotiert. ",
         position = GetPosition(theodor)
     }
     local page4 = AP{
@@ -675,10 +680,12 @@ function TheodorVargBriefing2()
             GUI.SetControlledPlayer(1)
             Logic.ActivateUpdateOfExplorationForAllPlayers()
             theodor = ChangePlayer(theodor,1)
+            SetHostile(1,4)
             Tools.ExploreArea(GetPosition("dw4").X,GetPosition("dw4").Y,7)
             Tools.ExploreArea(GetPosition("dw2").X,GetPosition("dw2").Y,7)
             Tools.ExploreArea(GetPosition("dw3").X,GetPosition("dw3").Y,7)
             Tools.ExploreArea(GetPosition("backdoor_player4").X,GetPosition("backdoor_player4").Y,7)
+            ActivateTributesChapter4()
             AddTribute(Tribut_DrawBridgeNorth)
             AddTribute(Tribut_DrawBridgeLava)
             AddTribute(Tribut_BackdoorGate)
@@ -688,9 +695,7 @@ function TheodorVargBriefing2()
             ResCheatKI4()
             ActivateKI4Attacks()
             KI4RecruitSerfs()
-            if mode == 3 then
-                ActivateSuperTentKI4()
-            end
+            
 
             ---Def Generatoren
             Logic.SetEntityInvulnerabilityFlag(GetID("barracks_id4"),1)
@@ -709,12 +714,20 @@ function TheodorVargBriefing2()
             --SupportArmy
             SupportArmyTrigger = Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_DESTROYED,nil,"ActivateSupportArmys",1)
             --
+
+            InvTowerJob = StartSimpleJob("ActivateInvTower")
             VictoryJob = StartSimpleJob("KI4Defeated")
         end;
         NormalSpeedInBriefing()
         StartBriefing(briefing)
 end
 
+function ActivateInvTower()
+    if IsDestroyed("def_inv_tower") then
+        Logic.SetEntityInvulnerabilityFlag(GetID("inv_tower2"),0)
+        return true
+    end
+end
 
 function SteamDefAlive()
     if IsDestroyed("def_archery") then
@@ -867,15 +880,42 @@ function BuffKI4()
 end
 
 
+
 function ActivateTributesChapter4()
+    BridgeSystemActive = true
+    CounterBridgeLava = 0
+    CounterBridgeNorth = 0
+    CounterGateSouth = 0
+
+    CountBridgesTable = {}
+    if mode == 1 then
+        CountBridgesTable = {
+            [1] = 120
+        }
+    elseif mode == 2 then
+        CountBridgesTable = {
+            [1] = 210
+        }
+    elseif mode == 3 then
+        CountBridgesTable = {
+            [1] = 300
+        }
+    end
+
+    XGUIEng.SetText("CountdownBridgeNorth", "@center @color:124,252,0 Fertig!", 1)
+    XGUIEng.SetText("CountdownBridgeLava", "@center @color:124,252,0 Fertig!", 1)
+    XGUIEng.SetText("CountdownGateSouth", "@center @color:124,252,0 Fertig!", 1)
+
+    XGUIEng.ShowWidget("BridgeCooldown", 1)
 
     Tribut_DrawBridgeNorth = CreateATribute(1
     ,"@color:255,0,0 Zugbrücke: Norden @cr @color:255,255,255 Öffnet/ Schließt die Zugbrücke im Norden!",
     BridgesTable, 
     function() 
         ChangeBridgeNorth() 
+        CounterBridgeNorth =  CountBridgesTable[1]
+        StartSimpleJob("ActivateCountdownNorth")
         Tribut_DrawBridgeNorth.Tribute = nil
-        AddTribute(Tribut_DrawBridgeNorth)
     end)
 
     Tribut_DrawBridgeLava = CreateATribute(1
@@ -883,8 +923,9 @@ function ActivateTributesChapter4()
     BridgesTable, 
     function() 
         ChangeBridgeLava() 
+        CounterBridgeLava = CountBridgesTable[1]
+        StartSimpleJob("ActivateCountdownLava")
         Tribut_DrawBridgeLava.Tribute = nil
-        AddTribute(Tribut_DrawBridgeLava)
     end)
 
     Tribut_BackdoorGate = CreateATribute(1
@@ -892,25 +933,136 @@ function ActivateTributesChapter4()
     BridgesTable, 
     function() 
         ChangeBackdoorGate() 
+        CounterGateSouth = CountBridgesTable[1]
+        StartSimpleJob("ActivateCountdownSouth")
         Tribut_BackdoorGate.Tribute = nil
-        AddTribute(Tribut_BackdoorGate)
     end)
 
 end
 
 
+function ActivateCountdownNorth()
+    if CounterBridgeNorth == 0 then
+        AddTribute(Tribut_DrawBridgeNorth)
+        XGUIEng.SetText("CountdownBridgeNorth", "@center @color:124,252,0 Fertig!", 1)
+        return true
+    else
+        CounterBridgeNorth = CounterBridgeNorth -1
+        local TotalMin = math.floor( CounterBridgeNorth / 60 )
+        local Minutes = math.mod( TotalMin, 60 )
+        local TotalSeconds = math.mod( math.floor(CounterBridgeNorth), 60 )
+        local String = " "
+
+
+        if Minutes == 0 then
+            String = String .. "00" .. ":"
+        else
+            if Minutes <10 then
+                String = String .. "0" .. Minutes .. ":"
+            else
+                String = String .. Minutes .. ":"
+            end
+        end
+        
+        
+        if TotalSeconds < 10 then		
+            String = String .. "0" .. TotalSeconds	
+        else		
+            String = String .. TotalSeconds	
+        end
+        CountBridgeNorth = String
+        XGUIEng.SetText("CountdownBridgeNorth", "@center @color:255,0,0  "..CountBridgeNorth, 1)
+        return false
+    end
+end
+
+function ActivateCountdownLava()
+    if CounterBridgeLava == 0 then
+        AddTribute(Tribut_DrawBridgeLava)
+        XGUIEng.SetText("CountdownBridgeLava", "@center @color:124,252,0 Fertig!", 1)
+        return true
+    else
+        CounterBridgeLava = CounterBridgeLava -1
+        local TotalMin = math.floor( CounterBridgeLava / 60 )
+        local Minutes = math.mod( TotalMin, 60 )
+        local TotalSeconds = math.mod( math.floor(CounterBridgeLava), 60 )
+        local String = " "
+
+
+        if Minutes == 0 then
+            String = String .. "00" .. ":"
+        else
+            if Minutes <10 then
+                String = String .. "0" .. Minutes .. ":"
+            else
+                String = String .. Minutes .. ":"
+            end
+        end
+        
+        
+        if TotalSeconds < 10 then		
+            String = String .. "0" .. TotalSeconds	
+        else		
+            String = String .. TotalSeconds	
+        end
+        CountBridgeLava = String
+        XGUIEng.SetText("CountdownBridgeLava", "@center @color:255,0,0  "..CountBridgeLava, 1)
+        return false
+    end
+end
+
+
+function ActivateCountdownSouth()
+    if CounterGateSouth == 0 then
+        AddTribute(Tribut_BackdoorGate)
+        XGUIEng.SetText("CountdownGateSouth", "@center @color:124,252,0 Fertig!", 1)
+        return true
+    else
+        CounterGateSouth = CounterGateSouth -1
+        local TotalMin = math.floor( CounterGateSouth / 60 )
+        local Minutes = math.mod( TotalMin, 60 )
+        local TotalSeconds = math.mod( math.floor(CounterGateSouth), 60 )
+        local String = " "
+
+
+        if Minutes == 0 then
+            String = String .. "00" .. ":"
+        else
+            if Minutes <10 then
+                String = String .. "0" .. Minutes .. ":"
+            else
+                String = String .. Minutes .. ":"
+            end
+        end
+        
+        
+        if TotalSeconds < 10 then		
+            String = String .. "0" .. TotalSeconds	
+        else		
+            String = String .. TotalSeconds	
+        end
+        CountGateSouth = String
+        XGUIEng.SetText("CountdownGateSouth",  "@center @color:255,0,0  "..CountGateSouth, 1)
+        return false
+    end
+end
+
+
+StatusBridgeNorth = 0
 
 function ChangeBridgeNorth()
     local bID = GetID("dw4")
     local type = Logic.GetEntityTypeName(Logic.GetEntityType(bID))
     if type == "PB_DrawBridgeClosed2" then
         ReplaceEntity(bID,Entities.XD_DrawBridgeOpen2)
+        StatusBridgeNorth = 1
     else
         ReplaceEntity(bID,Entities.PB_DrawBridgeClosed2)
+        StatusBridgeNorth = 0
     end
 end
 
-
+StatusBridgeLava = 0
 
 function ChangeBridgeLava()
     local bID1 = GetID("dw2")
@@ -920,44 +1072,34 @@ function ChangeBridgeLava()
     if type1 == "PB_DrawBridgeClosed2" and type2 == "PB_DrawBridgeClosed2" then
         ReplaceEntity(bID1,Entities.XD_DrawBridgeOpen2)
         ReplaceEntity(bID2,Entities.XD_DrawBridgeOpen2)
+        StatusBridgeLava = 1
     else
         ReplaceEntity(bID1,Entities.PB_DrawBridgeClosed2)
         ReplaceEntity(bID2,Entities.PB_DrawBridgeClosed2)
+        StatusBridgeLava = 0
     end
 end
 
+StatusBackdoorGate = 0
 
 function ChangeBackdoorGate()
     local bID = GetID("backdoor_player4")
     local type = Logic.GetEntityTypeName(Logic.GetEntityType(bID))
     if type == "XD_DarkWallStraightGate_Closed" then
         ReplaceEntity(bID,Entities.XD_DarkWallStraightGate)
+        StatusBackdoorGate = 1
     else
         ReplaceEntity(bID,Entities.XD_DarkWallStraightGate_Closed)
+        StatusBackdoorGate = 0
     end
 end
 
 
 
+
 function ActivateKI4Attacks()
 
-    function SoeldnerMove2(self)
-        if not self:IsIdle() then
-            return false
-        end
-        local numbertable = { 1, 2, 3, 4, 5 }
-        table.remove(numbertable, self.LastPoint)
-        for k, v in pairs(numbertable) do
-            if v == self.CurrentPoint then
-                self.LastPoint = table.remove(numbertable, k)
-                break;
-            end
-        end
-        self.CurrentPoint = numbertable[math.random(1, 3)]
-        return false, UnlimitedArmy.CreateCommandMove(self.Points[self.CurrentPoint], false)
-    end
-
-
+    
     if mode == 1 then
         KIRecruitTable = {
             [1] = 10 --Größe der Armee/ Leaderanzahl
@@ -980,21 +1122,14 @@ function ActivateKI4Attacks()
         -- optional
         AutoDestroyIfEmpty = true,
         TransitAttackMove = true,
-        Formation = UnlimitedArmy.Formations.Lines,
+        Formation = UnlimitedArmy.Formations.Chaotic,
         LeaderFormation = 4,
         AIActive = true,
         AutoRotateRange = 100000,
         HiResJob = true
     }, 20, NumberUA)
-    --LkavPoint1
-    KI4RecruitingArmy.Points = { 
-        GetPosition("id4_attack1"), 
-        GetPosition("id4_attack2"), 
-        GetPosition("id4_attack3"),
-        GetPosition("id4_attack4"), 
-        GetPosition("id4_attack5") }
-    KI4RecruitingArmy.LastPoint = nil
-    KI4RecruitingArmy.CurrentPoint = math.random(1, 5)
+
+
 
     RecruiterKI4 = UnlimitedArmyRecruiter:New(KI4RecruitingArmy, {
         Buildings = { GetID("archery_id4"), GetID("barracks_id4"), GetID("foundry_id4"), GetID("stables_id4") }, -- mehr gebäude einfach hier rein
@@ -1022,49 +1157,102 @@ function ActivateKI4Attacks()
         DoNotRemoveIfDeadOrEmpty = true
     })
 
-    KI4RecruitingArmy:AddCommandMove(GetPosition("id4_attack" .. KI4RecruitingArmy.CurrentPoint), false)
-    KI4RecruitingArmy:AddCommandWaitForIdle(false)
-    local numbertable = { 1, 2, 3, 4, 5 }
-    KI4RecruitingArmy.LastPoint = table.remove(numbertable, KI4RecruitingArmy.CurrentPoint)
-    local nextpoint = numbertable[math.random(1, 4)]
-    KI4RecruitingArmy:AddCommandMove(GetPosition("id4_attack" .. nextpoint), false)
-    KI4RecruitingArmy.CurrentPoint = nextpoint
-    KI4RecruitingArmy:AddCommandLuaFunc(SoeldnerMove2, true)
 
+    KI4RecruitingArmy:AddCommandLuaFunc(HandleArmy,true)
 
+    
 end
 
-function ActivateSuperTentKI4()
-    SuperTentArmy = LazyUnlimitedArmy:New({
-        -- benötigt
-        Player = 4,
-        Area = 4000,
-        -- optional
-        AutoDestroyIfEmpty = true,
-        TransitAttackMove = true,
-        Formation = UnlimitedArmy.Formations.Lines,
-        AIActive = true,
-        AutoRotateRange = 100000,
-        HiResJob = true
-    }, 21, NumberUA)
 
-    SuperTentSpawner = UnlimitedArmySpawnGenerator:New(SuperTentArmy, {
-        -- benötigt:
-        Position = GetPosition("super_tent_spawn"), --position
-        ArmySize = 1, --armysize
-        SpawnCounter = 180,  --spawncounter
-        SpawnLeaders = 1,   --spawnleaders
-        LeaderDesc = {
-            {LeaderType = Entities.PU_LeaderSword1, SoldierNum = 0 , SpawnNum = 1, Looped = true, Experience = 3},
-        },
-        -- optional:
-        Generator = "super_tent",  --generator
-    })
 
-    SuperTentArmy: AddCommandMove(GetPosition("barb_castle"), true);
-    SuperTentArmy: AddCommandWaitForIdle(true);
 
+function HandleArmy(self)
+    if IsOnSide(self) and (StatusBridgeNorth == 1 or StatusBridgeLava == 1 or StatusBackdoorGate == 1) then
+        if self:IsIdle() then
+            return true, UnlimitedArmy.CreateCommandMove(GetPosition("barb_castle"))
+        end
+    elseif IsOnSide(self) and StatusBridgeNorth == 0 and StatusBridgeLava == 0 and StatusBackdoorGate == 0 then
+        if self:IsIdle() then
+            return true, UnlimitedArmy.CreateCommandMove(GetPosition("barb_castle"))
+        end
+    else
+        return true, UnlimitedArmy.CreateCommandDefend(GetPosition("def_pos_army4"), 12000)
+    end
 end
+
+
+function IsOnSide(self)
+    local armyPos = self:GetPosition()
+    _,KI4Pos = Logic.GetEntitiesInArea(Entities.XD_ScriptEntity,armyPos.X,armyPos.Y,1,1)
+    if not IsExisting(KI4Pos) then
+        KI4Pos = Logic.CreateEntity(Entities.XD_ScriptEntity,armyPos.X,armyPos.Y,0,4)
+    end
+    if Logic.GetSector(GetID("barb_castle")) == Logic.GetSector(KI4Pos) then
+        if GetID("def_pos_army4") ~= GetID(KI4Pos) then
+            DestroyEntity(KI4Pos)
+        end
+        return true
+    else
+        return false
+    end
+end
+
+
+function ActivateEndboss()
+
+    CreateEntity(4, Entities.CU_BlackKnight_LeaderMace1, GetPosition("spawn_hq_id4"), "Endgegner")
+
+    --Setup Endboss
+    CppLogic.Entity.SetDamage(GetID("Endgegner"), 30)
+    CppLogic.Entity.SetArmor(GetID("Endgegner"), 20)
+    CppLogic.Entity.Leader.SetTroopHealth(GetID("Endgegner"), 1000)
+    CppLogic.Entity.PerformHeal(GetID("Endgegner"), 1000, false)
+    --
+
+    StartSimpleHiResJob("EndbossSpezial")
+    StartSimpleJob("EndgegnerMinen")
+end
+
+function EndbossSpezial()
+    if IsAlive("hq_id4") then
+        local id = GetEntityId("Endgegner")
+        if Logic.IsEntityAlive(id) then
+            Logic.HealEntity(id, 5)
+        end
+    end
+    if IsDead("Endgegner") then
+        StartCountdown(60 * 4, ActivateEndboss, false)
+        return true
+    end
+end
+
+function EndgegnerMinen()
+    if IsAlive("Endgegner") then
+        if Counter.Tick2("Minenplatzierung", 4) then --alle 4 Sekunden
+            if IsAlive("Endgegner") then
+                local pos = GetPosition("Endgegner") --Bombe
+                Logic.CreateEntity(Entities.XD_Bomb1, pos.X, pos.Y, 0, 6)
+                x_end, y_end = Logic.EntityGetPos(GetID("Endgegner")) --Rangeattack
+
+                local x
+                local y
+                local r = 500
+                for a = 0, 360, 30 do
+                    x = r * math.cos(a) + x_end
+                    y = r * math.sin(a) + y_end
+                    CppLogic.Effect.CreateProjectile(GGL_Effects.FXKalaArrow, x_end, y_end, x, y, 0, nil, nil, nil, 4, nil, nil, nil)
+                    Logic.CreateEffect(GGL_Effects.FXSalimHeal, x, y, 1)
+                    CppLogic.Combat.DealAoEDamage(GetID("Endgegner"), x, y, 150, 300, 4, DamageClasses.DC_Hero, true, false, true, AdvancedDealDamageSource.Script)
+                end
+            end
+        end
+    end
+    if IsDead("Endgegner") then
+        return true
+    end
+end
+
+
 
 function ActivateSupportArmys()
     if IsDestroyed("barracks_id4") and IsDestroyed("archery_id4") and IsDestroyed("stables_id4") and IsDestroyed("foundry_id4") then
@@ -1073,6 +1261,9 @@ function ActivateSupportArmys()
         ActivateSupportArmy2()
         Logic.SetEntityInvulnerabilityFlag(GetID("def_hq1"),0)
         Logic.SetEntityInvulnerabilityFlag(GetID("def_hq2"),0)
+        if mode == 3 then
+            ActivateEndboss()
+        end
         return true
     end
 end
