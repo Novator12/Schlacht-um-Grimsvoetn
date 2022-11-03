@@ -27,6 +27,7 @@ EntitiesArea1ToCheckTable = {
 	[15] = {Entities.XD_Evil_Camp03},
 	[16] = {Entities.XD_Evil_Camp04},
 	[17] = {Entities.XD_Evil_Camp06},
+	[18] = {Entities.XD_Signpost1},
 }
 function ScanRuinsArea1()
 	for i= 1, table.getn(EntitiesArea1ToCheckTable), 1 do
@@ -93,6 +94,7 @@ EntitiesArea3ToCheckTable = {
 	[15] = {Entities.XD_Evil_Camp03},
 	[16] = {Entities.XD_Evil_Camp04},
 	[17] = {Entities.XD_Evil_Camp06},
+	[18] = {Entities.XD_Signpost1},
 }
 
 function ScanRuinsArea3()
@@ -111,6 +113,43 @@ function MakeRuinsExtractableArea3()
 	end
 end
 
+EntitiesArea4ToCheckTable = {
+	[1] = {Entities.XD_RuinFragment2},
+	[2] = {Entities.XD_RuinFragment4},
+	[3] = {Entities.XD_RuinFragment6},
+	[4] = {Entities.XD_RuinResidence2},
+	[5] = {Entities.XD_RuinHouse2},
+	[6] = {Entities.XD_RuinMonastery2},
+	[7] = {Entities.XD_RuinSmallTower2},
+	[8] = {Entities.XD_RuinSmallTower4},
+	[9] = {Entities.XD_RuinTower2},
+	[10] = {Entities.XD_RuinWall2},
+	[11] = {Entities.XD_RuinWall4},
+	[12] = {Entities.XD_RuinWall6},
+	[13] = {Entities.XD_Evil_Camp01},
+	[14] = {Entities.XD_Evil_Camp02},
+	[15] = {Entities.XD_Evil_Camp03},
+	[16] = {Entities.XD_Evil_Camp04},
+	[17] = {Entities.XD_Evil_Camp06},
+	[18] = {Entities.XD_Signpost1},
+}
+
+function ScanRuinsArea4()
+	for i= 1, table.getn(EntitiesArea4ToCheckTable), 1 do
+		EntitiesArea4ToCheckTable[i][2]= {Logic.GetEntitiesInArea(EntitiesArea4ToCheckTable[i][1],GetPosition("ruin_area3").X,GetPosition("ruin_area3").Y,3000,16)}
+		table.remove(EntitiesArea4ToCheckTable[i][2],1)
+	end
+end
+
+function MakeRuinsExtractableArea4()
+	for i = 1,table.getn(EntitiesArea4ToCheckTable),1 do
+		for n = 1, table.getn(EntitiesArea4ToCheckTable[i][2]) do
+			local ruinId = GetID(EntitiesArea4ToCheckTable[i][2][n])
+			CreateStone(ruinId,100,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
+		end
+	end
+end
+
 function ActivateRuinExtraction()
 	ScanRuinsArea1()
 	MakeRuinsExtractableArea1()
@@ -118,6 +157,8 @@ function ActivateRuinExtraction()
 	MakeRuinsExtractableArea2()
 	ScanRuinsArea3()
 	MakeRuinsExtractableArea3()
+	ScanRuinsArea4()
+	MakeRuinsExtractableArea4()
 end
 
 function CreateStone(_pos,_amount,_how,_addresource,_distance,_player)
