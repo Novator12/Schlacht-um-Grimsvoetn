@@ -43,6 +43,7 @@
         <Category>Military</Category>
 		<Category>Leader</Category>
         <Category>Melee</Category>
+		<Category>Sword</Category>
 		  <AdjustWalkAnimSpeed>true</AdjustWalkAnimSpeed>
 		  <Exploration>20</Exploration>		
 		  <ArmorClass>ArmorClassLeather</ArmorClass>

@@ -51,6 +51,7 @@
         <Category>Military</Category>
 		<Category>Soldier</Category>
         <Category>Melee</Category>
+		<Category>Sword</Category>
 		  <AdjustWalkAnimSpeed>true</AdjustWalkAnimSpeed>
 		  <Exploration>20</Exploration>
     	<IdleTaskList>TL_MILITARY_IDLE</IdleTaskList>
