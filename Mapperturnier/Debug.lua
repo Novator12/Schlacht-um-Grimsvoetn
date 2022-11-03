@@ -1,3 +1,25 @@
+function DebugTestKI4()
+    DebugOpen()
+    Debug1()
+    SetupAI(SetupPlayer4)
+    ActivateTributesChapter4()
+    StartPatrolKI4()
+    AddTribute(Tribut_DrawBridgeNorth)
+    AddTribute(Tribut_DrawBridgeLava)
+    AddTribute(Tribut_BackdoorGate)
+
+end
+
+function DebugTestKI42()
+    BuffKI4()
+    UpgradeKI4()
+    ResCheatKI4()
+    ActivateKI4Attacks()
+    KI4RecruitSerfs()
+
+end
+
+
 function DebugDestroyKI5()
     DestroyEntity("barracks_id5")
     DestroyEntity("foundry_id5")
@@ -52,6 +74,18 @@ function DebugOpen()
     DestroyEntity("shortcut1")
     DestroyEntity("shortcut2")
     DestroyEntity("barrier_lava2")
+    for i = 1,15,1 do
+        DestroyEntity("ev"..i)
+    end
+    for i=1,4,1 do
+        DestroyEntity("dt"..i)
+    end
+    for i =1,9,1 do
+        DestroyEntity("be"..i)
+    end
+    for i=1,4,1 do
+        DestroyEntity("ae"..i)
+    end
 end 
 
 --Gibt dem Spieler massiv viele Ressourcen
