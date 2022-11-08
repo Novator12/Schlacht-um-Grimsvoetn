@@ -44,25 +44,10 @@ end
 
 --Nebelvolk zum Start 
 
-SetupNV = {
-    id = 6,
-    name = "Nebelkrieger",
-    headquarters = "",
-    color = "green",
-    strength = 4,
-    range = 2000,
-    techlevel = 4,
-    aggressiveness = 4,
-    extracting = false,
-    repairing = false,
-    friends = false,
-    enemies = {1},
-    explore = false,
-}
-
 function CreateNVStart()
 
-    SetupAI(SetupNV)
+    Logic.SetPlayerRawName(6, "Nebelkrieger")
+    SetHostile(1,6)
 
     nvStartArmy = UnlimitedArmy:New({					
 			-- benötigt
@@ -79,7 +64,7 @@ function CreateNVStart()
 			--DefendDoNotHelpHeroes,
 			AutoRotateRange = 100000,
 			--DoNotNormalizeSpeed,
-			--IgnoreFleeing,
+			IgnoreFleeing = true,
 			--HiResJob,
 		})
     nvTypeCounter = 0
@@ -143,25 +128,10 @@ end
 
 ---Banditenlager
 
-SetupBandits = {
-    id = 7,
-    name = "Banditen",
-    headquarters = "",
-    color = "black",
-    strength = 4,
-    range = 2000,
-    techlevel = 4,
-    aggressiveness = 4,
-    extracting = false,
-    repairing = false,
-    friends = false,
-    enemies = {1},
-    explore = false,
-}
-
 function ActivateBandits()
 
-    SetupAI(SetupBandits)
+    SetHostile(1,7)
+    Logic.SetPlayerRawName(7, "Banditen")
 
     if mode == 1 then
         bandit_table = {
@@ -192,7 +162,8 @@ function ActivateBandits()
             LeaderFormation = 4,
             AIActive = true,
             AutoRotateRange = 100000,
-            HiResJob = true
+            HiResJob = true,
+			IgnoreFleeing = true,
         },i+0,NumberUA)
     
 
@@ -340,7 +311,8 @@ function ActivateNVCamp()
             Formation = UnlimitedArmy.Formations.Chaotic,
             AIActive = true,
             AutoRotateRange = 100000,
-            HiResJob = true
+            HiResJob = true,
+			IgnoreFleeing = true,
         },i+4,NumberUA)
     
 
