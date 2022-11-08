@@ -69,6 +69,7 @@ function ActivateNvAttackBase()
                 AIActive = false,
                 --DefendDoNotHelpHeroes,
                 AutoRotateRange = 100000,
+                IgnoreFleeing = true,
                 --DoNotNormalizeSpeed,
                 --IgnoreFleeing,
                 --HiResJob,
@@ -164,6 +165,7 @@ function ActivateNvAttackSignalFire()
                 AIActive = false,
                 --DefendDoNotHelpHeroes,
                 AutoRotateRange = 100000,
+                IgnoreFleeing = true,
                 --DoNotNormalizeSpeed,
                 --IgnoreFleeing,
                 --HiResJob,
@@ -510,7 +512,8 @@ function CreateNVIronPit()
             Formation = UnlimitedArmy.Formations.Chaotic,
             AIActive = true,
             AutoRotateRange = 100000,
-            HiResJob = true
+            HiResJob = true,
+			IgnoreFleeing = true,
         }, 7,NumberUA)
     
 
@@ -684,7 +687,7 @@ function ActivateTributWolfgang()
 
     Tribut_CreateBuildingSitesVillage = CreateATribute(1
     ,"@color:255,0,0 Ausbau zur Palisadenverteidigung @cr @color:255,255,255 Zahlt @color:212,175,55 "..build_costtable.Gold.." Gold  @color:255,255,255 , @color:91,58,41 "..build_costtable.Wood.." Holz @color:255,255,255 , @color:213,78,33 "..build_costtable.Clay.." Lehm @color:255,255,255 und @color:124,128,120 "..build_costtable.Stone.." Stein @color:255,255,255 für den Ausbau der Gerüste.",
-    rebuild_costtable, 
+    build_costtable, 
     function() 
         RebuildVillage()
         StartCutscene("villageflight", VillageCutsceneBrief)

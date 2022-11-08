@@ -1,3 +1,97 @@
+function InitExpellAllGUI()
+
+	assert(XGUIEng.GetWidgetID("Command_ExpelAll")==0, "Command_ExpelAll already exists")
+	CppLogic.UI.ContainerWidgetCreateGFXButtonWidgetChild("Commands_generic", "Command_ExpelAll", nil)
+	CppLogic.UI.WidgetSetPositionAndSize("Command_ExpelAll", 369, 76, 32, 32)
+	XGUIEng.ShowWidget("Command_ExpelAll", 1)
+	CppLogic.UI.WidgetSetBaseData("Command_ExpelAll", 0, false, false)
+	CppLogic.UI.WidgetSetGroup("Command_ExpelAll", "Command_group")
+	XGUIEng.DisableButton("Command_ExpelAll", 0)
+	XGUIEng.HighLightButton("Command_ExpelAll", 0)
+	CppLogic.UI.ButtonOverrideActionFunc("Command_ExpelAll", function() GUIAction_ExpelAllSettler() end)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAll", 0, 0, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAll", 0, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAll", 0, 255, 255, 255, 255)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAll", 1, 0.25, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAll", 1, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAll", 1, 255, 255, 255, 255)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAll", 2, 0.5, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAll", 2, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAll", 2, 255, 255, 255, 255)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAll", 3, 0, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAll", 3, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAll", 3, 128, 128, 128, 128)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAll", 4, 0.75, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAll", 4, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAll", 4, 255, 255, 255, 255)
+	CppLogic.UI.WidgetSetTooltipData("Command_ExpelAll", "TooltipBottom", true, true)
+	CppLogic.UI.WidgetOverrideTooltipFunc("Command_ExpelAll", function() GUITooltip_ExpelAllButton() end)
+	CppLogic.UI.WidgetSetUpdateManualFlag("Command_ExpelAll", true)
+
+	assert(XGUIEng.GetWidgetID("Command_ExpelAllSerf")==0, "Command_ExpelAllSerf already exists")
+	CppLogic.UI.ContainerWidgetCreateGFXButtonWidgetChild("SerfConstructionMenu", "Command_ExpelAllSerf", nil)
+	CppLogic.UI.WidgetSetPositionAndSize("Command_ExpelAllSerf", 326, 76, 32, 32)
+	XGUIEng.ShowWidget("Command_ExpelAllSerf", 1)
+	CppLogic.UI.WidgetSetBaseData("Command_ExpelAllSerf", 0, false, false)
+	CppLogic.UI.WidgetSetGroup("Command_ExpelAllSerf", "Command_group")
+	XGUIEng.DisableButton("Command_ExpelAllSerf", 0)
+	XGUIEng.HighLightButton("Command_ExpelAllSerf", 0)
+	CppLogic.UI.ButtonOverrideActionFunc("Command_ExpelAllSerf", function() GUIAction_ExpelAllSettler() end)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAllSerf", 0, 0, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAllSerf", 0, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAllSerf", 0, 255, 255, 255, 255)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAllSerf", 1, 0.25, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAllSerf", 1, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAllSerf", 1, 255, 255, 255, 255)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAllSerf", 2, 0.5, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAllSerf", 2, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAllSerf", 2, 255, 255, 255, 255)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAllSerf", 3, 0, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAllSerf", 3, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAllSerf", 3, 128, 128, 128, 128)
+	CppLogic.UI.WidgetMaterialSetTextureCoordinates("Command_ExpelAllSerf", 4, 0.75, 0.375, 0.25, 0.125)
+	XGUIEng.SetMaterialTexture("Command_ExpelAllSerf", 4, "graphics\\textures\\gui\\b_civil_tavern.png")
+	XGUIEng.SetMaterialColor("Command_ExpelAllSerf", 4, 255, 255, 255, 255)
+	CppLogic.UI.WidgetSetTooltipData("Command_ExpelAllSerf", "TooltipBottom", true, true)
+	CppLogic.UI.WidgetOverrideTooltipFunc("Command_ExpelAllSerf", function() GUITooltip_ExpelAllSerfButton() end)
+	CppLogic.UI.WidgetSetUpdateManualFlag("Command_ExpelAllSerf", true)
+	
+end
+
+function GUITooltip_ExpelAllButton()
+	XGUIEng.SetText("TooltipBottomText", "@color:255,255,0 Massenentlassung @cr @color:255,255,255 Entlässt alle selektierten Einheiten.")
+	XGUIEng.SetText("TooltipBottomCosts", "")
+end
+
+
+function GUIAction_ExpelAllSettler()
+	local EntityTable = {}
+	EntityTable = { GUI.GetSelectedEntities() }
+	for i = table.getn(EntityTable), 1, -1 do
+		if Logic.IsHero(EntityTable[i]) == 1 then
+			--Sound.PlayFeedbackSound( Sounds.Leader_LEADER_NO_rnd_01, 0 )
+		elseif Logic.IsLeader(EntityTable[i]) == 1 then
+			local EntitySoldierTable = {}
+			EntitySoldierTable       = { Logic.GetSoldiersAttachedToLeader(EntityTable[i]) }
+			table.remove(EntitySoldierTable, 1)
+			for n = table.getn(EntitySoldierTable), 1, -1 do
+				GUI.ExpelSettler(EntitySoldierTable[n])
+			end
+			GUI.ExpelSettler(EntityTable[i])
+		else
+			GUI.ExpelSettler(EntityTable[i])
+		end
+	end
+	EntityTable = nil
+end
+
+
+
+function GUITooltip_ExpelAllSerfButton()
+	XGUIEng.SetText("TooltipBottomText", "@color:255,255,0 Massenentlassung @cr @color:255,255,255 Entlässt alle selektierten Einheiten.")
+	XGUIEng.SetText("TooltipBottomCosts", "")
+end
+
 function InitBridgesCooldownGUI()
 	assert(XGUIEng.GetWidgetID("BridgeCooldown")==0, "BridgeCooldown already exists")
 	assert(XGUIEng.GetWidgetID("TooltipBrigeLava")==0, "TooltipBrigeLava already exists")
@@ -2523,4 +2617,5 @@ function GUI_Initialize()
 	GameSpeedButton()
 	veteranBombAbility()
 	InitCameraZoomButton()
+	InitExpellAllGUI()
 end

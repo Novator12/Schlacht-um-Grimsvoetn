@@ -1,7 +1,8 @@
 function DebugTestKI4()
     DebugOpen()
     Debug1()
-    SetupAI(SetupPlayer4)
+    SetHostile(1,4)
+    Logic.SetPlayerRawName(4, "Schattenfeste")
     ActivateTributesChapter4()
     StartPatrolKI4()
     AddTribute(Tribut_DrawBridgeNorth)
@@ -52,6 +53,13 @@ function DebugTroups2()
     CreateMilitaryGroup(1,Entities.PU_LeaderCavalry2,6,GetPosition("debug_help1"),"hilfe2")
     CreateMilitaryGroup(1,Entities.PU_LeaderHeavyCavalry1,3,GetPosition("debug_help1"),"hilfe3")
     CreateMilitaryGroup(1,Entities.PU_LeaderHeavyCavalry2,3,GetPosition("debug_help1"),"hilfe4")
+end
+
+function DebugTroups3()
+    CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow1,8,GetPosition("debug_help1"),"hilfe1")
+    CreateMilitaryGroup(1,Entities.CU_BanditLeaderBow2,8,GetPosition("debug_help1"),"hilfe2")
+    CreateMilitaryGroup(1,Entities.CU_BanditLeaderSword1,8,GetPosition("debug_help1"),"hilfe3")
+    CreateMilitaryGroup(1,Entities.CU_BanditLeaderSword2,8,GetPosition("debug_help1"),"hilfe4")
 end
 
 
@@ -197,4 +205,53 @@ function Debug4()
     _G["NvCampArmy"..i]:KillAllLeaders()
     _G["NvCampArmy"..i]:Destroy()
 end
+end
+
+
+function DebugIron()
+    DestroyEntity("nv_spawner_iron")
+    NVIronArmy:KillAllLeaders()
+    NVIronArmy:Destroy()
+end
+
+function DebugKI5Def()
+    KI5SpawnerBanditArmy1:ClearCommandQueue()
+    KI5SpawnerBanditArmy2:ClearCommandQueue()
+    KI5SpawnerBanditArmy1: AddCommandMove(GetPosition("spawner_bandit1_id5"), true);
+    KI5SpawnerBanditArmy1:AddCommandWaitForIdle(true);
+    KI5SpawnerBanditArmy2: AddCommandMove(GetPosition("spawner_bandit1_id5"), true);
+    KI5SpawnerBanditArmy2:AddCommandWaitForIdle(true);
+    KI5SpawnerArmy:ClearCommandQueue()
+    KI5Army:ClearCommandQueue()
+    KI5SpawnerArmy: AddCommandMove(GetPosition("hq_id5"), true);
+    KI5SpawnerArmy: AddCommandWaitForIdle(true);
+    KI5Army: AddCommandMove(GetPosition("hq_id5"), true);
+    KI5Army: AddCommandWaitForIdle(true);
+end
+
+
+function DebugKI5Attack()
+    KI5SpawnerBanditArmy1:ClearCommandQueue()
+    KI5SpawnerBanditArmy2:ClearCommandQueue()
+    KI5SpawnerBanditArmy1: AddCommandMove(GetPosition("barb_castle"), true);
+    KI5SpawnerBanditArmy1:AddCommandWaitForIdle(true);
+    KI5SpawnerBanditArmy2: AddCommandMove(GetPosition("barb_castle"), true);
+    KI5SpawnerBanditArmy2:AddCommandWaitForIdle(true);
+    KI5SpawnerArmy:ClearCommandQueue()
+    KI5Army:ClearCommandQueue()
+    KI5SpawnerArmy: AddCommandMove(GetPosition("barb_castle"), true);
+    KI5SpawnerArmy: AddCommandWaitForIdle(true);
+    KI5Army: AddCommandMove(GetPosition("barb_castle"), true);
+    KI5Army: AddCommandWaitForIdle(true);
+end
+
+
+function DebugDeactivateThiefAttack()
+    EnableThiefAttack = false
+    for i = table.getn(ThiefTable),1,-1 do
+        if IsExisting(ThiefTable[i]) then
+            DestroyEntity(ThiefTable[i])
+        end
+    end
+    ThiefTable = nil
 end

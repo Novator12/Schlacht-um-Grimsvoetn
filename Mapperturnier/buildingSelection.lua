@@ -10,6 +10,29 @@ function HelgarBombSelection()
     end
 end
 
+
+function BanditenSelection()
+    GameCallback_GUI_SelectionChangedBanditen = GameCallback_GUI_SelectionChanged
+    function GameCallback_GUI_SelectionChanged()
+        GameCallback_GUI_SelectionChangedBanditen()
+        local sel = GUI.GetSelectedEntity()
+        local type = Logic.GetEntityTypeName(Logic.GetEntityType(sel))
+        if type == "CU_BanditLeaderSword1" or type == "CU_BanditLeaderSword2" then
+            local VideoName = "data\\graphics\\videos\\cu_banditleadersword1.bik"
+                XGUIEng.StartVideoPlayback( gvGUI_WidgetID.VideoPreview, VideoName, 1 )
+        elseif type == "CU_BanditLeaderBow1" then
+            local VideoName = "data\\graphics\\videos\\pu_leaderbow2.bik"
+                XGUIEng.StartVideoPlayback( gvGUI_WidgetID.VideoPreview, VideoName, 1 )
+        elseif type == "CU_BanditLeaderBow2" then
+            local VideoName = "data\\graphics\\videos\\pu_leaderbow3.bik"
+                XGUIEng.StartVideoPlayback( gvGUI_WidgetID.VideoPreview, VideoName, 1 )
+        end
+        XGUIEng.DoManualButtonUpdate(gvGUI_WidgetID.InGame)
+    end
+end
+
+
+
 function CalvaryFormationSelection()
     GameCallback_GUI_SelectionChangedCalvary = GameCallback_GUI_SelectionChanged
     function GameCallback_GUI_SelectionChanged()
@@ -24,7 +47,19 @@ function CalvaryFormationSelection()
     end
 end
 
-
+function IsHeroSelection()
+    GameCallback_GUI_SelectionChangedIsHero = GameCallback_GUI_SelectionChanged
+    function GameCallback_GUI_SelectionChanged()
+        GameCallback_GUI_SelectionChangedIsHero()
+        local EntityId = GUI.GetSelectedEntity()
+        if Logic.IsHero(EntityId) == 1 then
+            XGUIEng.DisableButton("Command_ExpelAll", 1)
+        else
+            XGUIEng.DisableButton("Command_ExpelAll", 0)
+        end
+        XGUIEng.DoManualButtonUpdate(gvGUI_WidgetID.InGame)
+    end
+end
 
 
 function BarbarianHQSelection()
@@ -269,4 +304,6 @@ function InitBuildingSelection()
     WoodMineSelection3()
     BarbArenaSelection()
     CalvaryFormationSelection()
+    IsHeroSelection()
+    BanditenSelection()
 end

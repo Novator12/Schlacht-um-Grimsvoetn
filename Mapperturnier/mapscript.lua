@@ -102,6 +102,10 @@ function InitWeatherGfxSets()
 	CppLogic.Logic.SetStringTableText("names/CB_Barbarian_Arena", "Barbarenarena")
 	CppLogic.Logic.SetStringTableText("names/CB_EvilBoat", "Nebelkriegerschiff")
 	CppLogic.Logic.SetStringTableText("names/XD_EvilBoat_Wreckage", "Schiffswrack")
+	CppLogic.Logic.SetStringTableText("names/CU_BanditLeaderSword1", "Banditen")
+	CppLogic.Logic.SetStringTableText("names/CU_BanditLeaderSword2", "Banditen")
+	CppLogic.Logic.SetStringTableText("names/CU_BanditLeaderBow1", "Banditenschützen")
+	CppLogic.Logic.SetStringTableText("names/CU_BanditLeaderBow2", "Banditenschützen")
 	
 	CppLogic.ModLoader.ReloadGUITexture("data\\graphics\\textures\\gui\\b_select_varg.png")
     CppLogic.ModLoader.ReloadGUITexture("data\\graphics\\textures\\gui\\b_statistics.png")
@@ -215,7 +219,7 @@ function InitPlayerColorMapping()
 	Display.SetPlayerColorMapping(6, EVIL_GOVERNOR_COLOR)
 	Display.SetPlayerColorMapping(7, ROBBERS_COLOR)
 end
-	
+
 --++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 -- This function is called on game start after all initialization is done
 function FirstMapAction()
@@ -224,7 +228,7 @@ function FirstMapAction()
 	Display.SetRenderLandscapeDebugInfo(0)   --Debug
     ActivateBriefingsExpansion()
     StartSimpleJob("BarbCounter")  --CounterJob für kaufbare Barbaren im BarbarenHQ
-
+	OverrideGUIAction_ToggleMenu()
     InitBuildingSelection() --Aktivierung der Selectionsüberarbeitung für neue Gebäude
     InitalizeBarbTower()  --Aktivierung der Barbarentürme
 	UpgradeNewTroops() --Aktivierung der neuen Truppenupgrades
@@ -234,7 +238,7 @@ function FirstMapAction()
 	Tribute_Comforts() --Aktivierung der Tribut Comfort
 
 	--Anzahl UAs
-	NumberUA = 24
+	NumberUA = 28
 
 	--CC aktivieren
 	ActivateCC()
@@ -306,6 +310,11 @@ function FirstMapAction()
 	--Holzmine (verbleibende Ressourcen)
 	StartSimpleJob("WoodMineState")
 
+	--Kanonen und Leibis heilen HP
+	ComfortsStartHeal()
+
+	--HandelBalancing
+	Trigger.RequestTrigger(Events.LOGIC_EVENT_GOODS_TRADED,nil,"TransactionDetails",1,nil,nil) 
 end
 
 function ThiefLimiter()
@@ -1367,7 +1376,7 @@ end
 --################ Cannon / Serf Heal by P4F #######################--
 --##################################################################--
 
-function ComfortsStart()
+function ComfortsStartHeal()
 	SerfTablePlayer1={}
 	CannonTablePlayer1={}
 	Trigger.RequestTrigger(Events.LOGIC_EVENT_ENTITY_CREATED,"","EV_ON_ENTITY_CREATED",1)
@@ -1428,3 +1437,106 @@ end
 
 --##################################################################--
 --##################################################################--
+
+
+
+
+--Ghouls Handel-Balancer
+
+function TransactionDetails()
+
+    local eID = Event.GetEntityID()    
+    local TSellTyp = Event.GetSellResource()     
+    local TTyp = Event.GetBuyResource()     
+    local PID = Logic.EntityGetPlayer(eID)    
+
+    if Logic.GetCurrentPrice(PID,TSellTyp) > 1.3 then    
+        Logic.SetCurrentPrice(PID, TSellTyp, 1.3 )        
+    end
+    
+    if Logic.GetCurrentPrice(PID,TSellTyp) < 0.8 then    
+        Logic.SetCurrentPrice(PID, TSellTyp, 0.8 )        
+    end
+    
+    if Logic.GetCurrentPrice(PID,TTyp) > 1.3 then    
+        Logic.SetCurrentPrice(PID, TTyp, 1.3 )        
+    end
+    
+    if Logic.GetCurrentPrice(PID,TTyp) < 0.8 then    
+        Logic.SetCurrentPrice(PID, TTyp, 0.8 )    
+    end
+    
+end
+
+---Override Save Game Function 
+
+function OverrideGUIAction_ToggleMenu()
+
+	function GUIAction_ToggleMenu(_Menu, _Status)
+
+		NormalSpeedInBriefing()
+		-- Do not go back the main menu, when player hast los / won the game and cancle loading
+		if XGUIEng.GetCurrentWidgetID() == XGUIEng.GetWidgetID("MainMenuLoadWindowCloseButton")
+			and Logic.PlayerGetGameState(GUI.GetPlayerID()) ~= 1 then
+			_Menu = gvGUI_WidgetID.GameEndScreenWindowHint
+			_Status = 0
+		end
+
+
+		--if Logic.PlayerGetGameState(GUI.GetPlayerID())  ~= 1
+		--and _Menu ~= gvGUI_WidgetID.MainMenuLoadWindow
+		--and _Menu ~= gvGUI_WidgetID.GameEndScreenWindowHint	then
+		--	return
+		--end
+
+
+
+		-- Should toggle AND is shown right now?
+		local DoneFlag = 0
+		if _Status == -1 then
+			if XGUIEng.IsWidgetShown(_Menu) == 1 then
+				DoneFlag = 1
+			end
+		end
+
+
+		-- Hide all
+		XGUIEng.ShowAllSubWidgets(gvGUI_WidgetID.Windows, 0)
+
+		-- Check trade
+		if _Menu == gvGUI_WidgetID.TradeWindow then
+			local TributIDs = { Logic.GetAllTributes(GUI.GetPlayerID()) }
+			local HasPlayerTributes = TributIDs[1]
+			if HasPlayerTributes == 0 then
+				DoneFlag = 1
+			end
+		end
+
+		-- Check quest
+		if _Menu == gvGUI_WidgetID.QuestWindow then
+			local QuestIDs = { Logic.GetAllQuests(GUI.GetPlayerID()) }
+			local HasPlayerQuests = QuestIDs[1]
+			if HasPlayerQuests == 0 then
+				DoneFlag = 1
+			end
+		end
+
+		-- Check network
+		if _Menu == gvGUI_WidgetID.NetworkWindow
+			or _Menu == gvGUI_WidgetID.BuyHeroWindow then
+			if XNetwork.Manager_DoesExist() == 0 then
+				DoneFlag = 1
+			end
+		end
+
+		-- Done?
+		if DoneFlag == 1 then
+			return
+		end
+
+		XGUIEng.ShowWidget(_Menu, _Status)
+
+
+
+	end
+end

@@ -18,26 +18,11 @@ function Start_Chapter4()
     DefeatJob1 = StartSimpleJob("AllHerosDead")
     RefreshDisplayNames()
     MakeDefInvulnerable()
-    SetupAI(SetupPlayer4)
+    SetHostile(1,4)
+    Logic.SetPlayerRawName(4, "Schattenfeste")
     StartBriefingChapter4()
 end
 
-
-SetupPlayer4 = {
-    id = 4,
-    name = "Schattenfeste",
-    headquarters = "hq_id4",
-    color = "grey",
-    strength = 4,
-    range = 100000,
-    techlevel = 4,
-    aggressiveness = 8,
-    extracting = false,
-    repairing = true,
-    friends = false,
-    enemies = {1,2},
-    explore = false,
-}
 
 function MakeDefInvulnerable()
     for i = 1,4,1 do
@@ -229,6 +214,7 @@ function ActivateThiefQuest() --Wechselt zu Spieler 2
     CppLogic.Logic.PlayerSetTaxLevel(1, 2) --Steuern auf normal gesetzt
     StartPatrolKI4()
     ThiefPointer1 = Logic.CreateEffect(GGL_Effects.FXTerrainPointer,GetPosition("thief_pos1").X,GetPosition("thief_pos1").Y,1)
+    ThiefDeadJob = StartSimpleJob("ThiefIsDead")
 end
 
 function StartPatrolKI4()
@@ -351,6 +337,7 @@ AllBridgesActivated = false
 
 function TheodorNearSecretEntrance()
     if IsNear(theodor,"thief_pos1",300) then
+        EndJob(ThiefDeadJob)
         GUI.DestroyMinimapPulse(GetPosition("thief_pos1").X,GetPosition("thief_pos1").Y)
         Logic.DestroyEffect(ThiefPointer1)
         DestroyEntity(theodor)
@@ -608,6 +595,7 @@ function ThiefSecretEscape()
         EndJob(ThiefDeadJob)
         DestroyEntity(theodor)
         theodor = Logic.CreateEntity(Entities.PU_Thief,GetPosition("thief_pos1").X,GetPosition("thief_pos1").Y,0,2)
+        ThiefDeadJob = StartSimpleJob("ThiefIsDead")
         Message("Ich sollte mich auf den Weg zu Varg machen!")
         Camera.ScrollSetLookAt(GetPosition("thief_pos1").X,GetPosition("thief_pos1").Y)
         StartSimpleJob("ThiefNearVarg")
@@ -625,6 +613,7 @@ function ThiefNearVarg()
         Logic.EntityLookAt(trupp2,theodor)
         Logic.EntityLookAt(trupp3,theodor)
         Logic.EntityLookAt(guard,theodor)
+        EndJob(ThiefDeadJob)
         if XGUIEng.IsWidgetShown("ThiefCollectables") == 1 then
             XGUIEng.ShowWidget("ThiefCollectables",0)
         end
@@ -695,6 +684,17 @@ function TheodorVargBriefing2()
             ResCheatKI4()
             ActivateKI4Attacks()
             KI4RecruitSerfs()
+
+            --NV Rush
+            NVtime = 180
+            if mode == 3 then
+                NVtime = 60
+            elseif mode == 2 then
+                NVtime = 120
+            elseif mode == 1 then
+                NVtime = 180
+            end
+            StartCountdown(NVtime,ActivateNVRush,false)
             
 
             ---Def Generatoren
@@ -1125,7 +1125,8 @@ function ActivateKI4Attacks()
         LeaderFormation = 4,
         AIActive = true,
         AutoRotateRange = 100000,
-        HiResJob = true
+        HiResJob = true,
+        IgnoreFleeing = true,
     }, 20, NumberUA)
 
 
@@ -1153,7 +1154,8 @@ function ActivateKI4Attacks()
         },
         ResCheat = true,
         ReorderAllowed = false,
-        DoNotRemoveIfDeadOrEmpty = true
+        DoNotRemoveIfDeadOrEmpty = true,
+        RemoveUnavailable = true
     })
 
     KI4RecruitingArmy.ControlState= UAControlState.Refill
@@ -1168,31 +1170,31 @@ function HandleArmy(self, cmd)
     if self.ControlState ~= UAControlState.Refill and self:IsDead() then
         self.SpawnerActive = true
         self.ControlState = UAControlState.Refill
-        Message("now refilling, cmd move home")
+        --Message("now refilling, cmd move home")
         return false, UnlimitedArmy.CreateCommandMove(GetPosition("def_pos_army4"))
     end
     if self.ControlState == UAControlState.Refill then
         if self:GetSize() >= self.Spawner.ArmySize then
             self.SpawnerActive = false
             self.ControlState = UAControlState.Attacking
-            Message("now attacking")
+            --Message("now attacking")
         else
-            Message("cmd def")
+            --Message("cmd def")
             return false, cmd.Def
         end
     end
     if self.ControlState == UAControlState.Attacking then
         if IsOnSide(self) then
             if self:IsIdle() then
-                Message("cmd move attack")
+                --Message("cmd move attack")
                 return false, UnlimitedArmy.CreateCommandMove(GetPosition("barb_castle"))
             end
         else
-            Message("no way, def")
+            --Message("no way, def")
             return false, cmd.Def
         end
     end
-    Message("no cmd")
+    --Message("no cmd")
     return false
 end
 
@@ -1329,7 +1331,8 @@ function ActivateSupportArmy1()
         Formation = UnlimitedArmy.Formations.Lines,
         AIActive = true,
         AutoRotateRange = 100000,
-        HiResJob = true
+        HiResJob = true,
+        IgnoreFleeing = true,
     }, 22, NumberUA)
 
     SupportArmy1Spawner = UnlimitedArmySpawnGenerator:New(SupportArmy1, {
@@ -1406,7 +1409,8 @@ function ActivateSupportArmy2()
         Formation = UnlimitedArmy.Formations.Lines,
         AIActive = true,
         AutoRotateRange = 100000,
-        HiResJob = true
+        HiResJob = true,
+        IgnoreFleeing = true,
     }, 23, NumberUA)
 
     SupportArmy2Spawner = UnlimitedArmySpawnGenerator:New(SupportArmy2, {
@@ -1441,6 +1445,163 @@ function KI4Defeated()
             return true
         end
     end
+end
+
+
+function ActivateNVRush()
+    ActivateRushSpawner1()
+    ActivateRushSpawner2()
+    StartNVRushBrief()
+end
+
+
+function StartNVRushBrief()
+    local briefing = {}
+    local AP = function(_page) table.insert(briefing, _page) return _page end
+    local page1 = AP{
+        title	= "Mentor",
+        text	= "Seht Herr, das Nebelvolk hat einen Weg durch das unterirdische Höhlensystem gefunden und greift uns wieder an!",
+        position = GetPosition("nv_rush1"),
+        explore = 2000,
+    }
+    local page2 = AP{
+        title	= "Mentor",
+        text	= "Sie kommen auch am Fuß des Vulkans aus den Höhlen!",
+        position = GetPosition("nv_rush2"),
+        explore = 2000,
+    }
+    briefing.finished = function()  
+        ResolveBriefing(page1)
+        ResolveBriefing(page2)
+        for i=1,6,1 do
+            DestroyEntity("pali"..i)
+        end
+        NVRushJob = StartSimpleJob("NVRush2Checker")
+     end;
+     NormalSpeedInBriefing()
+     StartBriefing(briefing)
+
+end
+
+function NVRush2Checker()
+    if IsDestroyed("block_rush2") then
+        ReplaceEntity("nv_rush2",Entities.XD_RockDarkEvelance7)
+        Sound.Play2DSound(1069,0,150)
+        Logic.CreateEffect(GGL_Effects.FXBuildingSmokeLarge, GetPosition("nv_rush2").X, GetPosition("nv_rush2").Y, 1) 
+        SpawnerNVRushArmy2:Remove()
+        return true
+    end
+end
+
+function ActivateRushSpawner1()
+   
+    if mode == 1 then
+        nvrush1_table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 180 --Respawnzeit
+        }
+    elseif mode == 2 then
+        nvrush1_table = {
+            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [2] = 140 --Respawnzeit
+        }
+    elseif mode == 3 then
+        nvrush1_table = {
+            [1] = 6, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    end
+    
+    
+        NVRushArmy1 = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 6,
+            Area = 4000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Chaotic,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true,
+			IgnoreFleeing = true,
+        }, 24,NumberUA)
+    
+
+        SpawnerNVRushArmy1 = UnlimitedArmySpawnGenerator:New(NVRushArmy1, {
+            -- benötigt:
+            Position = GetPosition("nv_rush1"), --position
+            ArmySize = nvrush1_table[1], --armysize
+            SpawnCounter = nvrush1_table[2],  --spawncounter
+            SpawnLeaders = nvrush1_table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.CU_Evil_LeaderBearman1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderSkirmisher1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderBearman1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderSkirmisher1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderBearman1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderSkirmisher1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+            },
+        })
+
+        NVRushArmy1: AddCommandMove(GetPosition("barb_castle"), true);
+        NVRushArmy1: AddCommandWaitForIdle(true);
+
+end
+
+function ActivateRushSpawner2()
+    if mode == 1 then
+        nvrush2_table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 180 --Respawnzeit
+        }
+    elseif mode == 2 then
+        nvrush2_table = {
+            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [2] = 140 --Respawnzeit
+        }
+    elseif mode == 3 then
+        nvrush2_table = {
+            [1] = 6, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    end
+    
+    
+        NVRushArmy2 = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 6,
+            Area = 4000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Chaotic,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true,
+			IgnoreFleeing = true,
+        }, 25,NumberUA)
+    
+
+        SpawnerNVRushArmy2 = UnlimitedArmySpawnGenerator:New(NVRushArmy2, {
+            -- benötigt:
+            Position = GetPosition("nv_rush2"), --position
+            ArmySize = nvrush2_table[1], --armysize
+            SpawnCounter = nvrush2_table[2],  --spawncounter
+            SpawnLeaders = nvrush2_table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.CU_Evil_LeaderBearman1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderSkirmisher1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderBearman1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderSkirmisher1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderBearman1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.CU_Evil_LeaderSkirmisher1, SoldierNum = 16 , SpawnNum = 1, Looped = true, Experience = 3},
+            },
+        })
+
+        NVRushArmy2: AddCommandMove(GetPosition("barb_castle"), true);
+        NVRushArmy2: AddCommandWaitForIdle(true);
+
 end
 
 

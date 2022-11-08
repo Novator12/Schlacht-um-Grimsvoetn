@@ -1025,15 +1025,7 @@ function ActivateDeadJargBrief()
                         text = "@color:255,136,0 Heureka. Hier ist alles drin was wir brauchen!",
                         position = GetPosition("chest_nv"),
                         };
-                    local page9 = AP{
-                        title = "@color:255,0,0 Mijörn",
-                        text = "@color:255,136,0 ",
-                        npc = { id = GetEntityId(varg),
-                                    isObserved = true },
-                        action = function() 
-                            
-                        end     
-                        };
+
     briefing.finished = function() 
         ResolveBriefing(page1); 
         ResolveBriefing(page2); 
@@ -1103,23 +1095,31 @@ end
 function HeimdallNearSignal()
     if IsNear("hermit","signalfire",700) then
         BriefingHeimdallSignal()
-        HeimdallCount1 = StartCountdown(10*60,TalkToHeimdallWarning1,false)
+        if mode ==1 then
+            HermitTimer = 15
+        elseif mode ==2 then
+            HermitTimer = 10
+        elseif mode == 3 then
+            HermitTimer = 7
+        end
+        HeimdallCount1 = StartCountdown(HermitTimer*60,TalkToHeimdallWarning1,false)
         return true;
     end
 end
 
+
 function TalkToHeimdallWarning1()
     Message("Ihr solltet mit Heimdall beim Signalfeuer sprechen.")
-    HeimdallCount2 = StartCountdown(10*60,TalkToHeimdallWarning2,false)
+    HeimdallCount2 = StartCountdown(HermitTimer*60,TalkToHeimdallWarning2,false)
 end
 
 function TalkToHeimdallWarning2()
     Message("Sprecht mit Heimdall bevor er an Altersschwäche stirbt.")
-    HeimdallCount3 = StartCountdown(10*60,TalkToHeimdallWarning3,true)
+    HeimdallCount3 = StartCountdown(HermitTimer*60,TalkToHeimdallWarning3,true)
 end
 
 function TalkToHeimdallWarning3()
-    Message("Ein Blitz hat Heimdall erschlage. Was ein Pech!")
+    Message("Ein Blitz hat Heimdall erschlagen. Was ein Pech!")
     Logic.CreateEffect(GGL_Effects.FXLightning, GetPosition("hermit").X, GetPosition("hermit").Y, 1)
     DestroyEntity("hermit")
     StartCountdown(5,DefeatHeimdall,false)

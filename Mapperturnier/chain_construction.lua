@@ -74,6 +74,12 @@ GameCallback_OnBuildingConstructionCompleteCC=GameCallback_OnBuildingConstructio
             local serfs = {}
             serfs = { Logic.GetEntitiesInArea(Entities.PU_Serf,GetPosition(csite).X,GetPosition(csite).Y,CHAIN_CONSTRUCTION_MAX_DISTANCE,8)}
             table.remove(serfs,1)
+            for i= table.getn(serfs),1,-1 do
+                local tasklist = Logic.GetCurrentTaskList(serfs[i])
+                if not tasklist == "TL_SERF_IDLE" then
+                    table.remove(serfs,i)
+                end
+            end
             --LuaDebugger.Log(serfs);
             
             local buildings = {};

@@ -40,7 +40,7 @@ function MakeRuinsExtractableArea1()
 	for i = 1,table.getn(EntitiesArea1ToCheckTable),1 do
 		for n = 1, table.getn(EntitiesArea1ToCheckTable[i][2]) do
 			local ruinId = GetID(EntitiesArea1ToCheckTable[i][2][n])
-			CreateStone(ruinId,100,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
+			CreateStone(ruinId,50,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
 		end
 	end
 end
@@ -58,6 +58,9 @@ EntitiesArea2ToCheckTable = {
 	[10] = {Entities.XD_RuinWall2},
 	[11] = {Entities.XD_RuinWall4},
 	[12] = {Entities.XD_RuinWall6},
+	[13] = {Entities.XD_Signpost1},
+	[14] = {Entities.XD_Signpost2},
+	[15] = {Entities.XD_Signpost3},
 }
 
 function ScanRuinsArea2()
@@ -71,7 +74,7 @@ function MakeRuinsExtractableArea2()
 	for i = 1,table.getn(EntitiesArea2ToCheckTable),1 do
 		for n = 1, table.getn(EntitiesArea2ToCheckTable[i][2]) do
 			local ruinId = GetID(EntitiesArea2ToCheckTable[i][2][n])
-			CreateStone(ruinId,100,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
+			CreateStone(ruinId,50,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
 		end
 	end
 end
@@ -108,7 +111,7 @@ function MakeRuinsExtractableArea3()
 	for i = 1,table.getn(EntitiesArea3ToCheckTable),1 do
 		for n = 1, table.getn(EntitiesArea3ToCheckTable[i][2]) do
 			local ruinId = GetID(EntitiesArea3ToCheckTable[i][2][n])
-			CreateStone(ruinId,100,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
+			CreateStone(ruinId,50,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
 		end
 	end
 end
@@ -136,7 +139,7 @@ EntitiesArea4ToCheckTable = {
 
 function ScanRuinsArea4()
 	for i= 1, table.getn(EntitiesArea4ToCheckTable), 1 do
-		EntitiesArea4ToCheckTable[i][2]= {Logic.GetEntitiesInArea(EntitiesArea4ToCheckTable[i][1],GetPosition("ruin_area3").X,GetPosition("ruin_area3").Y,3000,16)}
+		EntitiesArea4ToCheckTable[i][2]= {Logic.GetEntitiesInArea(EntitiesArea4ToCheckTable[i][1],GetPosition("ruin_area4").X,GetPosition("ruin_area4").Y,3000,16)}
 		table.remove(EntitiesArea4ToCheckTable[i][2],1)
 	end
 end
@@ -145,7 +148,7 @@ function MakeRuinsExtractableArea4()
 	for i = 1,table.getn(EntitiesArea4ToCheckTable),1 do
 		for n = 1, table.getn(EntitiesArea4ToCheckTable[i][2]) do
 			local ruinId = GetID(EntitiesArea4ToCheckTable[i][2][n])
-			CreateStone(ruinId,100,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
+			CreateStone(ruinId,50,"TL_SERF_EXTRACT_RESOURCE","stone",500,1)
 		end
 	end
 end
