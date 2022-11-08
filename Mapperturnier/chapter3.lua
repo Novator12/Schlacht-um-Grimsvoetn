@@ -17,7 +17,8 @@ end
 function StartBriefingChapter3()
     --SetupAI5 
     --KI5 aktivieren
-    SetupAI(SetupPlayer5)
+    Logic.SetPlayerRawName(5, "Schattenkrieger")
+    SetHostile(1,5)
     ResCheatKI5()
     KI5RecruitSerfs()
     UpgradeKI5()
@@ -26,6 +27,8 @@ function StartBriefingChapter3()
     end
     ActivateSpawnerKI5()
     ActivateRecruiterKI5()
+    ActivateDef1KI5()
+    ActivateDef2KI5()
     
 
     --SetupBrief
@@ -142,21 +145,6 @@ function ScoutNearVarg()
 end
 
 
-SetupPlayer5 = {
-    id = 5,
-    name = "Schattenkrieger",
-    headquarters = "hq_id5",
-    color = "violet",
-    strength = 4,
-    range = 100000,
-    techlevel = 4,
-    aggressiveness = 8,
-    extracting = false,
-    repairing = true,
-    friends = false,
-    enemies = {1},
-    explore = false,
-}
 
 function KI5RecruitSerfs()
     if IsExisting("hq_id5") then
@@ -254,10 +242,76 @@ function LeoResearchDoneBrief()
         --ActivateShortcut
         DestroyEntity("shortcut1")
         DestroyEntity("shortcut2")
+        EvilBomber = Logic.CreateEntity(Entities.CU_SmelterIdle,GetPosition("evil_bomber").X,GetPosition("evil_bomber").Y,0,5)
+        EvilBomberJob1 = StartSimpleJob("BombPlaceHandler1")
+        Move(EvilBomber,"evil_bomb1")
         Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Angriff auf die Schattenkrieger", "@cr Bekämpft die Schattenkrieger und zerstört Ihre Militärgebäude und die Burg.", 1) 
     end;
     NormalSpeedInBriefing()
     StartBriefing(briefing)
+end
+
+
+function BombPlaceHandler1()
+    if IsNear(EvilBomber,"evil_bomb1") then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb1").X,GetPosition("evil_bomb1").Y,0,1)
+        StartCountdown(60,Move(EvilBomber,"evil_bomb1"),false)
+        EvilBomberJob2 = StartSimpleJob("BombPlaceHandler2")
+        return true
+    end
+end
+
+function BombPlaceHandler2()
+    if IsNear(EvilBomber,"evil_bomb2") then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb2").X,GetPosition("evil_bomb2").Y,0,1)
+        StartCountdown(60,Move(EvilBomber,"evil_bomb3"),false)
+        EvilBomberJob3 = StartSimpleJob("BombPlaceHandler3")
+        return true
+    end
+end
+
+function BombPlaceHandler3()
+    if IsNear(EvilBomber,"evil_bomb3") then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb3").X,GetPosition("evil_bomb3").Y,0,1)
+        StartCountdown(60,Move(EvilBomber,"evil_bomb4"),false)
+        EvilBomberJob4 = StartSimpleJob("BombPlaceHandler4")
+        return true
+    end
+end
+
+function BombPlaceHandler4()
+    if IsNear(EvilBomber,"evil_bomb4") then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb4").X,GetPosition("evil_bomb4").Y,0,1)
+        StartCountdown(60,Move(EvilBomber,"evil_bomb5"),false)
+        EvilBomberJob5 = StartSimpleJob("BombPlaceHandler5")
+        return true
+    end
+end
+
+function BombPlaceHandler5()
+    if IsNear(EvilBomber,"evil_bomb5") then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb5").X,GetPosition("evil_bomb5").Y,0,1)
+        StartCountdown(60,Move(EvilBomber,"evil_bomb6"),false)
+        EvilBomberJob6 = StartSimpleJob("BombPlaceHandler6")
+        return true
+    end
+end
+
+function BombPlaceHandler6()
+    if IsNear(EvilBomber,"evil_bomb6") then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb6").X,GetPosition("evil_bomb6").Y,0,1)
+        StartCountdown(60,Move(EvilBomber,"evil_bomb7"),false)
+        EvilBomberJob2 = StartSimpleJob("BombPlaceHandler7")
+        return true
+    end
+end
+
+function BombPlaceHandler7()
+    if IsNear(EvilBomber,"evil_bomb7") then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb7").X,GetPosition("evil_bomb7").Y,0,1)
+        Move(EvilBomber,"evil_bomber")
+        return true
+    end
 end
 
 function ResCheatKI5()
@@ -372,7 +426,8 @@ function ActivateSpawnerKI5()
             LeaderFormation = 4,
             AIActive = true,
             AutoRotateRange = 100000,
-            HiResJob = true
+            HiResJob = true,
+			IgnoreFleeing = true,
         },8,NumberUA)
     
 
@@ -394,6 +449,8 @@ function ActivateSpawnerKI5()
         KI5SpawnerArmy: AddCommandMove(GetPosition("barb_castle"), true);
         KI5SpawnerArmy: AddCommandWaitForIdle(true);
 end
+
+
 
 
 function ActivateRecruiterKI5()
@@ -425,7 +482,8 @@ function ActivateRecruiterKI5()
         LeaderFormation = 4,
         AIActive = true,
         AutoRotateRange = 100000,
-        HiResJob = true
+        HiResJob = true,
+        IgnoreFleeing = true,
     }, 9, NumberUA)
 
 
@@ -450,7 +508,8 @@ function ActivateRecruiterKI5()
         },
         ResCheat = true,
         ReorderAllowed = false,
-        DoNotRemoveIfDeadOrEmpty = true
+        DoNotRemoveIfDeadOrEmpty = true,
+        RemoveUnavailable = true
     })
 
     KI5Army: AddCommandMove(GetPosition("barb_castle"), true);
@@ -491,7 +550,8 @@ function ActivateSpawnerBanditsKI5()
             LeaderFormation = 4,
             AIActive = true,
             AutoRotateRange = 100000,
-            HiResJob = true
+            HiResJob = true,
+			IgnoreFleeing = true,
         },9+i,NumberUA)
     
 
@@ -519,8 +579,6 @@ function ActivateSpawnerBanditsKI5()
 end
 
 
-
-
 ThiefTable = {}
 function InitThiefAttack()
     if IsExisting("barb_castle") and EnableThiefAttack == true then
@@ -537,7 +595,6 @@ function InitThiefAttack()
         
     end
 end
-
 
 
 
@@ -662,4 +719,119 @@ function SchattenfesteCutsceneEnd()
     end;
     NormalSpeedInBriefing()
     StartBriefing(briefing)
+end
+
+
+
+
+function ActivateDef1KI5()
+
+
+    if mode == 1 then
+        KI5_Def1_Table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 2 then
+        KI5_Def1_Table = {
+            [1] = 3, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 3 then
+        KI5_Def1_Table = {
+            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    end
+    
+   
+    KI5Def1Army = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 5,
+            Area = 4000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Lines,
+            LeaderFormation = 4,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true,
+			IgnoreFleeing = true,
+        },26,NumberUA)
+    
+
+        SpawnerKI5Def1 = UnlimitedArmySpawnGenerator:New(KI5Def1Army, {
+            -- benötigt:
+            Position = GetPosition("ki5_spawn_def1"), --position
+            ArmySize = KI5_Def1_Table[1], --armysize
+            SpawnCounter = KI5_Def1_Table[2],  --spawncounter
+            SpawnLeaders = KI5_Def1_Table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.PU_LeaderBow4, SoldierNum = 8 , SpawnNum = 4, Looped = true, Experience = 3},
+            },
+            -- optional:
+            Generator = "archery_id5",  --generator
+        })
+
+        KI5Def1Army: AddCommandMove(GetPosition("ki5_patrol2"), true);
+        KI5Def1Army: AddCommandWaitForIdle(true);
+        KI5Def1Army: AddCommandMove(GetPosition("ki5_patrol1"), true);
+        KI5Def1Army: AddCommandWaitForIdle(true);
+end
+
+function ActivateDef2KI5()
+
+
+    if mode == 1 then
+        KI5_Def2_Table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 2 then
+        KI5_Def2_Table = {
+            [1] = 3, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 3 then
+        KI5_Def2_Table = {
+            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    end
+    
+   
+        KI5Def2Army = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 5,
+            Area = 4000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Lines,
+            LeaderFormation = 4,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true,
+			IgnoreFleeing = true,
+        },27,NumberUA)
+    
+
+        SpawnerKI5Def2 = UnlimitedArmySpawnGenerator:New(KI5Def2Army, {
+            -- benötigt:
+            Position = GetPosition("ki5_spawn_def2"), --position
+            ArmySize = KI5_Def2_Table[1], --armysize
+            SpawnCounter = KI5_Def2_Table[2],  --spawncounter
+            SpawnLeaders = KI5_Def2_Table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.PU_LeaderPoleArm4, SoldierNum = 8 , SpawnNum = 4, Looped = true, Experience = 3},
+            },
+            -- optional:
+            Generator = "barracks_id5",  --generator
+        })
+
+        KI5Def2Army: AddCommandMove(GetPosition("ki5_patrol1"), true);
+        KI5Def2Army: AddCommandWaitForIdle(true);
+        KI5Def2Army: AddCommandMove(GetPosition("ki5_patrol2"), true);
+        KI5Def2Army: AddCommandWaitForIdle(true);
 end
