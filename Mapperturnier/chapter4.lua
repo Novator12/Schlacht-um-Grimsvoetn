@@ -20,6 +20,9 @@ function Start_Chapter4()
     MakeDefInvulnerable()
     SetHostile(1,4)
     Logic.SetPlayerRawName(4, "Schattenfeste")
+    AI.Village_EnableConstructing(4, 1)
+    AI.Village_EnableRepairing(4, 1)
+    AI.Village_EnableExtracting(4,1)
     StartBriefingChapter4()
 end
 
@@ -210,6 +213,8 @@ end
 
 function ActivateThiefQuest() --Wechselt zu Spieler 2
     GUI.SetControlledPlayer(2)
+    SetHostile(2,4)
+    SetFriendly(1,2)
     Logic.ActivateUpdateOfExplorationForAllPlayers()
     CppLogic.Logic.PlayerSetTaxLevel(1, 2) --Steuern auf normal gesetzt
     StartPatrolKI4()
@@ -678,7 +683,7 @@ function TheodorVargBriefing2()
             AddTribute(Tribut_DrawBridgeNorth)
             AddTribute(Tribut_DrawBridgeLava)
             AddTribute(Tribut_BackdoorGate)
-            Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Finalschlacht", "@cr Ihr habt nun die volle Kontrolle über die Zuwege zur Schattenfeste. Setzt diese weise ein. Besiegt alle Militärgebäude und zerstört die Feste. @cr @cr @color:255,255,0 Wichtig: @color:255,255,255  Die Militärgebäude der Schattenfeste werden durch Dampfmaschinen geschützt. Zerstört diese zuerst, damit die Militärgebäude zerstört werden können!", 1) 
+            Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Finalschlacht", "@cr Ihr habt nun die volle Kontrolle über die Zuwege zur Schattenfeste. Setzt diese weise ein. Besiegt alle Militärgebäude, alle Soldaten und zerstört die Feste. @cr @cr @color:255,255,0 Wichtig: @color:255,255,255  Die Militärgebäude der Schattenfeste werden durch Dampfmaschinen geschützt. Zerstört diese zuerst, damit die Militärgebäude zerstört werden können!", 1) 
             BuffKI4()
             UpgradeKI4()
             ResCheatKI4()
@@ -1117,7 +1122,7 @@ function ActivateKI4Attacks()
     KI4RecruitingArmy = LazyUnlimitedArmy:New({
         -- benötigt
         Player = 4,
-        Area = 4000,
+        Area = 11000,
         -- optional
         AutoDestroyIfEmpty = true,
         TransitAttackMove = true,
@@ -1154,7 +1159,6 @@ function ActivateKI4Attacks()
         },
         ResCheat = true,
         ReorderAllowed = false,
-        DoNotRemoveIfDeadOrEmpty = true,
         RemoveUnavailable = true
     })
 
@@ -1174,7 +1178,7 @@ function HandleArmy(self, cmd)
         return false, UnlimitedArmy.CreateCommandMove(GetPosition("def_pos_army4"))
     end
     if self.ControlState == UAControlState.Refill then
-        if self:GetSize() >= self.Spawner.ArmySize then
+        if not self.Spawner or self:GetSize() >= self.Spawner.ArmySize then
             self.SpawnerActive = false
             self.ControlState = UAControlState.Attacking
             --Message("now attacking")
@@ -1212,40 +1216,40 @@ end
 
 
 function ActivateEndboss()
-
-    CreateEntity(4, Entities.CU_BlackKnight_LeaderMace1, GetPosition("spawn_hq_id4"), "Endgegner")
-
+    Endgegner = Logic.CreateEntity(Entities.CU_BlackKnight_LeaderMace1,GetPosition("spawn_hq_id4").X,GetPosition("spawn_hq_id4").Y,0,4)
     --Setup Endboss
-    CppLogic.Entity.SetDamage(GetID("Endgegner"), 30)
-    CppLogic.Entity.SetArmor(GetID("Endgegner"), 20)
-    CppLogic.Entity.Leader.SetTroopHealth(GetID("Endgegner"), 1000)
-    CppLogic.Entity.PerformHeal(GetID("Endgegner"), 1000, false)
+    CppLogic.Entity.SetDamage(GetID(Endgegner), 30)
+    CppLogic.Entity.SetArmor(GetID(Endgegner), 20)
+    CppLogic.Entity.Leader.SetTroopHealth(GetID(Endgegner), 1000)
+    CppLogic.Entity.PerformHeal(GetID(Endgegner), 1000, false)
     --
-
+    if IsAlive("support_army1") then
+        SupportArmy1:AddLeader(Endgegner)
+    end
     StartSimpleHiResJob("EndbossSpezial")
     StartSimpleJob("EndgegnerMinen")
 end
 
 function EndbossSpezial()
     if IsAlive("hq_id4") then
-        local id = GetEntityId("Endgegner")
+        local id = GetEntityId(Endgegner)
         if Logic.IsEntityAlive(id) then
             Logic.HealEntity(id, 5)
         end
     end
-    if IsDead("Endgegner") then
+    if IsDead(Endgegner) then
         StartCountdown(60 * 4, ActivateEndboss, false)
         return true
     end
 end
 
 function EndgegnerMinen()
-    if IsAlive("Endgegner") then
+    if IsAlive(Endgegner) then
         if Counter.Tick2("Minenplatzierung", 4) then --alle 4 Sekunden
-            if IsAlive("Endgegner") then
-                local pos = GetPosition("Endgegner") --Bombe
+            if IsAlive(Endgegner) then
+                local pos = GetPosition(Endgegner) --Bombe
                 Logic.CreateEntity(Entities.XD_Bomb1, pos.X, pos.Y, 0, 6)
-                x_end, y_end = Logic.EntityGetPos(GetID("Endgegner")) --Rangeattack
+                x_end, y_end = Logic.EntityGetPos(GetID(Endgegner)) --Rangeattack
 
                 local x
                 local y
@@ -1255,12 +1259,12 @@ function EndgegnerMinen()
                     y = r * math.sin(a) + y_end
                     CppLogic.Effect.CreateProjectile(GGL_Effects.FXKalaArrow, x_end, y_end, x, y, 0, nil, nil, nil, 4, nil, nil, nil)
                     Logic.CreateEffect(GGL_Effects.FXSalimHeal, x, y, 1)
-                    CppLogic.Combat.DealAoEDamage(GetID("Endgegner"), x, y, 150, 300, 4, DamageClasses.DC_Hero, true, false, true, AdvancedDealDamageSource.Script)
+                    CppLogic.Combat.DealAoEDamage(GetID(Endgegner), x, y, 150, 300, 4, DamageClasses.DC_Hero, true, false, true, AdvancedDealDamageSource.Script)
                 end
             end
         end
     end
-    if IsDead("Endgegner") then
+    if IsDead(Endgegner) then
         return true
     end
 end
@@ -1353,9 +1357,9 @@ function ActivateSupportArmy1()
         Generator = "support_army1",  --generator
     })
 
-    SupportArmy1: AddCommandMove(GetPosition("barb_castle"), true);
-    SupportArmy1: AddCommandWaitForIdle(true);
 
+    SupportArmy1.ControlState= UAControlState.Refill
+    SupportArmy1:AddCommandLuaFunc(HandleArmy,true).Def = UnlimitedArmy.CreateCommandDefend(GetPosition("def_pos_army4"), 12000)
 end
 
 
@@ -1431,8 +1435,8 @@ function ActivateSupportArmy2()
         Generator = "support_army2",  --generator
     })
 
-    SupportArmy2: AddCommandMove(GetPosition("barb_castle"), true);
-    SupportArmy2: AddCommandWaitForIdle(true);
+    SupportArmy2.ControlState= UAControlState.Refill
+    SupportArmy2:AddCommandLuaFunc(HandleArmy,true).Def = UnlimitedArmy.CreateCommandDefend(GetPosition("def_pos_army4"), 12000)
 
 end
 
@@ -1440,7 +1444,7 @@ end
 
 function KI4Defeated()
     if IsDestroyed("barracks_id4") and IsDestroyed("archery_id4") and IsDestroyed("stables_id4") and IsDestroyed("foundry_id4") and IsDestroyed("tower1_id4") and IsDestroyed("tower2_id4") and IsDestroyed("inv_tower2") and IsDestroyed("hq_id4") then
-        if KI4RecruitingArmy:IsDead() == -1 and KI4ArmyTable[1][1] == -1  and KI4ArmyTable[2][1] == -1 and KI4ArmyTable[3][1] == -1 and KI4ArmyTable[4][1] == -1 and KI4ArmyTable[5][1] == -1 and KI4ArmyTable[6][1] == -1 and KI4ArmyTable[7][1] == -1 and KI4ArmyTable[8][1] == -1 then
+        if KI4RecruitingArmy:IsDead() == -1 and KI4ArmyTable[1][1]:IsDead() == -1  and KI4ArmyTable[2][1]:IsDead() == -1 and KI4ArmyTable[3][1]:IsDead() == -1 and KI4ArmyTable[4][1]:IsDead() == -1 and KI4ArmyTable[5][1]:IsDead() == -1 and KI4ArmyTable[6][1]:IsDead() == -1 and KI4ArmyTable[7][1]:IsDead() == -1 and KI4ArmyTable[8][1]:IsDead() == -1 then
             StartVictoryBriefing()
             return true
         end

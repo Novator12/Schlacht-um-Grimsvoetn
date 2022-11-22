@@ -70,7 +70,6 @@ ModLoader = {
 			"CB_EvilBoat",
 			"XD_EvilBoat_Wreckage",
 			Entities.PU_LeaderCavalry2,
-			"CU_Sauron",
 			Entities.CU_Evil_LeaderBearman1,
 			Entities.CU_Evil_LeaderSkirmisher1,
 			Entities.CU_Evil_SoldierBearman1,
@@ -199,7 +198,7 @@ ModLoader = {
 			"XD_Construction_SiteTower",
 			"CB_EvilBoat",
 			"XD_EvilBoat_Wreckage",
-			"CU_Sauron"
+			
 		},
 		--- Animations to load or reload. put in a string to load, and a number to reload (Animations.Typename).
 		Animations = {
@@ -257,7 +256,6 @@ ModLoader = {
 		--- Sound (Groups) to load. use arrays of names to load.
 		SoundGroups = {
             {"girlscream"},
-            {"distantexplosion"},
         },
 		--- DirectX Effects to load. no difference between load and reload (requires keeping the bba/s5x that contains them loaded).
 		DirectXEffects = {

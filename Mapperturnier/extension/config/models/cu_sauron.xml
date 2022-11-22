@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<root>
-    <Effect>SkinnedObject</Effect>
-    <OcclusionReceiver>True</OcclusionReceiver>
-    <SelectionRadius>100</SelectionRadius>
-    <SelectionTexture>Selection_hero</SelectionTexture>
-</root>

@@ -255,3 +255,4 @@ function DebugDeactivateThiefAttack()
     end
     ThiefTable = nil
 end
+

@@ -19,6 +19,9 @@ function StartBriefingChapter3()
     --KI5 aktivieren
     Logic.SetPlayerRawName(5, "Schattenkrieger")
     SetHostile(1,5)
+    AI.Village_EnableConstructing(5, 1)
+    AI.Village_EnableRepairing(5, 1)
+    AI.Village_EnableExtracting(5,1)
     ResCheatKI5()
     KI5RecruitSerfs()
     UpgradeKI5()
@@ -244,6 +247,7 @@ function LeoResearchDoneBrief()
         DestroyEntity("shortcut2")
         EvilBomber = Logic.CreateEntity(Entities.CU_SmelterIdle,GetPosition("evil_bomber").X,GetPosition("evil_bomber").Y,0,5)
         EvilBomberJob1 = StartSimpleJob("BombPlaceHandler1")
+        KI5RushJob = StartSimpleJob("ActivateRushKI5")
         Move(EvilBomber,"evil_bomb1")
         Logic.AddQuest(1, 2, MAINQUEST_OPEN, "@color:255,0,0 Angriff auf die Schattenkrieger", "@cr Bekämpft die Schattenkrieger und zerstört Ihre Militärgebäude und die Burg.", 1) 
     end;
@@ -251,65 +255,90 @@ function LeoResearchDoneBrief()
     StartBriefing(briefing)
 end
 
+function ActivateRushKI5()
+    if IsDestroyed("rushblock7") and IsDestroyed("rushblock6") and IsDestroyed("rushblock5") and IsDestroyed("rushblock4") and IsDestroyed("rushblock3") and IsDestroyed("rushblock2") and IsDestroyed("rushblock1") then
+        if IsExisting("rush1_id5") then
+            ActivateRush1KI5()
+        end
+        if IsExisting("rush2_id5") then
+            ActivateRush2KI5()
+        end
+        return true
+    end
+end
 
 function BombPlaceHandler1()
-    if IsNear(EvilBomber,"evil_bomb1") then
-        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb1").X,GetPosition("evil_bomb1").Y,0,1)
-        StartCountdown(60,Move(EvilBomber,"evil_bomb1"),false)
+    if IsNear(EvilBomber,"evil_bomb1",100) and IsExisting(EvilBomber) then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb1").X,GetPosition("evil_bomb1").Y,0,5)
+        StartCountdown(60,function() Move(EvilBomber,"evil_bomb2") end,false)
         EvilBomberJob2 = StartSimpleJob("BombPlaceHandler2")
+        return true
+    elseif IsDead(EvilBomber) then
         return true
     end
 end
 
 function BombPlaceHandler2()
-    if IsNear(EvilBomber,"evil_bomb2") then
-        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb2").X,GetPosition("evil_bomb2").Y,0,1)
-        StartCountdown(60,Move(EvilBomber,"evil_bomb3"),false)
+    if IsNear(EvilBomber,"evil_bomb2",100) and IsExisting(EvilBomber) then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb2").X,GetPosition("evil_bomb2").Y,0,5)
+        StartCountdown(60,function() Move(EvilBomber,"evil_bomb3") end,false)
         EvilBomberJob3 = StartSimpleJob("BombPlaceHandler3")
+        return true
+    elseif IsDead(EvilBomber) then
         return true
     end
 end
 
 function BombPlaceHandler3()
-    if IsNear(EvilBomber,"evil_bomb3") then
-        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb3").X,GetPosition("evil_bomb3").Y,0,1)
-        StartCountdown(60,Move(EvilBomber,"evil_bomb4"),false)
+    if IsNear(EvilBomber,"evil_bomb3",100) and IsExisting(EvilBomber) then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb3").X,GetPosition("evil_bomb3").Y,0,5)
+        StartCountdown(60,function() Move(EvilBomber,"evil_bomb4") end,false)
         EvilBomberJob4 = StartSimpleJob("BombPlaceHandler4")
+        return true
+    elseif IsDead(EvilBomber) then
         return true
     end
 end
 
 function BombPlaceHandler4()
-    if IsNear(EvilBomber,"evil_bomb4") then
-        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb4").X,GetPosition("evil_bomb4").Y,0,1)
-        StartCountdown(60,Move(EvilBomber,"evil_bomb5"),false)
+    if IsNear(EvilBomber,"evil_bomb4",100) and IsExisting(EvilBomber) then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb4").X,GetPosition("evil_bomb4").Y,0,5)
+        StartCountdown(60,function() Move(EvilBomber,"evil_bomb5") end,false)
         EvilBomberJob5 = StartSimpleJob("BombPlaceHandler5")
+        return true
+    elseif IsDead(EvilBomber) then
         return true
     end
 end
 
 function BombPlaceHandler5()
-    if IsNear(EvilBomber,"evil_bomb5") then
-        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb5").X,GetPosition("evil_bomb5").Y,0,1)
-        StartCountdown(60,Move(EvilBomber,"evil_bomb6"),false)
+    if IsNear(EvilBomber,"evil_bomb5",100) and IsExisting(EvilBomber) then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb5").X,GetPosition("evil_bomb5").Y,0,5)
+        StartCountdown(60,function() Move(EvilBomber,"evil_bomb6") end,false)
         EvilBomberJob6 = StartSimpleJob("BombPlaceHandler6")
+        return true
+    elseif IsDead(EvilBomber) then
         return true
     end
 end
 
 function BombPlaceHandler6()
-    if IsNear(EvilBomber,"evil_bomb6") then
-        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb6").X,GetPosition("evil_bomb6").Y,0,1)
-        StartCountdown(60,Move(EvilBomber,"evil_bomb7"),false)
+    if IsNear(EvilBomber,"evil_bomb6",100) and IsExisting(EvilBomber) then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb6").X,GetPosition("evil_bomb6").Y,0,5)
+        StartCountdown(60,function() Move(EvilBomber,"evil_bomb7") end,false)
         EvilBomberJob2 = StartSimpleJob("BombPlaceHandler7")
+        return true
+    elseif IsDead(EvilBomber) then
         return true
     end
 end
 
 function BombPlaceHandler7()
-    if IsNear(EvilBomber,"evil_bomb7") then
-        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb7").X,GetPosition("evil_bomb7").Y,0,1)
+    if IsNear(EvilBomber,"evil_bomb7",100) and IsExisting(EvilBomber) then
+        Logic.CreateEntity(Entities.XD_Bomb1,GetPosition("evil_bomb7").X,GetPosition("evil_bomb7").Y,0,5)
         Move(EvilBomber,"evil_bomber")
+        return true
+    elseif IsDead(EvilBomber) then
         return true
     end
 end
@@ -508,7 +537,6 @@ function ActivateRecruiterKI5()
         },
         ResCheat = true,
         ReorderAllowed = false,
-        DoNotRemoveIfDeadOrEmpty = true,
         RemoveUnavailable = true
     })
 
@@ -834,4 +862,131 @@ function ActivateDef2KI5()
         KI5Def2Army: AddCommandWaitForIdle(true);
         KI5Def2Army: AddCommandMove(GetPosition("ki5_patrol2"), true);
         KI5Def2Army: AddCommandWaitForIdle(true);
+end
+
+
+
+
+function ActivateRush1KI5()
+
+
+    if mode == 1 then
+        KI5_Rush1_Table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 2 then
+        KI5_Rush1_Table = {
+            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 3 then
+        KI5_Rush1_Table = {
+            [1] = 6, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    end
+    
+   
+    KI5Rush1Army = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 5,
+            Area = 4000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Lines,
+            LeaderFormation = 4,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true,
+			IgnoreFleeing = true,
+        },28,NumberUA)
+    
+
+        SpawnerKI5Rush1Army = UnlimitedArmySpawnGenerator:New(KI5Rush1Army, {
+            -- benötigt:
+            Position = GetPosition("spawn_rush1_id5"), --position
+            ArmySize = KI5_Rush1_Table[1], --armysize
+            SpawnCounter = KI5_Rush1_Table[2],  --spawncounter
+            SpawnLeaders = KI5_Rush1_Table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.PU_LeaderHeavyCavalry2, SoldierNum = 3 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderCavalry2, SoldierNum = 6 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderHeavyCavalry2, SoldierNum = 3 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderCavalry2, SoldierNum = 6 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderHeavyCavalry2, SoldierNum = 3 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderCavalry2, SoldierNum = 6 , SpawnNum = 1, Looped = true, Experience = 3},
+            },
+            -- optional:
+            Generator = "rush1_id5",  --generator
+        })
+
+        KI5Rush1Army: AddCommandMove(GetPosition("evil_bomb4"), true);
+        KI5Rush1Army: AddCommandWaitForIdle(true);
+        KI5Rush1Army: AddCommandMove(GetPosition("barb_castle"), true);
+        KI5Rush1Army: AddCommandWaitForIdle(true);
+end
+
+
+function ActivateRush2KI5()
+
+
+    if mode == 1 then
+        KI5_Rush2_Table = {
+            [1] = 2, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 2 then
+        KI5_Rush2_Table = {
+            [1] = 4, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    elseif mode == 3 then
+        KI5_Rush2_Table = {
+            [1] = 6, --Größe der Armee/ Leaderanzahl
+            [2] = 120 --Respawnzeit
+        }
+    end
+    
+   
+    KI5Rush2Army = LazyUnlimitedArmy:New({					
+            -- benötigt
+            Player = 5,
+            Area = 4000,
+            -- optional
+            AutoDestroyIfEmpty = true,
+            TransitAttackMove = true,
+            Formation = UnlimitedArmy.Formations.Lines,
+            LeaderFormation = 4,
+            AIActive = true,
+            AutoRotateRange = 100000,
+            HiResJob = true,
+			IgnoreFleeing = true,
+            DoNotNormalizeSpeed = true,
+        },29,NumberUA)
+    
+
+        SpawnerKI5Rush2Army = UnlimitedArmySpawnGenerator:New(KI5Rush2Army, {
+            -- benötigt:
+            Position = GetPosition("spawn_rush2_id5"), --position
+            ArmySize = KI5_Rush2_Table[1], --armysize
+            SpawnCounter = KI5_Rush2_Table[2],  --spawncounter
+            SpawnLeaders = KI5_Rush2_Table[1],   --spawnleaders
+            LeaderDesc = {
+                {LeaderType = Entities.PU_LeaderBow4, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderBow4, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderSword4, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PU_LeaderSword4, SoldierNum = 8 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PV_Cannon3, SoldierNum = 0 , SpawnNum = 1, Looped = true, Experience = 3},
+                {LeaderType = Entities.PV_Cannon4, SoldierNum = 0 , SpawnNum = 1, Looped = true, Experience = 3},
+            },
+            -- optional:
+            Generator = "rush2_id5",  --generator
+        })
+
+        KI5Rush2Army: AddCommandMove(GetPosition("evil_bomb4"), true);
+        KI5Rush2Army: AddCommandWaitForIdle(true);
+        KI5Rush2Army: AddCommandMove(GetPosition("barb_castle"), true);
+        KI5Rush2Army: AddCommandWaitForIdle(true);
 end

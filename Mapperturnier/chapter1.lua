@@ -346,6 +346,7 @@ function ActivateNVCamp()
         NvCampArmy2: AddCommandWaitForIdle(true);
 
         StartSimpleJob("CheckNVCamp")
+        StartNVScoutBrief()
 end
 
 
@@ -382,6 +383,9 @@ function DelayResurrectBarb()
         SetEntityOverheadWidget(guard,1)
         Move(guard,"watch_jarg1")
         StartSimpleJob("JargDeadBody")
+        if NVScoutActivated == false and IsExisting("NVScout") then
+            DestroyNPC(NPCScout) --Scout-Brief deaktivieren
+        end
         return true;
     else
         delayBarbCount1 = delayBarbCount1 +1;
@@ -397,3 +401,185 @@ function JargDeadBody()
     return false;
 end
 
+NVScoutActivated = false
+
+function StartNVScoutBrief()
+    local callback = function()
+        local briefing = {}
+        -- AddPage Funktion
+        local AP = function(_page) table.insert(briefing, _page); return _page; end
+
+        -- Seite 1
+        local page1 = AP{
+            title = "@color:255,0,0 Varg",
+            text = "@color:255,136,0 Hey du! Was machst du hier? Wir suchen meinen Vater, Jarg. Hast du Ihn gesehen?",
+            NPCScout = { id = GetEntityId("NVScout"),
+                    isObserved = true },
+            dialogCamera = true,
+            action = function() 
+                Logic.EntityLookAt(GetID("NVScout"), varg) 
+                Logic.EntityLookAt(varg, GetID("NVScout"))
+            end
+        };
+        local page2 = AP{
+            title = "@color:255,0,0 Neuridus der Seher",
+            text = "@color:255,136,0 Nicht so forsch. Ich wohne schon lange hier und betreue meine Pflanzen! Ich bin Neuridus der Seher und ich habe euren Vater noch nie gesehen, bzw. von Ihm gehört.",
+            position = GetPosition("NVScout"),
+        };
+        local page3 = AP{
+            title = "@color:255,0,0 Varg",
+            text = "@color:255,136,0 Pfff...Seher...das ich nicht lache. Was könnt Ihr denn so tolles sehen? Wie ein Grashalm nach dem anderen wächst? Har har har.",
+            position = GetPosition(varg),
+            
+        };
+        local page4 = AP{
+            title = "@color:255,0,0 Neuridus der Seher",
+            text = "@color:255,136,0 Ja und auch das Lager der Nebelkrieger dort drüben auch. Aber wieso sollte ich euch jetzt noch bei irgendwas helfen. Mehr als beleidigen könnt Ihr ja nicht. HA HA!",
+            position = GetPosition("NVScout"),
+        };
+
+        local page5 = AP{
+            title = "@color:255,0,0 Varg",
+            text = "@color:255,136,0 Ok ok, tut mir leid. Was wollt Ihr denn haben, damit Ihr uns helft?",
+            position = GetPosition(varg),
+        };
+
+        local page6 = AP { -- Auswahlseite für die Auswertung merken
+            mc           = { -- Multiple Choice
+                title          = "@color:255,0,0 Neuridus der Seher",
+                text           = "@color:255,136,0 Ich brauche zwei Feldarbeiter, da die letzten beiden von den Nebelkriegern getötet wurden. Gebt Sie mir und ich gewähre euch Einblick in deren Basis!",
+                firstText      = "Gebt dem Seher zwei Leibeigene!",
+                secondText     = "Das schaffen wir auch ohne euch. Pff...",
+                firstSelected  = 7, -- Regen   -> Seite 7
+                secondSelected = 9, -- Schnee -> Seite 9
+            },
+            dialogCamera = true,
+        }
+
+        -- Seite 7
+        local page7 = AP{
+            title = "@color:255,0,0 Neuridus der Seher",
+            text = "@color:255,136,0 Wunderbar, schickt mir die Leibeigenen hier aufs Feld.",
+            position = GetPosition("marker_scout"),
+        };
+
+
+        -- Seite 8
+        AP() -- Zwischen beiden Folgebriefings muss mindestens eine "Leerseite" liegen.
+
+        -- Seite 9
+        local page9 = AP{
+            title = "@color:255,0,0 Neuridus der Seher",
+            text = "@color:255,136,0 Dann verschwindet!",
+            position = GetPosition("NVScout"),
+        };
+
+        -- Die finished Funktion:
+        briefing.finished =
+        function()
+            ResolveBriefing(page1)
+            NVScoutActivated = true
+            if Logic.GetPlayerEntities(1,Entities.PU_Serf,4) >= 2 and GetSelectedBriefingMCButton( page6 ) == 1 then -- Erste Antwort gewählt?
+                ScoutPointer = Logic.CreateEffect(GGL_Effects.FXTerrainPointer,GetPosition("marker_scout").X,GetPosition("marker_scout").Y,1)
+                SerfNearScoutJob = StartSimpleJob("SerfsNearPointer")
+            elseif GetSelectedBriefingMCButton( page6 ) == 2 then-- zweite Antwort gewählt?
+                Sound.Play2DSound(1314,0,150)
+            else
+                Message("Scheint so, dass ihr nicht genügend Leibeigene habt!")
+            end
+        end
+        NormalSpeedInBriefing()
+        StartBriefing(briefing)
+    end
+     NPCScout = {
+        name = "NVScout",
+        callback = callback,
+        heroName = varg,
+        wrongHeroMessage = "Ihr seht mir nicht vertrauenswürdig aus. Verschwindet..."
+    };
+    CreateNPC(NPCScout);
+end
+
+SerfScoutTable = {}
+FlagSerfPos = 0
+function SerfsNearPointer()
+    if Logic.GetEntitiesInArea(Entities.PU_Serf,GetPosition("marker_scout").X,GetPosition("marker_scout").Y,200,2) == 2 then
+        SerfScoutTable = {Logic.GetEntitiesInArea(Entities.PU_Serf,GetPosition("marker_scout").X,GetPosition("marker_scout").Y,200,2)}
+        table.remove(SerfScoutTable,1)
+        Logic.DestroyEffect(ScoutPointer)
+        for i = 1,2,1 do
+            SerfScoutTable[i] =  ChangePlayer(SerfScoutTable[i],3)
+            StartSimpleJob("SerfTasklistChecker"..i)
+        end
+        StartSimpleJob("SerfsReachedField")
+        StartCountdown(1,MoveFieldSerfs,false)
+        return true
+    end
+end
+
+function MoveFieldSerfs()
+    Logic.MoveSettler(SerfScoutTable[1],GetPosition("serf_corn1").X,GetPosition("serf_corn1").Y)
+    Logic.MoveSettler(SerfScoutTable[2],GetPosition("serf_corn2").X,GetPosition("serf_corn2").Y)
+end
+
+
+function SerfTasklistChecker1()
+    if IsNear(SerfScoutTable[1],"serf_corn1",100) then
+        Logic.SetTaskList(SerfScoutTable[1],TaskLists.TL_SERF_EXTRACT_RESOURCE)
+        FlagSerfPos = FlagSerfPos+1
+        return true
+    end
+end
+
+function SerfTasklistChecker2()
+    if IsNear(SerfScoutTable[2],"serf_corn2",100) then
+        Logic.SetTaskList(SerfScoutTable[2],TaskLists.TL_SERF_EXTRACT_RESOURCE)
+        FlagSerfPos = FlagSerfPos+1
+        return true
+    end
+end
+
+function SerfsReachedField()
+    if FlagSerfPos == 2 then
+        StartScoutSuccessBrief()
+        return true
+    end
+end
+
+function StartScoutSuccessBrief()
+    local briefing = {}
+    local AP = function(_page) table.insert(briefing, _page) return _page end
+    local page1 = AP{
+        title	= "@color:255,0,0 Neuridus der Seher",
+        text	= "@color:255,136,0 Schaut, wie fein Sie arbeiten. Hehehe...",
+        position = GetPosition("NVScout"),
+        explore = 2000
+    }
+    local page2 = AP{
+        title	= "@color:255,0,0 Leibeigener",
+        text	= "@color:255,136,0 Sklaventreiber...mpff!",
+        position = GetPosition(SerfScoutTable[1]),
+        explore = 2000,
+    }
+    local page3 = AP{
+        title	= "@color:255,0,0 Varg",
+        text	= "@color:255,136,0 So und jetzt haltet euch an unsere Abmachung.",
+        position = GetPosition(varg),
+        explore = 2000,
+    }
+    local page4 = AP{
+        title	= "@color:255,0,0 Neuridus der Seher",
+        text	= "@color:255,136,0 Schon gut. Schaut her:",
+        position = GetPosition("NVScoutExplore"),
+        explore = 3000
+    }
+
+
+    briefing.finished = function()  
+        ResolveBriefing(page1)
+        ResolveBriefing(page2)
+        ResolveBriefing(page3)
+    end;
+    NormalSpeedInBriefing()
+    StartBriefing(briefing)
+end

@@ -180,7 +180,8 @@ function InitWeatherGfxSets()
 		XGUIEng.SetText("CountdownBridgeLava", "@center @color:124,252,0 Fertig!", 1)
 		XGUIEng.SetText("CountdownGateSouth", "@center @color:124,252,0 Fertig!", 1)
 	end
-
+	
+	Input.KeyBindDown(Keys.Back, "GUI.SellBuilding(GUI.GetSelectedEntity())", 2); --Löschen mit Backspace Taste 
 	
 end
 
@@ -228,17 +229,16 @@ function FirstMapAction()
 	Display.SetRenderLandscapeDebugInfo(0)   --Debug
     ActivateBriefingsExpansion()
     StartSimpleJob("BarbCounter")  --CounterJob für kaufbare Barbaren im BarbarenHQ
-	OverrideGUIAction_ToggleMenu()
     InitBuildingSelection() --Aktivierung der Selectionsüberarbeitung für neue Gebäude
     InitalizeBarbTower()  --Aktivierung der Barbarentürme
 	UpgradeNewTroops() --Aktivierung der neuen Truppenupgrades
-	Input.KeyBindDown(Keys.Back, "GUI.SellBuilding(GUI.GetSelectedEntity())", 2); --Löschen mit Backspace Taste 
+	
 	--Logic.SetTechnologyState(1,Technologies.GT_BarbarianBuildings,3) --Aktivierung der Selektierbarkeit des Baumenüs von Serfs
 	Update_GUIUpdate_HeroFindButtons() --Update GUIUpdate_HeroButton
 	Tribute_Comforts() --Aktivierung der Tribut Comfort
 
 	--Anzahl UAs
-	NumberUA = 28
+	NumberUA = 30
 
 	--CC aktivieren
 	ActivateCC()
@@ -315,7 +315,19 @@ function FirstMapAction()
 
 	--HandelBalancing
 	Trigger.RequestTrigger(Events.LOGIC_EVENT_GOODS_TRADED,nil,"TransactionDetails",1,nil,nil) 
+
+	--Savegame Trigger
+	Trigger.RequestTrigger(Events.SCRIPT_EVENT_ON_PRE_SAVE,nil,"NormalizeSaveGameSpeed",1,nil,nil)
 end
+
+function NormalizeSaveGameSpeed()
+	Game.GameTimeSetFactor(1)
+    speedMode = 2
+	currentMode = 1
+    GUITooltip_GenericSpeedButton()
+end
+
+
 
 function ThiefLimiter()
 	if mode ==2 and Logic.GetPlayerEntities(1,Entities.PU_Thief,48) >= 2 then
@@ -1466,77 +1478,4 @@ function TransactionDetails()
         Logic.SetCurrentPrice(PID, TTyp, 0.8 )    
     end
     
-end
-
----Override Save Game Function 
-
-function OverrideGUIAction_ToggleMenu()
-
-	function GUIAction_ToggleMenu(_Menu, _Status)
-
-		NormalSpeedInBriefing()
-		-- Do not go back the main menu, when player hast los / won the game and cancle loading
-		if XGUIEng.GetCurrentWidgetID() == XGUIEng.GetWidgetID("MainMenuLoadWindowCloseButton")
-			and Logic.PlayerGetGameState(GUI.GetPlayerID()) ~= 1 then
-			_Menu = gvGUI_WidgetID.GameEndScreenWindowHint
-			_Status = 0
-		end
-
-
-		--if Logic.PlayerGetGameState(GUI.GetPlayerID())  ~= 1
-		--and _Menu ~= gvGUI_WidgetID.MainMenuLoadWindow
-		--and _Menu ~= gvGUI_WidgetID.GameEndScreenWindowHint	then
-		--	return
-		--end
-
-
-
-		-- Should toggle AND is shown right now?
-		local DoneFlag = 0
-		if _Status == -1 then
-			if XGUIEng.IsWidgetShown(_Menu) == 1 then
-				DoneFlag = 1
-			end
-		end
-
-
-		-- Hide all
-		XGUIEng.ShowAllSubWidgets(gvGUI_WidgetID.Windows, 0)
-
-		-- Check trade
-		if _Menu == gvGUI_WidgetID.TradeWindow then
-			local TributIDs = { Logic.GetAllTributes(GUI.GetPlayerID()) }
-			local HasPlayerTributes = TributIDs[1]
-			if HasPlayerTributes == 0 then
-				DoneFlag = 1
-			end
-		end
-
-		-- Check quest
-		if _Menu == gvGUI_WidgetID.QuestWindow then
-			local QuestIDs = { Logic.GetAllQuests(GUI.GetPlayerID()) }
-			local HasPlayerQuests = QuestIDs[1]
-			if HasPlayerQuests == 0 then
-				DoneFlag = 1
-			end
-		end
-
-		-- Check network
-		if _Menu == gvGUI_WidgetID.NetworkWindow
-			or _Menu == gvGUI_WidgetID.BuyHeroWindow then
-			if XNetwork.Manager_DoesExist() == 0 then
-				DoneFlag = 1
-			end
-		end
-
-		-- Done?
-		if DoneFlag == 1 then
-			return
-		end
-
-		XGUIEng.ShowWidget(_Menu, _Status)
-
-
-
-	end
 end
