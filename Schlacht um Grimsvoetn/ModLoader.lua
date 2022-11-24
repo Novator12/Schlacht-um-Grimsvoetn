@@ -95,6 +95,8 @@ ModLoader = {
 			Entities.PB_Blacksmith3,
 			Entities.PB_Farm2,
 			Entities.PB_Farm3,
+			Entities.PU_LeaderRifle2,
+			Entities.PU_SoldierRifle2,
 		},
 		--- EffectTypes to load or reload. put in a string to load, and a number to reload (GGL_Effects.Typename).
 		EffectTypes = {
